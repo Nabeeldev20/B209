@@ -1,23 +1,19 @@
 import * as React from 'react'
 import { View, Text, StyleSheet, FlatList } from 'react-native'
 import { Switch, TouchableRipple, Surface, ProgressBar, Portal, Dialog, IconButton, Button, Divider } from 'react-native-paper'
-import { Octicons } from '@expo/vector-icons';
-import { DateTime } from 'luxon'
-import { useFonts, Cairo_700Bold, Cairo_600SemiBold, Cairo_400Regular, Cairo_900Black } from '@expo-google-fonts/cairo'
-import { get_database, update_database, get_bookmarks } from './db'
 import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
+import Octicons from 'react-native-vector-icons/Octicons';
+import { FileSystem } from 'react-native-file-access';
+import { DateTime } from 'luxon'
+import { get_database, update_database, get_bookmarks } from './db'
+
 let database = get_database()
 export default function Subject({ navigation, route }) {
     const { subject_name } = route.params;
     React.useEffect(() => {
         navigation.setOptions({ title: subject_name })
     }, [subject_name])
-    let [fontsLoaded] = useFonts({
-        Cairo_700Bold,
-        Cairo_600SemiBold,
-        Cairo_400Regular
-    });
 
     const [onlyCycles, setOnlyCycles] = React.useState(false);
     const [data, setData] = React.useState(database.filter(quiz => quiz.subject == subject_name))
@@ -53,7 +49,6 @@ export default function Subject({ navigation, route }) {
         )
     }
 
-
     function empty_state_cycle() {
         return (
             <Animatable.View animation="fadeIn" style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
@@ -77,11 +72,12 @@ export default function Subject({ navigation, route }) {
     }
 
 
-    function remove_file(title) {
+    async function remove_file(title, path) {
         setData(data.filter(quiz => quiz.title != title));
         setDialogData({ visible: false })
-        //update the database here
-        update_database(data.filter(quiz => quiz.title != title))
+        //db.js
+        update_database(data.filter(quiz => quiz.title != title));
+        await FileSystem.unlink(path)
     }
     if (data.length > 0) {
         if (data[0].subject != subject_name) {
@@ -132,6 +128,7 @@ export default function Subject({ navigation, route }) {
                                     setDialogData({
                                         visible: true,
                                         title: item.title,
+                                        path: item.path,
                                         average_accuracy: item.get_average_accuracy(),
                                         average_time: item.get_average_time(),
                                         last_score: item.average_accuracy[item.average_accuracy.length - 1] || 0,
@@ -237,7 +234,7 @@ export default function Subject({ navigation, route }) {
 
 
                         <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
-                            <IconButton icon='alert' size={20} color='red' onPress={() => remove_file(dialogData.title)} />
+                            <IconButton icon='alert' size={20} color='red' onPress={() => remove_file(dialogData.title, dialogData.path)} />
                             <Button
                                 onPress={() => setDialogData({ visible: false })}
                                 labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo_700Bold' }}
