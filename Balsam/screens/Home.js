@@ -7,6 +7,7 @@ import { FileSystem } from 'react-native-file-access';
 import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
 import { DateTime } from 'luxon'
+import Analytics from 'appcenter-analytics';
 import Exam from './Exam'
 import FinishScreen from './FinishScreen'
 import Activation from './Activation'
@@ -66,6 +67,7 @@ export default function Home({ navigation }) {
                         quiz
                     })
                 } else {
+                    Analytics.trackEvent('Exam taken', { Subject: quiz.subject, FileName: quiz.title });
                     quiz.get_shuffled_questions(true, true)
                     navigation.push('Exam', { quiz, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) })
                 }
