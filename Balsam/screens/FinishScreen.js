@@ -1,23 +1,15 @@
 import * as React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import { Surface, TouchableRipple, Divider, Button } from 'react-native-paper'
-import { useFonts, Cairo_700Bold, Cairo_600SemiBold, Cairo_400Regular, Cairo_900Black } from '@expo-google-fonts/cairo'
-import { Octicons } from '@expo/vector-icons';
+import { Surface, TouchableRipple, Divider } from 'react-native-paper'
+import Octicons from 'react-native-vector-icons/Octicons';
 import { DateTime } from 'luxon'
 import * as Animatable from 'react-native-animatable';
-import { get_database, save_file, get_quotes } from './db'
+import { get_database, save_file } from './db'
 
-let database = get_database()
+let database = get_database();
+
 export default function FinishScreen({ navigation, route }) {
     const { quiz, wrong_count, exam_time } = route.params
-    let [fontsLoaded] = useFonts({
-        Cairo_700Bold,
-        Cairo_600SemiBold,
-        Cairo_400Regular,
-        Cairo_900Black
-    });
-
-
 
     function get_ratio_score() {
         let right = quiz.get_questions_number() - wrong_count;
@@ -63,19 +55,17 @@ export default function FinishScreen({ navigation, route }) {
         }
         return { visible: false }
     }
-
     function go_exam(exam = quiz) {
         exam.get_shuffled_questions();
         exam.index = 0;
         navigation.replace('Exam', { quiz: exam, exam_time: DateTime.fromISO(DateTime.now().toLocaleString(DateTime.TIME_24_SIMPLE)) })
     }
-
     async function update_quiz() {
         quiz.update_average_time(Math.ceil(get_time() * 60));
         quiz.update_average_accuracy(get_ratio_score());
         quiz.index = 0;
         quiz.last_time = DateTime.now().toISODate();
-        //!save_file(quiz)
+        save_file(quiz)
     }
     function update_data() {
         if (!quiz.title.includes('مخصص')) {

@@ -2,33 +2,17 @@ import * as React from 'react'
 import { View, StyleSheet, Text, ScrollView } from 'react-native'
 import { Divider } from 'react-native-paper';
 import { DrawerItem } from '@react-navigation/drawer';
-import { useFonts, Cairo_700Bold, Cairo_600SemiBold } from '@expo-google-fonts/cairo'
-import { Octicons } from '@expo/vector-icons';
+import Octicons from 'react-native-vector-icons/Octicons';
+
 import { get_database } from './db'
 let database = get_database()
+
 export default function CustomDrawer({ navigation }) {
-    let [fontsLoaded] = useFonts({
-        Cairo_700Bold,
-        Cairo_600SemiBold
-    });
-
-
     const get_subject = () => {
         let output = [];
         database.forEach(file => output.push(file.subject))
         return [... new Set(output)]
     }
-
-    if (!fontsLoaded) {
-        return (
-            <View>
-                <Text> loading</Text>
-            </View>
-        )
-    }
-
-
-
     return (
         <View style={styles.container}>
 
@@ -38,6 +22,7 @@ export default function CustomDrawer({ navigation }) {
                 labelStyle={styles.drawer_text}
                 style={{ marginVertical: 1 }}
                 onPress={() => navigation.navigate('Home')} />
+
             <DrawerItem
                 label='امتحان مخصص'
                 icon={() => <Octicons size={16} name='zap' />}
@@ -46,7 +31,7 @@ export default function CustomDrawer({ navigation }) {
                 style={{ marginVertical: 1 }}
             />
             <Divider />
-            <Text style={{ fontFamily: 'Cairo_600SemiBold', margin: 5, fontSize: 16, color: 'grey' }}>المقررات</Text>
+            <Text style={{ fontFamily: 'Cairo_600SemiBold', margin: 6, fontSize: 16, color: 'grey' }}>المقررات</Text>
             <ScrollView
                 style={{ flex: 1 }}
                 contentContainerStyle={{ flexGrow: 1 }}
@@ -60,7 +45,8 @@ export default function CustomDrawer({ navigation }) {
                             onPress={() => navigation.navigate('SubjectStack', { screen: 'Subject', params: { subject_name: subject } })}
                         />
                     )
-                })}</ScrollView>
+                })}
+            </ScrollView>
         </View>
 
     )

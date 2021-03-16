@@ -2,21 +2,14 @@ import * as React from 'react'
 import { View, Text, StyleSheet, FlatList, ScrollView, Dimensions } from 'react-native'
 import { Checkbox, Divider, Subheading, Switch, Surface, TouchableRipple, useTheme } from 'react-native-paper'
 import { createStackNavigator } from '@react-navigation/stack';
-import { Octicons } from '@expo/vector-icons';
-import { useFonts, Cairo_700Bold, Cairo_600SemiBold, Cairo_400Regular } from '@expo-google-fonts/cairo'
+import Octicons from 'react-native-vector-icons/Octicons';
 import { DateTime } from 'luxon'
 
 import { get_database } from './db'
-//! database shit
 let database = get_database()
 
 export default function CustomExam({ navigation }) {
     const Stack = createStackNavigator();
-    let [fontsLoaded] = useFonts({
-        Cairo_700Bold,
-        Cairo_600SemiBold,
-        Cairo_400Regular
-    });
     const { colors } = useTheme();
     const [selectedSubject, setSelectedSubject] = React.useState([]);
     const [onlyCycles, setOnlyCycles] = React.useState(false);
@@ -24,9 +17,17 @@ export default function CustomExam({ navigation }) {
     const [randomChoices, setRandomChoices] = React.useState(true);
     const [quizArray, setQuizArray] = React.useState([])
     const [isAll, setIsAll] = React.useState(false);
+
+
     const [screenHeight, setScreenHeight] = React.useState(Dimensions.get('window'));
     const { height } = Dimensions.get('window');
-    const [sliderNumber, setSliderNumber] = React.useState(0)
+    const scrollEnabled = () => {
+        return screenHeight > height ? true : false
+    }
+    const onContentSizeChange = (contentHeight) => {
+        setScreenHeight(contentHeight);
+    }
+
     function custom_exam({ navigation }) {
 
         const SubjectCheckbox = () => {
@@ -176,7 +177,6 @@ export default function CustomExam({ navigation }) {
 
         const makeExam = () => {
             if (quizArray.length > 0) {
-
                 const quiz = {
                     title: `امتحان مخصص في ${selectedSubject[0]}`,
                     questions: make_questions().questions,
@@ -196,7 +196,8 @@ export default function CustomExam({ navigation }) {
                         }
                         time[2] = ':'
                         return time.join('')
-                    }, get_shuffled_questions(onlyQuestions = true, onlyChoices = true) {
+                    },
+                    get_shuffled_questions(onlyQuestions = true, onlyChoices = true) {
                         if (onlyQuestions) {
                             let array = this.questions
                             for (let i = array.length - 1; i > 0; i--) {
@@ -224,22 +225,11 @@ export default function CustomExam({ navigation }) {
                     screen: 'Exam',
                     params: {
                         quiz,
-                        exam_time: DateTime.fromISO(DateTime.now().toLocaleString(DateTime.TIME_24_SIMPLE))
+                        exam_time: DateTime.fromISO(DateTime.now().toISOTime())
                     }
                 })
             }
         }
-
-
-
-        const scrollEnabled = () => {
-            return screenHeight > height ? true : false
-        }
-        const onContentSizeChange = (contentHeight) => {
-            setScreenHeight(contentHeight);
-        };
-
-
 
         return (
             <ScrollView

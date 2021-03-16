@@ -1,21 +1,16 @@
 import * as React from 'react'
 import { View, Text, StyleSheet, ScrollView, Dimensions, FlatList } from 'react-native'
 import { Title, TouchableRipple, Surface, Subheading, IconButton, useTheme } from 'react-native-paper'
-import { useFonts, Cairo_700Bold, Cairo_600SemiBold, Cairo_400Regular } from '@expo-google-fonts/cairo'
-import { Octicons } from '@expo/vector-icons';
-import { get_bookmarks, update_bookmarks, get_database, save_file } from './db'
+import Octicons from 'react-native-vector-icons/Octicons';
+
 import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
-//! import { FileSystem } from 'react-native-file-access';
+import { get_bookmarks, update_bookmarks, get_database, save_file } from './db'
 
-let database = get_database()
+let database = get_database();
+
 export default function Exam({ navigation, route }) {
     let { quiz, exam_time } = route.params;
-    let [fontsLoaded] = useFonts({
-        Cairo_700Bold,
-        Cairo_600SemiBold,
-        Cairo_400Regular
-    });
     React.useEffect(() => {
         navigation.setOptions({ title: quiz.title })
     }, [quiz.title])
@@ -35,13 +30,14 @@ export default function Exam({ navigation, route }) {
     const [hasAnswered, setHasAnswered] = React.useState(false);
     const [wrongAnswersCount, setWrongAnswersCount] = React.useState(0)
     const [inBookmark, setInBookmark] = React.useState(get_bookmarks().filter(bookmark => bookmark.subject == quiz.subject).length >= 1);
-    const title = React.useRef(null)
+
+    const title = React.useRef(null);
     const choices_animation = React.useRef(null);
-    const footer_animation = React.useRef(null)
+    const footer_animation = React.useRef(null);
+
     const Footer = () => {
         if (hasAnswered) {
             return (
-
                 <Animatable.View ref={footer_animation} animation="fadeInUp" duration={1500}>
                     <TouchableRipple
                         onPress={move_to_next_question}
@@ -55,12 +51,10 @@ export default function Exam({ navigation, route }) {
                         </Surface>
                     </TouchableRipple>
                 </Animatable.View>
-
             )
         }
         return null
     }
-
     const check_answer = async (choice) => {
         if (!hasAnswered) {
             if (quiz.get_question(index).is_right(choice)) {
