@@ -2,32 +2,24 @@ import * as React from 'react'
 import { View, Text, StyleSheet, FlatList } from 'react-native'
 import { TouchableRipple, Surface, Dialog, Portal, Divider, IconButton, Button, useTheme } from 'react-native-paper'
 import { createStackNavigator } from '@react-navigation/stack';
+import Octicons from 'react-native-vector-icons/Octicons';
+import { FileSystem } from 'react-native-file-access';
+import * as Animatable from 'react-native-animatable';
+import * as Haptics from 'expo-haptics';
+import { DateTime } from 'luxon'
 import Exam from './Exam'
 import FinishScreen from './FinishScreen'
 import Activation from './Activation'
-import { useFonts, Cairo_700Bold, Cairo_600SemiBold, Cairo_400Regular } from '@expo-google-fonts/cairo'
-import { Octicons } from '@expo/vector-icons';
-import { DateTime } from 'luxon'
-import * as Animatable from 'react-native-animatable';
-import * as Haptics from 'expo-haptics';
+import { get_database, update_database, is_quiz_valid } from './db'
 
-import { get_database, update_database, get_act, is_quiz_valid } from './db'
-
-// TODO empty state
-// TODO handle first time, premission? in empty screen
 
 let data = get_database()
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();
-    let [fontsLoaded] = useFonts({
-        Cairo_700Bold,
-        Cairo_600SemiBold,
-        Cairo_400Regular
-    });
     const { colors } = useTheme();
 
 
-    const EmptyHome = () => {
+    function EmptyHome() {
         return (
             <Animatable.View animation="fadeIn" style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
                 <Octicons
@@ -53,11 +45,12 @@ export default function Home({ navigation }) {
         const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 })
         const [database, setDatabase] = React.useState(data)
 
-        const remove_file = (title) => {
+        async function remove_file(title, path) {
             setDatabase(database.filter(quiz => quiz.title != title));
             setDialogData({ visible: false })
-            //! update the database here
-            update_database(database.filter(quiz => quiz.title != title))
+            // in db.js
+            update_database(database.filter(quiz => quiz.title != title));
+            await FileSystem.unlink(path)
         }
 
 
@@ -117,6 +110,7 @@ export default function Home({ navigation }) {
                                         setDialogData({
                                             visible: true,
                                             title: item.title,
+                                            path: item.path,
                                             average_accuracy: item.get_average_accuracy(),
                                             average_time: item.get_average_time(),
                                             last_score: item.average_accuracy[item.average_accuracy.length - 1] ?? 0,
@@ -227,7 +221,7 @@ export default function Home({ navigation }) {
                             <Divider />
                         </Dialog.Content>
                         <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
-                            <IconButton icon='alert' size={20} color='red' onPress={() => remove_file(dialogData.title)} />
+                            <IconButton icon='alert' size={20} color='red' onPress={() => remove_file(dialogData.title, dialogData.path)} />
                             <Button
                                 onPress={() => setDialogData({ visible: false })}
                                 labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo_700Bold' }}
