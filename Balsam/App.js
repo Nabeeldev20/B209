@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import { I18nManager, PermissionsAndroid, NativeModules } from 'react-native';
+import { I18nManager, PermissionsAndroid, NativeModules, View, Text } from 'react-native';
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
