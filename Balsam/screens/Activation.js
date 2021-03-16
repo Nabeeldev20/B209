@@ -5,6 +5,7 @@ import * as Animatable from 'react-native-animatable';
 import Octicons from 'react-native-vector-icons/Octicons';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Hashids from 'hashids'
+import Analytics from 'appcenter-analytics';
 import { DateTime } from 'luxon'
 import { get_act, update_act } from './db'
 
@@ -61,6 +62,7 @@ export default function Activation({ navigation, route }) {
         }
     }
     function save() {
+        Analytics.trackEvent('Activation', { Subject: subject_name, QuizCode: code });
         get_act()[get_ID().index].valid = true;
         update_act(get_act());
     }

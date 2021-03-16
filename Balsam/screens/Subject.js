@@ -6,6 +6,7 @@ import * as Haptics from 'expo-haptics';
 import Octicons from 'react-native-vector-icons/Octicons';
 import { FileSystem } from 'react-native-file-access';
 import { DateTime } from 'luxon'
+import Analytics from 'appcenter-analytics';
 import { get_database, update_database, get_bookmarks } from './db'
 
 let database = get_database()
@@ -85,6 +86,7 @@ export default function Subject({ navigation, route }) {
         }
     }
     function go_exam(item) {
+        Analytics.trackEvent('Exam', { Subject: item.subject, FileName: item.title });
         item.get_shuffled_questions(true, true)
         navigation.navigate('Home', {
             screen: 'Exam', params: { quiz: item, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) }

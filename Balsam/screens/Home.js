@@ -67,7 +67,7 @@ export default function Home({ navigation }) {
                         quiz
                     })
                 } else {
-                    Analytics.trackEvent('Exam taken', { Subject: quiz.subject, FileName: quiz.title });
+                    Analytics.trackEvent('Exam', { Subject: quiz.subject, FileName: quiz.title });
                     quiz.get_shuffled_questions(true, true)
                     navigation.push('Exam', { quiz, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) })
                 }
