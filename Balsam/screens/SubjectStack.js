@@ -1,11 +1,11 @@
 import * as React from 'react'
-import { View, Text, Button } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack';
-import Bookmarks from './Bookmarks'
-import { Octicons } from '@expo/vector-icons';
-import Subject from './Subject'
 
-export default function SubjectStack({ navigation, route }) {
+import Octicons from 'react-native-vector-icons/Octicons';
+import Subject from './Subject'
+import Bookmarks from './Bookmarks'
+
+export default function SubjectStack({ navigation }) {
     const Stack = createStackNavigator();
 
     return (
