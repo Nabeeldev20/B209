@@ -1,0 +1,128 @@
+import * as React from 'react'
+import { View, Text, StyleSheet, FlatList, Button } from 'react-native'
+import { Divider, Surface, Headline, IconButton } from 'react-native-paper'
+import { useFonts, Cairo_700Bold, Cairo_600SemiBold, Cairo_400Regular } from '@expo-google-fonts/cairo'
+import { Octicons } from '@expo/vector-icons';
+import * as Animatable from 'react-native-animatable';
+import { get_bookmarks, update_bookmarks } from './db'
+
+
+export default function Bookmarks({ navigation, route }) {
+    let { subject_name } = route.params;
+
+    React.useEffect(() => {
+        navigation.setOptions({ title: 'محفوظات' + ' ' + subject_name })
+    }, [subject_name])
+
+
+    let [fontsLoaded] = useFonts({
+        Cairo_700Bold,
+        Cairo_600SemiBold,
+        Cairo_400Regular
+    });
+
+
+    const [bookmarksData, setBookmarksData] = React.useState(get_bookmarks().filter(bookmark => bookmark.subject == subject_name))
+
+    const QuestionExplanation = (item) => {
+        if (item.question.has_explanation()) {
+            return (
+                <View>
+                    <Divider />
+                    <View style={styles.row}>
+                        <Octicons style={{ marginRight: 4 }} name='report' color='grey' size={16} />
+                        <Text style={styles.text}>{item.question.explanation}</Text>
+                    </View>
+                </View>
+            )
+        }
+        return null
+    }
+    const remove_Bookmark = (item) => {
+        setBookmarksData(bookmarksData.filter(bookmark => bookmark.question.title != item.question.title))
+        // update the database
+        update_bookmarks(bookmarksData.filter(bookmark => bookmark.question.title != item.question.title));
+    }
+    const empty_state = () => {
+        return (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: '25%' }}>
+                <Octicons name='star' size={40} color='grey' />
+                <Text style={styles.text}>جرّب إضافة سؤال للمحفوظات أثناء الحل</Text>
+            </View>
+        )
+    }
+
+    return (
+        <View style={styles.container}>
+            <FlatList
+                data={bookmarksData}
+                extraData={bookmarksData}
+                ListEmptyComponent={empty_state}
+                keyExtractor={(item) => item.question.title}
+                renderItem={({ item, index }) => (
+                    <Animatable.View animation="fadeInRight" delay={index * 350} duration={1500}>
+                        <Surface style={styles.surface}>
+                            <View style={styles.row} >
+                                <Octicons style={{ marginRight: 4 }} name='qustion' color='grey' size={16} />
+                                <Headline style={styles.headline}>{item.question.title}
+                                    <Text style={styles.text}>({item.subject})</Text></Headline>
+                            </View>
+                            <Divider />
+                            {item.question.choices.filter(choice => choice != '-').map(choice => {
+                                return (
+                                    <Text
+                                        style={[styles.text, { color: item.question.is_right(choice) ? 'green' : 'grey' }]}
+                                        key={choice}
+                                    >{choice}</Text>
+                                )
+                            })}
+                            {QuestionExplanation(item)}
+                            <IconButton
+                                icon='alert'
+                                color='grey'
+                                size={20}
+                                onPress={() => remove_Bookmark(item)}
+                                style={{ alignSelf: 'flex-end' }}
+                            />
+                        </Surface>
+                    </Animatable.View>
+                )}
+            />
+        </View>
+    )
+}
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        width: '100%',
+        padding: 5,
+    },
+    surface: {
+        padding: 5,
+        elevation: 1,
+        borderWidth: 1,
+        borderColor: '#D7D8D2',
+        margin: 3
+    },
+    headline: {
+        fontFamily: 'Cairo_700Bold',
+        fontSize: 16,
+        selectable: false,
+        padding: 3,
+        textAlign: 'flex-start'
+    },
+    text: {
+        fontFamily: 'Cairo_600SemiBold',
+        fontSize: 14,
+        selectable: false,
+        padding: 3,
+        paddingHorizontal: 5,
+        marginHorizontal: 5,
+        color: 'grey'
+    },
+    row: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        paddingHorizontal: 4
+    }
+})
