@@ -2,8 +2,7 @@ import * as React from 'react'
 import { View, Text, StyleSheet, Linking } from 'react-native'
 import { Surface, TextInput, HelperText, Badge, Button } from 'react-native-paper'
 import * as Animatable from 'react-native-animatable';
-import { useFonts, Cairo_700Bold, Cairo_600SemiBold, Cairo_400Regular, Cairo_900Black } from '@expo-google-fonts/cairo'
-import { Octicons } from '@expo/vector-icons';
+import Octicons from 'react-native-vector-icons/Octicons';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Hashids from 'hashids'
 import { DateTime } from 'luxon'
@@ -15,11 +14,7 @@ export default function Activation({ navigation, route }) {
     React.useEffect(() => {
         navigation.setOptions({ title: 'تفعيل بنك' + ' ' + subject_name })
     }, [subject_name])
-    let [fontsLoaded] = useFonts({
-        Cairo_700Bold,
-        Cairo_600SemiBold,
-        Cairo_400Regular
-    });
+
     const [storeCode, setStoreCode] = React.useState('');
     const [keyCode, setKeyCode] = React.useState('');
     const act_button = React.useRef(null);
@@ -153,7 +148,7 @@ export default function Activation({ navigation, route }) {
                             mode='contained'
                             labelStyle={styles.button}
                             color='#00C853'
-                            icon='lock'
+                            icon='unlock'
                             disabled={keyCode != h.decode(get_ID().en)}
                             contentStyle={{ flexDirection: 'row-reverse' }}
                             onPress={() => save()}>

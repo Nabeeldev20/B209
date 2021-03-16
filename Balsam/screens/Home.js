@@ -221,7 +221,7 @@ export default function Home({ navigation }) {
                             <Divider />
                         </Dialog.Content>
                         <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
-                            <IconButton icon='alert' size={20} color='red' onPress={() => remove_file(dialogData.title, dialogData.path)} />
+                            <IconButton icon='trash' size={20} color='red' onPress={() => remove_file(dialogData.title, dialogData.path)} />
                             <Button
                                 onPress={() => setDialogData({ visible: false })}
                                 labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo_700Bold' }}

@@ -178,7 +178,7 @@ export default function Exam({ navigation, route }) {
                 <View style={{ flexDirection: 'row', width: '55%', justifyContent: quiz.title.includes('مخصص') ? 'flex-end' : 'space-between' }}>
                     {!quiz.title.includes('مخصص') ?
                         <IconButton
-                            icon={inBookmark ? 'star-fill' : 'star'}
+                            icon={inBookmark ? 'bookmark' : 'bookmark-slash'}
                             color={inBookmark ? 'gold' : 'grey'}
                             size={30}
                             onPress={() => add_to_bookmarks({

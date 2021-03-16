@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { View, Text, StyleSheet, FlatList, Button } from 'react-native'
 import { Divider, Surface, Headline, IconButton } from 'react-native-paper'
-import { useFonts, Cairo_700Bold, Cairo_600SemiBold, Cairo_400Regular } from '@expo-google-fonts/cairo'
-import { Octicons } from '@expo/vector-icons';
+import Octicons from 'react-native-vector-icons/Octicons';
 import * as Animatable from 'react-native-animatable';
+
 import { get_bookmarks, update_bookmarks } from './db'
 
 
@@ -13,14 +13,6 @@ export default function Bookmarks({ navigation, route }) {
     React.useEffect(() => {
         navigation.setOptions({ title: 'محفوظات' + ' ' + subject_name })
     }, [subject_name])
-
-
-    let [fontsLoaded] = useFonts({
-        Cairo_700Bold,
-        Cairo_600SemiBold,
-        Cairo_400Regular
-    });
-
 
     const [bookmarksData, setBookmarksData] = React.useState(get_bookmarks().filter(bookmark => bookmark.subject == subject_name))
 
@@ -40,7 +32,7 @@ export default function Bookmarks({ navigation, route }) {
     }
     const remove_Bookmark = (item) => {
         setBookmarksData(bookmarksData.filter(bookmark => bookmark.question.title != item.question.title))
-        // update the database
+        // db.js + asyncStorage
         update_bookmarks(bookmarksData.filter(bookmark => bookmark.question.title != item.question.title));
     }
     const empty_state = () => {
@@ -78,7 +70,7 @@ export default function Bookmarks({ navigation, route }) {
                             })}
                             {QuestionExplanation(item)}
                             <IconButton
-                                icon='alert'
+                                icon='trash'
                                 color='grey'
                                 size={20}
                                 onPress={() => remove_Bookmark(item)}
