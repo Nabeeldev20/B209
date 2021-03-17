@@ -5,6 +5,7 @@ import CryptoJS from 'crypto-js';
 let database = []
 let bookmarks = []
 let act = []
+let error_array = []
 function get_database() {
     return database
 }
@@ -44,5 +45,10 @@ async function save_file(quiz) {
     let encrypted = CryptoJS.AES.encrypt(JSON.stringify(quiz), 'nabeeladnanalinizam_20900!@#()').toString();
     await FileSystem.writeFile(path, encrypted)
 }
-
-export { get_database, update_database, get_bookmarks, update_bookmarks, get_act, update_act, save_file, is_quiz_valid }
+function get_error_msgs() {
+    return error_array;
+}
+function update_error_msgs(data) {
+    error_array.push(JSON.stringify(data))
+}
+export { get_database, update_database, get_bookmarks, update_bookmarks, get_act, update_act, save_file, is_quiz_valid, get_error_msgs, update_error_msgs }

@@ -6,7 +6,7 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
 
-import { get_database } from './db'
+import { get_database, get_error_msgs } from './db'
 let database = get_database()
 
 export default function CustomExam({ navigation }) {
@@ -241,6 +241,7 @@ export default function CustomExam({ navigation }) {
                 onContentSizeChange={onContentSizeChange}
             >
                 <View style={styles.container}>
+                    <Text>{get_error_msgs()}</Text>
                     <Surface style={styles.surface}>
                         <Subheading style={styles.title}>المقررات</Subheading>
                         <SubjectCheckbox />
