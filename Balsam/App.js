@@ -53,6 +53,7 @@ export default function App() {
         setHasPermissons(false)
       }
     } catch (error) {
+      update_error_msgs({ Code: 'asking for premission', error })
     }
   }
 
@@ -130,7 +131,7 @@ export default function App() {
             </Text>
           </Animatable.View>
           <Animatable.View animation='fadeInUp' delay={1000}>
-            <Button style={{ padding: 5 }} labelStyle={styles.button} color='#313131' onPress={ask_for_permission}>الحصول على صلاحية الوصول للذاكرة</Button>
+            <Button style={{ padding: 5 }} labelStyle={styles.button} color='#313131' onPress={() => ask_for_permission()}>الحصول على صلاحية الوصول للذاكرة</Button>
           </Animatable.View>
         </View>
       )
