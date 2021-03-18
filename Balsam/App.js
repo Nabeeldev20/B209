@@ -38,8 +38,8 @@ export default function App() {
     },
   };
   let [fontsLoaded] = useFonts({
-    'Changa_Bold': require('./assets/fonts/Changa-Bold.ttf'),
-    'Changa_SemiBold': require('./assets/fonts/Changa-SemiBold.ttf'),
+    'Cairo_Bold': require('./assets/fonts/Cairo-Bold.ttf'),
+    'Cairo_SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
   });
   const [loading, setLoading] = React.useState(true);
   const [hasPermissons, setHasPermissons] = React.useState(false)
@@ -47,7 +47,7 @@ export default function App() {
     try {
       const has_premissons = await PermissionsAndroid.requestMultiple([PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE, PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE]);
       update_error_msgs({ Code: 'asking for permission', has_premissons })
-      if (has_premissons.android.permission.READ_EXTERNAL_STORAGE == 'granted') {
+      if (has_premissons['android.permission.READ_EXTERNAL_STORAGE'] == 'granted') {
         setHasPermissons(true)
       } else {
         setHasPermissons(false)
@@ -93,7 +93,6 @@ export default function App() {
         update_error_msgs({ Code: 'Storage.get_files_paths', error })
       }
     }
-    ask_for_permission()
     if (hasPermissons) {
       get_data();
       setLoading(false);
@@ -104,28 +103,38 @@ export default function App() {
 
 
   if (loading) {
-    return (
-      <View style={styles.container}>
-        <Animatable.Text animation='fadeInRight' style={styles.welcome}>مرحباً يا بلسم!</Animatable.Text>
-        <Animatable.Text animation='fadeInRight' delay={450} style={styles.headline}>تطبيق حل أسئلة صمم خصيصاً ليكون بلسماً لمشاكلك.</Animatable.Text>
-        <Animatable.View animation='fadeIn' delay={700} style={{ paddingTop: 10 }}>
-          <MaterialCommunityIcons name='lightbulb' size={20} color="grey" style={{ alignSelf: 'flex-start' }} />
-          <Text style={styles.text}> ملفات اختبارات بلسم بلاحقة
-      <Text style={{ fontWeight: 'bold', fontFamily: 'Cairo_700Bold', marginHorizontal: 10 }}>
-              quiz.
-      </Text>{'\n'}
-يمكنك تحميل الملفات من قناتنا على التلغرام
-<MaterialCommunityIcons style={{ paddingHorizontal: 3 }} name='telegram' size={16} color='grey' /> <Text style={{ paddingLeft: 5 }}>@Balsam_app</Text>    {'\n'}
-تتم قراءة الملفات تلقائياً من مجلد التنزيلات
-      <MaterialCommunityIcons style={{ paddingHorizontal: 5 }} name='folder-download' size={16} color='grey' /> {'\n'}
+    if (hasPermissons == false) {
+      return (
+        <View style={styles.container}>
+          <Animatable.Text animation='fadeInRight' style={styles.welcome}>مرحباً يا بلسم!</Animatable.Text>
+          <Animatable.Text animation='fadeInRight' delay={450} style={styles.headline}>تطبيق حل أسئلة صمم خصيصاً ليكون بلسماً لمشاكلك.</Animatable.Text>
+          <Animatable.View animation='fadeIn' delay={700} style={{ paddingTop: 10 }}>
+            <MaterialCommunityIcons name='lightbulb' size={20} color="grey" style={{ alignSelf: 'flex-start' }} />
+            <Text style={styles.text}> ملفات اختبارات بلسم بلاحقة
+        <Text style={{ fontWeight: 'bold', fontFamily: 'Cairo_700Bold', marginHorizontal: 10 }}>
+                quiz.
+        </Text>{'\n'}
+  يمكنك تحميل الملفات من قناتنا على التلغرام
+  <MaterialCommunityIcons style={{ paddingHorizontal: 3 }} name='telegram' size={16} color='grey' /> <Text style={{ paddingLeft: 5 }}>@Balsam_app</Text>    {'\n'}
+  تتم قراءة الملفات تلقائياً من مجلد التنزيلات
+        <MaterialCommunityIcons style={{ paddingHorizontal: 5 }} name='folder-download' size={16} color='grey' /> {'\n'}
 
-          </Text>
-        </Animatable.View>
-        <Animatable.View animation='fadeInUp' delay={1000}>
-          <Button style={{ padding: 5 }} labelStyle={styles.button} color='#313131' onPress={ask_for_permission}>الحصول على صلاحية الوصول للذاكرة</Button>
-        </Animatable.View>
-      </View>
-    )
+            </Text>
+          </Animatable.View>
+          <Animatable.View animation='fadeInUp' delay={1000}>
+            <Button style={{ padding: 5 }} labelStyle={styles.button} color='#313131' onPress={ask_for_permission}>الحصول على صلاحية الوصول للذاكرة</Button>
+          </Animatable.View>
+        </View>
+      )
+    } else {
+      return (
+         <Animatable.View animation='flash' iterationCount='infinite' duration={3500} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <MaterialCommunityIcons name='folder-sync' size={35} color='grey' />
+      <Text style={[styles.headline, { color: 'grey' }]} >جاري التحميل</Text>
+    </Animatable.View>
+      )
+    }
+
   } else {
     return (
       <PaperProvider
@@ -163,22 +172,22 @@ const styles = StyleSheet.create({
 
   },
   welcome: {
-    fontFamily: 'Changa_Bold',
+    fontFamily: 'Cairo_Bold',
     fontSize: 35,
     padding: 10,
     paddingBottom: 3
   },
   headline: {
-    fontFamily: 'Changa_Bold',
+    fontFamily: 'Cairo_Bold',
     fontSize: 21,
     paddingBottom: 20
   },
   text: {
-    fontFamily: 'Changa_SemiBold',
+    fontFamily: 'Cairo_SemiBold',
     color: 'grey'
   },
   button: {
     letterSpacing: 0,
-    fontFamily: 'Changa_Bold'
+    fontFamily: 'Cairo_Bold'
   }
 })

@@ -5,11 +5,16 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
+import { useFonts } from 'expo-font';
 
 import { get_database, get_error_msgs } from './db'
 let database = get_database()
 
 export default function CustomExam({ navigation }) {
+    let [fontsLoaded] = useFonts({
+        'Cairo_700Bold': require('./assets/fonts/Cairo-Bold.ttf'),
+        'Cairo_600SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
+    });
     const Stack = createStackNavigator();
     const { colors } = useTheme();
     const [selectedSubject, setSelectedSubject] = React.useState([]);

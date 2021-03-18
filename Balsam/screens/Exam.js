@@ -2,6 +2,7 @@ import * as React from 'react'
 import { View, Text, StyleSheet, ScrollView, Dimensions, FlatList } from 'react-native'
 import { Title, TouchableRipple, Surface, Subheading, IconButton, useTheme } from 'react-native-paper'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useFonts } from 'expo-font';
 
 import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
@@ -14,7 +15,10 @@ export default function Exam({ navigation, route }) {
     React.useEffect(() => {
         navigation.setOptions({ title: quiz.title })
     }, [quiz.title])
-
+    let [fontsLoaded] = useFonts({
+        'Cairo_700Bold': require('./assets/fonts/Cairo-Bold.ttf'),
+        'Cairo_600SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
+    });
     const [screenHeight, setScreenHeight] = React.useState(Dimensions.get('window'));
     const { height } = Dimensions.get('window');
     const scrollEnabled = () => {

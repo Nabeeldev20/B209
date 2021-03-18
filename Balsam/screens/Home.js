@@ -8,6 +8,8 @@ import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
+import { useFonts } from 'expo-font';
+
 import Exam from './Exam'
 import FinishScreen from './FinishScreen'
 import Activation from './Activation'
@@ -18,7 +20,10 @@ let data = get_database()
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();
     const { colors } = useTheme();
-
+    let [fontsLoaded] = useFonts({
+        'Cairo_700Bold': require('./assets/fonts/Cairo-Bold.ttf'),
+        'Cairo_600SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
+    });
 
     function EmptyHome() {
         return (

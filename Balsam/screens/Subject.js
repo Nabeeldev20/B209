@@ -7,6 +7,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { FileSystem } from 'react-native-file-access';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
+import { useFonts } from 'expo-font';
+
 import { get_database, update_database, get_bookmarks } from './db'
 
 let database = get_database()
@@ -15,7 +17,10 @@ export default function Subject({ navigation, route }) {
     React.useEffect(() => {
         navigation.setOptions({ title: subject_name })
     }, [subject_name])
-
+    let [fontsLoaded] = useFonts({
+        'Cairo_700Bold': require('./assets/fonts/Cairo-Bold.ttf'),
+        'Cairo_600SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
+    });
     const [onlyCycles, setOnlyCycles] = React.useState(false);
     const [data, setData] = React.useState(database.filter(quiz => quiz.subject == subject_name))
     const [dialogData, setDialogData] = React.useState({ visible: false })

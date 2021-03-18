@@ -7,6 +7,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import Hashids from 'hashids'
 import Analytics from 'appcenter-analytics';
 import { DateTime } from 'luxon'
+import { useFonts } from 'expo-font';
 import { get_act, update_act } from './db'
 
 export default function Activation({ navigation, route }) {
@@ -15,7 +16,10 @@ export default function Activation({ navigation, route }) {
     React.useEffect(() => {
         navigation.setOptions({ title: 'تفعيل بنك' + ' ' + subject_name })
     }, [subject_name])
-
+    let [fontsLoaded] = useFonts({
+        'Cairo_700Bold': require('./assets/fonts/Cairo-Bold.ttf'),
+        'Cairo_600SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
+    });
     const [storeCode, setStoreCode] = React.useState('');
     const [keyCode, setKeyCode] = React.useState('');
     const act_button = React.useRef(null);

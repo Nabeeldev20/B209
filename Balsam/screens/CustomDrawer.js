@@ -3,11 +3,16 @@ import { View, StyleSheet, Text, ScrollView } from 'react-native'
 import { Divider } from 'react-native-paper';
 import { DrawerItem } from '@react-navigation/drawer';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useFonts } from 'expo-font';
 
 import { get_database } from './db'
 let database = get_database()
 
 export default function CustomDrawer({ navigation }) {
+    let [fontsLoaded] = useFonts({
+        'Cairo_700Bold': require('./assets/fonts/Cairo-Bold.ttf'),
+        'Cairo_600SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
+    });
     const get_subject = () => {
         let output = [];
         database.forEach(file => output.push(file.subject))

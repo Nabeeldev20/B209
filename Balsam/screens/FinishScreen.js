@@ -5,12 +5,16 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { DateTime } from 'luxon'
 import * as Animatable from 'react-native-animatable';
 import { get_database, save_file } from './db'
+import { useFonts } from 'expo-font';
 
 let database = get_database();
 
 export default function FinishScreen({ navigation, route }) {
     const { quiz, wrong_count, exam_time } = route.params
-
+    let [fontsLoaded] = useFonts({
+        'Cairo_700Bold': require('./assets/fonts/Cairo-Bold.ttf'),
+        'Cairo_600SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
+    });
     function get_ratio_score() {
         let right = quiz.get_questions_number() - wrong_count;
         return Math.ceil((right * 100) / quiz.get_questions_number())
