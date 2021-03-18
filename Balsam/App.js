@@ -93,7 +93,15 @@ export default function App() {
         update_error_msgs({ Code: 'Storage.get_files_paths', error })
       }
     }
-    if (hasPermissons) {
+    async function check_permission() {
+      try {
+        return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE)
+      } catch (error) {
+        update_error_msgs({ Code: 'check permission code', error })
+      }
+    }
+
+    if (check_permission()) {
       get_data();
       setLoading(false);
     }
@@ -128,10 +136,10 @@ export default function App() {
       )
     } else {
       return (
-         <Animatable.View animation='flash' iterationCount='infinite' duration={3500} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <MaterialCommunityIcons name='folder-sync' size={35} color='grey' />
-      <Text style={[styles.headline, { color: 'grey' }]} >جاري التحميل</Text>
-    </Animatable.View>
+        <Animatable.View animation='flash' iterationCount='infinite' duration={3500} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <MaterialCommunityIcons name='folder-sync' size={35} color='grey' />
+          <Text style={[styles.headline, { color: 'grey' }]} >جاري التحميل</Text>
+        </Animatable.View>
       )
     }
 
