@@ -49,6 +49,6 @@ function get_error_msgs() {
     return error_array;
 }
 function update_error_msgs(data) {
-    error_array.push(JSON.stringify(data))
+    error_array.push(data)
 }
 export { get_database, update_database, get_bookmarks, update_bookmarks, get_act, update_act, save_file, is_quiz_valid, get_error_msgs, update_error_msgs }
