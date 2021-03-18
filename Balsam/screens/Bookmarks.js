@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { View, Text, StyleSheet, FlatList, Button } from 'react-native'
 import { Divider, Surface, Headline, IconButton } from 'react-native-paper'
-import Octicons from 'react-native-vector-icons/Octicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Animatable from 'react-native-animatable';
 
 import { get_bookmarks, update_bookmarks } from './db'
@@ -22,7 +22,7 @@ export default function Bookmarks({ navigation, route }) {
                 <View>
                     <Divider />
                     <View style={styles.row}>
-                        <Octicons style={{ marginRight: 4 }} name='report' color='grey' size={16} />
+                        <MaterialCommunityIcons style={{ marginRight: 4 }} name='bookmark-remove' color='grey' size={16} />
                         <Text style={styles.text}>{item.question.explanation}</Text>
                     </View>
                 </View>
@@ -38,7 +38,7 @@ export default function Bookmarks({ navigation, route }) {
     const empty_state = () => {
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: '25%' }}>
-                <Octicons name='star' size={40} color='grey' />
+                <MaterialCommunityIcons name='bookmark-plus' size={40} color='grey' />
                 <Text style={styles.text}>جرّب إضافة سؤال للمحفوظات أثناء الحل</Text>
             </View>
         )
@@ -55,7 +55,7 @@ export default function Bookmarks({ navigation, route }) {
                     <Animatable.View animation="fadeInRight" delay={index * 350} duration={1500}>
                         <Surface style={styles.surface}>
                             <View style={styles.row} >
-                                <Octicons style={{ marginRight: 4 }} name='qustion' color='grey' size={16} />
+                                <MaterialCommunityIcons style={{ marginRight: 4 }} name='comment-question' color='grey' size={16} />
                                 <Headline style={styles.headline}>{item.question.title}
                                     <Text style={styles.text}>({item.subject})</Text></Headline>
                             </View>
