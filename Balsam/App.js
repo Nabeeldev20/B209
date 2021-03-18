@@ -129,6 +129,7 @@ export default function App() {
       }
     }
     if (check_permission()) {
+      get_async_storage()
       get_data();
       setLoading(false);
     }
