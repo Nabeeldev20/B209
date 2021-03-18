@@ -2,7 +2,7 @@ import * as React from 'react'
 import { View, Text, StyleSheet, Linking } from 'react-native'
 import { Surface, TextInput, HelperText, Badge, Button } from 'react-native-paper'
 import * as Animatable from 'react-native-animatable';
-import Octicons from 'react-native-vector-icons/Octicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Hashids from 'hashids'
 import Analytics from 'appcenter-analytics';
@@ -84,7 +84,7 @@ export default function Activation({ navigation, route }) {
                         value={storeCode}
                         dense
                         onChangeText={text => setStoreCode(text)}
-                        left={<TextInput.Icon name={() => <Octicons name='organization' size={20} />} />}
+                        left={<TextInput.Icon name={() => <MaterialCommunityIcons name='store' size={20} />} />}
                     />
                     <HelperText style={{ fontFamily: 'Cairo_400Regular' }} type="error" visible={hasErrors()}>كود المكتبة مكوّن من 12 خانة</HelperText>
                 </Surface>
@@ -107,7 +107,7 @@ export default function Activation({ navigation, route }) {
                         {'\n'} <Text style={{ fontFamily: 'Cairo_700Bold' }}> ثمَّ</Text> أرسل رسالة عن طريق
                         <View style={[styles.row, { paddingHorizontal: 5 }]}>
                                 <Text style={styles.link} onPress={() => Linking.openURL('https://t.me/Balsam_dev')}>@Balsam_dev</Text>
-                                <Octicons name='cross-reference' size={16} />
+                                <MaterialCommunityIcons name='telegram' size={16} />
                             </View>
                           على التلغرام لنرسل لك مفتاح التفعيل
                     </Text>
@@ -143,14 +143,14 @@ export default function Activation({ navigation, route }) {
                         value={keyCode}
                         dense
                         onChangeText={text => setKeyCode(text)}
-                        left={<TextInput.Icon name={() => <Octicons name='key' size={20} />} />}
+                        left={<TextInput.Icon name={() => <MaterialCommunityIcons name='key' size={20} />} />}
                     />
                     <Animatable.View ref={act_button} style={{ paddingTop: 5 }}>
                         <Button
                             mode='contained'
                             labelStyle={styles.button}
                             color='#00C853'
-                            icon='unlock'
+                            icon='lock-open'
                             disabled={keyCode != h.decode(get_ID().en)}
                             contentStyle={{ flexDirection: 'row-reverse' }}
                             onPress={() => save()}>
