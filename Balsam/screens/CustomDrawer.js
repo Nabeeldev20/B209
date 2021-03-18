@@ -2,7 +2,7 @@ import * as React from 'react'
 import { View, StyleSheet, Text, ScrollView } from 'react-native'
 import { Divider } from 'react-native-paper';
 import { DrawerItem } from '@react-navigation/drawer';
-import Octicons from 'react-native-vector-icons/Octicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { get_database } from './db'
 let database = get_database()
@@ -18,14 +18,14 @@ export default function CustomDrawer({ navigation }) {
 
             <DrawerItem
                 label='الرئيسة'
-                icon={() => <Octicons size={16} name='home' />}
+                icon={() => <MaterialCommunityIcons size={16} name='home' />}
                 labelStyle={styles.drawer_text}
                 style={{ marginVertical: 1 }}
                 onPress={() => navigation.navigate('Home')} />
 
             <DrawerItem
                 label='امتحان مخصص'
-                icon={() => <Octicons size={16} name='zap' />}
+                icon={() => <MaterialCommunityIcons size={16} name='auto-fix' />}
                 labelStyle={styles.drawer_text}
                 onPress={() => navigation.navigate('CustomExam')}
                 style={{ marginVertical: 1 }}
