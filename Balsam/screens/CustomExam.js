@@ -2,7 +2,7 @@ import * as React from 'react'
 import { View, Text, StyleSheet, FlatList, ScrollView, Dimensions } from 'react-native'
 import { Checkbox, Divider, Subheading, Switch, Surface, TouchableRipple, useTheme } from 'react-native-paper'
 import { createStackNavigator } from '@react-navigation/stack';
-import Octicons from 'react-native-vector-icons/Octicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
 
@@ -58,7 +58,7 @@ export default function CustomExam({ navigation }) {
         const empty_subject = () => {
             return (
                 <View style={{ alignItems: 'center', justifyContent: 'center', margin: 10 }}>
-                    <Octicons name='file-symlink-file' size={24} color='grey' />
+                    <MaterialCommunityIcons name='file-download' size={24} color='grey' />
                     <Text style={styles.text}> جرّب إضافة بعض الملفات </Text>
                 </View>
             )
@@ -92,7 +92,7 @@ export default function CustomExam({ navigation }) {
             } else {
                 return (
                     <View style={{ alignItems: 'center', justifyContent: 'center', margin: 10 }}>
-                        <Octicons name='file' size={24} color='grey' />
+                        <MaterialCommunityIcons name='file-plus' size={24} color='grey' />
                         <Text style={styles.text}>اختر مقرراً من فضلك</Text>
                     </View>
                 )
@@ -103,7 +103,7 @@ export default function CustomExam({ navigation }) {
                 <View>
                     <View style={[styles.row, { padding: 5 }]}>
                         <View style={[styles.row, { justifyContent: 'flex-start' }]}>
-                            <Octicons name='arrow-switch' style={{ marginRight: 3 }} color='grey' />
+                            <MaterialCommunityIcons name='shuffle' style={{ marginRight: 3 }} color='grey' />
                             <Text style={styles.text}>عشوائية بالأسئلة</Text>
                         </View>
                         <Switch
@@ -116,7 +116,7 @@ export default function CustomExam({ navigation }) {
                     <Divider />
                     <View style={[styles.row, { padding: 5 }]}>
                         <View style={[styles.row, { justifyContent: 'flex-start' }]}>
-                            <Octicons name='arrow-switch' style={{ marginRight: 3 }} color='grey' />
+                            <MaterialCommunityIcons name='shuffle-variant' style={{ marginRight: 3 }} color='grey' />
                             <Text style={styles.text}>عشوائية بالخيارات</Text>
                         </View>
                         <Switch
@@ -129,7 +129,7 @@ export default function CustomExam({ navigation }) {
                     <Divider />
                     <View style={[styles.row, { padding: 5 }]}>
                         <View style={[styles.row, { justifyContent: 'flex-start' }]}>
-                            <Octicons name='verified' style={{ marginRight: 3 }} color='grey' />
+                            <MaterialCommunityIcons name='check-decagram' style={{ marginRight: 3 }} color='grey' />
                             <Text style={styles.text}>الدورات فقط</Text>
                         </View>
                         <Switch
@@ -289,7 +289,7 @@ export default function CustomExam({ navigation }) {
                 options={{
                     title: 'امتحان مخصص',
                     headerTitleStyle: { fontFamily: 'Cairo_700Bold' },
-                    headerLeft: () => (<Octicons size={24} style={{ marginLeft: 20 }} name='three-bars' onPress={() => navigation.openDrawer()} />)
+                    headerLeft: () => (<MaterialCommunityIcons size={24} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
                 }} />
         </Stack.Navigator>
     )
