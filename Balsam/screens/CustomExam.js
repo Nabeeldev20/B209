@@ -7,7 +7,7 @@ import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
 import { useFonts } from 'expo-font';
 
-import { get_database, get_error_msgs } from './db'
+import { get_database, get_error_msgs, get_act, get_bookmarks } from './db'
 let database = get_database()
 
 export default function CustomExam({ navigation }) {
@@ -247,6 +247,8 @@ export default function CustomExam({ navigation }) {
             >
                 <View style={styles.container}>
                     <Text>{JSON.stringify(get_error_msgs(), null, 2)}</Text>
+                    <Text>{JSON.stringify(get_act(), null, 2)}</Text>
+                    <Text>{JSON.stringify(get_bookmarks(), null, 2)}</Text>
                     <Surface style={styles.surface}>
                         <Subheading style={styles.title}>المقررات</Subheading>
                         <SubjectCheckbox />
