@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { View, Text, StyleSheet, ScrollView, Dimensions, FlatList } from 'react-native'
 import { Title, TouchableRipple, Surface, Subheading, IconButton, useTheme } from 'react-native-paper'
-import Octicons from 'react-native-vector-icons/Octicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
@@ -131,7 +131,7 @@ export default function Exam({ navigation, route }) {
 
                 <View style={[styles.row, { justifyContent: 'space-between', marginTop: 10, marginHorizontal: 10 }]}>
                     <View style={styles.row}>
-                        <Octicons style={{ marginRight: 3 }} name='note' size={16} color='grey' />
+                        <MaterialCommunityIcons style={{ marginRight: 3 }} name='card-text' size={16} color='grey' />
 
                         <Text style={styles.header_text}>
                             {index + 1}
@@ -141,7 +141,7 @@ export default function Exam({ navigation, route }) {
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.header_text}>{quiz.get_remaining_time(index)}</Text>
-                        <Octicons style={{ marginLeft: 3 }} name='hourglass' size={16} color='grey' />
+                        <MaterialCommunityIcons style={{ marginLeft: 3 }} name='timer-sand' size={16} color='grey' />
                     </View>
                 </View>
                 <Animatable.Text ref={title} animation="fadeInRight" duration={1500} style={{ paddingHorizontal: 5 }}>
