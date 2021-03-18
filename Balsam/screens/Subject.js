@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList } from 'react-native'
 import { Switch, TouchableRipple, Surface, ProgressBar, Portal, Dialog, IconButton, Button, Divider } from 'react-native-paper'
 import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
-import Octicons from 'react-native-vector-icons/Octicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons ';
 import { FileSystem } from 'react-native-file-access';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
@@ -31,7 +31,7 @@ export default function Subject({ navigation, route }) {
                         style={{ marginVertical: 3 }}
                     >
                         <View style={styles.row}>
-                            <Octicons style={{ marginRight: 3 }} name='star' size={16} color='grey' />
+                            <MaterialCommunityIcons style={{ marginRight: 3 }} name='bookmark-multiple' size={16} color='grey' />
                             <Text style={styles.Header_text}>المحفوظات
                                    ( {get_bookmarks().length})
                             </Text>
@@ -39,12 +39,12 @@ export default function Subject({ navigation, route }) {
                     </TouchableRipple> : null}
 
                 <View style={styles.row}>
-                    <Octicons
-                        name='verified'
+                    <MaterialCommunityIcons
+                        name='check-decagram'
                         color='grey'
                         size={16} style={{ marginRight: 6 }} />
                     <Text style={[styles.Header_text, { marginRight: 5 }]}>الدورات فقط</Text>
-                    <Switch value={onlyCycles} onValueChange={handle_switch} color='red' />
+                    <Switch value={onlyCycles} onValueChange={handle_switch} color='#E53935' />
                 </View>
             </View>
         )
@@ -53,8 +53,8 @@ export default function Subject({ navigation, route }) {
     function empty_state_cycle() {
         return (
             <Animatable.View animation="fadeIn" style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
-                <Octicons
-                    name='repo-template'
+                <MaterialCommunityIcons
+                    name='file-hidden'
                     color='grey'
                     size={50} style={{ marginLeft: 5 }} />
                 <Text style={{ fontFamily: 'Cairo_700Bold', color: 'grey' }}>الدنيا دوارة بس لا يوجد دورات هنا</Text>
@@ -103,15 +103,15 @@ export default function Subject({ navigation, route }) {
     }
     function get_icon(quiz) {
         if (quiz.is_cycle()) {
-            return { name: 'verified', color: colors.error }
+            return { name: 'check-decagram', color: '#E53935' }
         }
         else if (quiz.index > 0) {
-            return { name: 'stop', color: 'grey' }
+            return { name: 'asterisk', color: 'grey' }
         }
         else if (quiz.taken_number > 0) {
-            return { name: 'dot-fill', color: 'grey' }
+            return { name: 'checkbox-blank-circle', color: 'grey' }
         }
-        return { name: 'dot', color: 'grey' }
+        return { name: 'checkbox-blank-circle-outline', color: 'grey' }
     }
     function Files() {
         return (
@@ -146,7 +146,7 @@ export default function Subject({ navigation, route }) {
                                     <View>
                                         <Text style={styles.title}>{item.title}</Text>
                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Octicons
+                                            <MaterialCommunityIcons
                                                 name={get_icon(item).name}
                                                 color={get_icon(item).color}
                                                 size={16} style={{ marginLeft: 5 }} />
@@ -161,11 +161,11 @@ export default function Subject({ navigation, route }) {
                                     <View>
                                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
                                             <Text style={styles.numbers}>{item.get_questions_number()}</Text>
-                                            <Octicons name="list-ordered" size={16} color="grey" style={{ marginLeft: 5 }} />
+                                            <MaterialCommunityIcons name="format-list-numbered" size={16} color="grey" style={{ marginLeft: 5 }} />
                                         </View>
                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                             <Text style={styles.numbers}>{item.get_estimated_time()}</Text>
-                                            <Octicons name="clock" size={16} color="grey" style={{ marginLeft: 5 }} />
+                                            <MaterialCommunityIcons name="progress-clock" size={16} color="grey" style={{ marginLeft: 5 }} />
                                         </View>
                                     </View>
                                 </Surface>
@@ -184,7 +184,7 @@ export default function Subject({ navigation, route }) {
 
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
-                                    <Octicons name='repo' size={16} style={{ marginRight: 3 }} color='grey' />
+                                    <MaterialCommunityIcons name='target-variant' size={16} style={{ marginRight: 3 }} color='grey' />
                                     <Text style={styles.dialog_text}>متوسط التحصيل في المقرر</Text>
                                 </View>
                                 <Text style={styles.dialog_text}>{dialogData.average_accuracy}</Text>
@@ -194,7 +194,7 @@ export default function Subject({ navigation, route }) {
 
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
-                                    <Octicons name='history' size={16} style={{ marginRight: 3 }} color='grey' />
+                                    <MaterialCommunityIcons name='history' size={16} style={{ marginRight: 3 }} color='grey' />
                                     <Text style={styles.dialog_text}>متوسط الوقت في المقرر</Text>
                                 </View>
                                 <Text style={styles.dialog_text}>{dialogData.average_time}</Text>
@@ -203,7 +203,7 @@ export default function Subject({ navigation, route }) {
 
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
-                                    <Octicons name='calendar' size={16} style={{ marginRight: 3 }} color='grey' />
+                                    <MaterialCommunityIcons name='calendar-today' size={16} style={{ marginRight: 3 }} color='grey' />
                                     <Text style={styles.dialog_text}>آخر مرة </Text>
                                 </View>
                                 <Text style={styles.dialog_text}>{calculate_last_time(dialogData.last_time)}</Text>
@@ -212,7 +212,7 @@ export default function Subject({ navigation, route }) {
 
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
-                                    <Octicons name='file-badge' color='#313131' size={16} style={{ marginRight: 3 }} color='grey' />
+                                    <MaterialCommunityIcons name='file-check' color='#313131' size={16} style={{ marginRight: 3 }} color='grey' />
                                     <Text style={styles.dialog_text}>آخر نتيجة</Text>
                                 </View>
                                 <Text style={styles.dialog_text}>% {dialogData.last_score}</Text>
@@ -223,7 +223,7 @@ export default function Subject({ navigation, route }) {
 
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
-                                    <Octicons name='stopwatch' size={16} style={{ marginRight: 3 }} color='grey' />
+                                    <MaterialCommunityIcons name='clock-check' size={16} style={{ marginRight: 3 }} color='grey' />
                                     <Text style={styles.dialog_text}>آخر توقيت</Text>
                                 </View>
                                 <Text style={styles.dialog_text}>{dialogData.last_time_score} د</Text>
