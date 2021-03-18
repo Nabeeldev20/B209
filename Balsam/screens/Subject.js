@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList } from 'react-native'
 import { Switch, TouchableRipple, Surface, ProgressBar, Portal, Dialog, IconButton, Button, Divider } from 'react-native-paper'
 import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons ';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { FileSystem } from 'react-native-file-access';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
