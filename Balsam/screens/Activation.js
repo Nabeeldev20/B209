@@ -17,8 +17,8 @@ export default function Activation({ navigation, route }) {
         navigation.setOptions({ title: 'تفعيل بنك' + ' ' + subject_name })
     }, [subject_name])
     let [fontsLoaded] = useFonts({
-        'Cairo_700Bold': require('./assets/fonts/Cairo-Bold.ttf'),
-        'Cairo_600SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
+        'Cairo_700Bold': require('../assets/fonts/Cairo-Bold.ttf'),
+        'Cairo_600SemiBold': require('../assets/fonts/Cairo-SemiBold.ttf'),
     });
     const [storeCode, setStoreCode] = React.useState('');
     const [keyCode, setKeyCode] = React.useState('');

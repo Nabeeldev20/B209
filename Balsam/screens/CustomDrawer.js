@@ -10,8 +10,8 @@ let database = get_database()
 
 export default function CustomDrawer({ navigation }) {
     let [fontsLoaded] = useFonts({
-        'Cairo_700Bold': require('./assets/fonts/Cairo-Bold.ttf'),
-        'Cairo_600SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
+        'Cairo_700Bold': require('../assets/fonts/Cairo-Bold.ttf'),
+        'Cairo_600SemiBold': require('../assets/fonts/Cairo-SemiBold.ttf'),
     });
     const get_subject = () => {
         let output = [];

@@ -15,8 +15,8 @@ export default function Bookmarks({ navigation, route }) {
         navigation.setOptions({ title: 'محفوظات' + ' ' + subject_name })
     }, [subject_name])
     let [fontsLoaded] = useFonts({
-        'Cairo_700Bold': require('./assets/fonts/Cairo-Bold.ttf'),
-        'Cairo_600SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
+        'Cairo_700Bold': require('../assets/fonts/Cairo-Bold.ttf'),
+        'Cairo_600SemiBold': require('../assets/fonts/Cairo-SemiBold.ttf'),
     });
     const [bookmarksData, setBookmarksData] = React.useState(get_bookmarks().filter(bookmark => bookmark.subject == subject_name))
 

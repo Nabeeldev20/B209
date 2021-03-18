@@ -9,7 +9,7 @@ import { useFonts } from 'expo-font';
 export default function SubjectStack({ navigation }) {
     const Stack = createStackNavigator();
     let [fontsLoaded] = useFonts({
-        'Cairo_700Bold': require('./assets/fonts/Cairo-Bold.ttf'),
+        'Cairo_700Bold': require('../assets/fonts/Cairo-Bold.ttf'),
     });
     return (
         <Stack.Navigator screenOptions={{ headerStyle: { height: 50 } }}>

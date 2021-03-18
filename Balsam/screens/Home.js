@@ -21,8 +21,8 @@ export default function Home({ navigation }) {
     const Stack = createStackNavigator();
     const { colors } = useTheme();
     let [fontsLoaded] = useFonts({
-        'Cairo_700Bold': require('./assets/fonts/Cairo-Bold.ttf'),
-        'Cairo_600SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
+        'Cairo_700Bold': require('../assets/fonts/Cairo-Bold.ttf'),
+        'Cairo_600SemiBold': require('../assets/fonts/Cairo-SemiBold.ttf'),
     });
 
     function EmptyHome() {
