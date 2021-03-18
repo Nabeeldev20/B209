@@ -66,7 +66,7 @@ export default function App() {
     }
     function set_last_time(file) {
       if (file.last_time == null) {
-        file.last_time = DateTime.now().toISODate();
+        return file.last_time = DateTime.now().toISODate();
       }
     }
     async function get_data() {

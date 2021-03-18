@@ -241,7 +241,7 @@ export default function CustomExam({ navigation }) {
                 onContentSizeChange={onContentSizeChange}
             >
                 <View style={styles.container}>
-                    <Text>{get_error_msgs()}</Text>
+                    <Text>{JSON.stringify(get_error_msgs(), null, 2)}</Text>
                     <Surface style={styles.surface}>
                         <Subheading style={styles.title}>المقررات</Subheading>
                         <SubjectCheckbox />
