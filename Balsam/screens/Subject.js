@@ -18,8 +18,8 @@ export default function Subject({ navigation, route }) {
         navigation.setOptions({ title: subject_name })
     }, [subject_name])
     let [fontsLoaded] = useFonts({
-        'Cairo_700Bold': require('./assets/fonts/Cairo-Bold.ttf'),
-        'Cairo_600SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
+        'Cairo_700Bold': require('../assets/fonts/Cairo-Bold.ttf'),
+        'Cairo_600SemiBold': require('../assets/fonts/Cairo-SemiBold.ttf'),
     });
     const [onlyCycles, setOnlyCycles] = React.useState(false);
     const [data, setData] = React.useState(database.filter(quiz => quiz.subject == subject_name))
