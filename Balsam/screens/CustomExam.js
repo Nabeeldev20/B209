@@ -239,7 +239,12 @@ export default function CustomExam({ navigation }) {
         }
         function read_mmkv() {
             try {
-                MMKV.get('act_array')
+                let output = MMKV.get('act_array')
+                if (output != null || undefined) {
+                    return output
+                } else {
+                    output = 'null or undefined'
+                }
             } catch (error) {
                 update_error_msgs({ Code: 'Error reading MMKV', error })
             }
