@@ -13,10 +13,9 @@ import { useFonts } from 'expo-font';
 import Exam from './Exam'
 import FinishScreen from './FinishScreen'
 import Activation from './Activation'
-import { get_database, update_database, is_quiz_valid } from './db'
+import { get_database, update_database, is_quiz_valid, erase_database, update_error_msgs } from './db'
+import { MMKV } from 'react-native-mmkv';
 
-
-let data = get_database()
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();
     const { colors } = useTheme();
@@ -49,33 +48,39 @@ export default function Home({ navigation }) {
     function Home_component({ navigation }) {
         const [dialogData, setDialogData] = React.useState({ visible: false })
         const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 })
-        const [database, setDatabase] = React.useState(data)
+        const [database, setDatabase] = React.useState(get_database())
 
         async function remove_file(title, path) {
             setDatabase(database.filter(quiz => quiz.title != title));
             setDialogData({ visible: false })
             // in db.js
-            update_database(database.filter(quiz => quiz.title != title));
+            erase_database()
+            update_database(...database.filter(quiz => quiz.title != title));
             await FileSystem.unlink(path)
         }
 
 
         function go_exam(quiz) {
-            if (is_quiz_valid(quiz.code) == false) {
-                navigation.push('Activation', { subject_name: quiz.subject, code: quiz.code })
-            } else {
-                if (quiz.index > 0) {
-                    setUnfinishedDialog({
-                        visible: true,
-                        index: quiz.index + 1,
-                        questions_number: quiz.get_questions_number(),
-                        quiz
-                    })
-                } else {
-                    Analytics.trackEvent('Exam', { Subject: quiz.subject, FileName: quiz.title });
-                    quiz.get_shuffled_questions(true, true)
-                    navigation.push('Exam', { quiz, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) })
+            if (quiz.is_paid()) {
+                try {
+                    MMKV.set('act_array', JSON.stringify({ QuizTitle: quiz.title, QuizCode: quiz.code }))
+                } catch (error) {
+                    update_error_msgs({ Code: 'Writing MMKV', error })
                 }
+                navigation.push('Activation', { subject_name: quiz.subject, code: quiz.code })
+            }
+
+            if (quiz.index > 0) {
+                setUnfinishedDialog({
+                    visible: true,
+                    index: quiz.index + 1,
+                    questions_number: quiz.get_questions_number(),
+                    quiz
+                })
+            } else {
+                Analytics.trackEvent('Exam', { Subject: quiz.subject, FileName: quiz.title });
+                quiz.get_shuffled_questions(true, true)
+                navigation.push('Exam', { quiz, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) })
             }
 
         }
@@ -246,8 +251,8 @@ export default function Home({ navigation }) {
                 component={Home_component}
                 options={{
                     title: 'بلســم',
-                    headerTitleStyle: { fontFamily: 'Cairo_700Bold' },
-                    headerLeft: () => (<MaterialCommunityIcons size={24} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
+                    headerTitleStyle: { fontFamily: 'Cairo_700Bold', fontSize: 17 },
+                    headerLeft: () => (<MaterialCommunityIcons size={30} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
                 }} />
             <Stack.Screen
                 name="Exam"

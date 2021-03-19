@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FileSystem } from 'react-native-file-access';
 import CryptoJS from 'crypto-js';
 
@@ -10,19 +9,16 @@ function get_database() {
     return database
 }
 function update_database(update) {
-    database = update
+    database.unshift(update)
 }
-
+function erase_database() {
+    database = []
+}
 function get_bookmarks() {
     return bookmarks
 }
-async function update_bookmarks(update) {
-    bookmarks = update;
-    try {
-        const jsonValue = JSON.stringify(bookmarks)
-        await AsyncStorage.setItem('@bookmarks', CryptoJS.AES.encrypt(jsonValue, 'nabeeladnanalinizam_20900!@#()').toString())
-    } catch (e) {
-    }
+function update_bookmarks(update) {
+    bookmarks.push(...update);
 }
 
 function get_act() {
@@ -32,13 +28,8 @@ function is_quiz_valid(code) {
     if ([...new Set(act_array)].filter(i => i.code == code)[0].valid) return true
     return false
 }
-async function update_act(data) {
-    act_array = data;
-    try {
-        const jsonValue = JSON.stringify(act_array)
-        await AsyncStorage.setItem('@act_array', CryptoJS.AES.encrypt(jsonValue, 'nabeeladnanalinizam_20900!@#()').toString())
-    } catch (e) {
-    }
+function update_act(data) {
+    act_array.push(...data);
 }
 async function save_file(quiz) {
     let path = quiz.path;
@@ -51,4 +42,4 @@ function get_error_msgs() {
 function update_error_msgs(data) {
     error_array.push(data)
 }
-export { get_database, update_database, get_bookmarks, update_bookmarks, get_act, update_act, save_file, is_quiz_valid, get_error_msgs, update_error_msgs }
+export { get_database, update_database, get_bookmarks, update_bookmarks, get_act, update_act, save_file, is_quiz_valid, get_error_msgs, update_error_msgs, erase_database }
