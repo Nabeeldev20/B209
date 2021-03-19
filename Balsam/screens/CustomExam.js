@@ -7,8 +7,8 @@ import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
 import { useFonts } from 'expo-font';
 
-import { get_database, get_error_msgs, get_act, get_bookmarks } from './db'
-let database = get_database()
+import { get_database, get_error_msgs, update_error_msgs } from './db'
+import { MMKV } from 'react-native-mmkv';
 
 export default function CustomExam({ navigation }) {
     let [fontsLoaded] = useFonts({
@@ -38,7 +38,7 @@ export default function CustomExam({ navigation }) {
 
         const SubjectCheckbox = () => {
             let subjects = [];
-            database.forEach(quiz => subjects.push(quiz.subject));
+            get_database().forEach(quiz => subjects.push(quiz.subject));
             return (
                 <FlatList
                     data={[...new Set(subjects)]}
@@ -69,7 +69,7 @@ export default function CustomExam({ navigation }) {
             )
         }
         const SubjectFilesList = () => {
-            const Files = database.filter(quiz => quiz.subject == selectedSubject[0]);
+            const Files = get_database().filter(quiz => quiz.subject == selectedSubject[0]);
             if (selectedSubject.length == 1) {
                 return (
 
@@ -108,7 +108,7 @@ export default function CustomExam({ navigation }) {
                 <View>
                     <View style={[styles.row, { padding: 5 }]}>
                         <View style={[styles.row, { justifyContent: 'flex-start' }]}>
-                            <MaterialCommunityIcons name='shuffle' style={{ marginRight: 3 }} color='grey' />
+                            <MaterialCommunityIcons name='shuffle' size={20} style={{ marginRight: 3 }} color='grey' />
                             <Text style={styles.text}>عشوائية بالأسئلة</Text>
                         </View>
                         <Switch
@@ -121,7 +121,7 @@ export default function CustomExam({ navigation }) {
                     <Divider />
                     <View style={[styles.row, { padding: 5 }]}>
                         <View style={[styles.row, { justifyContent: 'flex-start' }]}>
-                            <MaterialCommunityIcons name='shuffle-variant' style={{ marginRight: 3 }} color='grey' />
+                            <MaterialCommunityIcons name='shuffle-variant' size={20} style={{ marginRight: 3 }} color='grey' />
                             <Text style={styles.text}>عشوائية بالخيارات</Text>
                         </View>
                         <Switch
@@ -134,7 +134,7 @@ export default function CustomExam({ navigation }) {
                     <Divider />
                     <View style={[styles.row, { padding: 5 }]}>
                         <View style={[styles.row, { justifyContent: 'flex-start' }]}>
-                            <MaterialCommunityIcons name='check-decagram' style={{ marginRight: 3 }} color='grey' />
+                            <MaterialCommunityIcons name='check-decagram' size={20} style={{ marginRight: 3 }} color='grey' />
                             <Text style={styles.text}>الدورات فقط</Text>
                         </View>
                         <Switch
@@ -149,7 +149,7 @@ export default function CustomExam({ navigation }) {
         }
         const handleAll = () => {
             if (selectedSubject.length == 1) {
-                let array = database.filter(quiz => quiz.subject == selectedSubject[0]);
+                let array = get_database().filter(quiz => quiz.subject == selectedSubject[0]);
                 let output = [];
                 array.forEach(item => output.push(item.title));
                 setQuizArray([...new Set(output)]);
@@ -161,7 +161,7 @@ export default function CustomExam({ navigation }) {
             }
         }
         const handle_cycles_only = () => {
-            let array = database.filter(quiz => quiz.subject == selectedSubject[0])
+            let array = get_database().filter(quiz => quiz.subject == selectedSubject[0])
             let output = [];
             array.forEach(item => item.is_cycle() ? output.push(item.title) : null);
             setQuizArray([...new Set(output)]);
@@ -173,7 +173,7 @@ export default function CustomExam({ navigation }) {
         }
         function make_questions() {
             let output = [];
-            database.filter(quiz => quiz.subject == selectedSubject[0]).forEach(file => {
+            get_database().filter(quiz => quiz.subject == selectedSubject[0]).forEach(file => {
                 if (quizArray.includes(file.title)) {
                     output = [...output, ...file.questions]
                 }
@@ -237,7 +237,13 @@ export default function CustomExam({ navigation }) {
                 })
             }
         }
-
+        function read_mmkv() {
+            try {
+                MMKV.get('act_array')
+            } catch (error) {
+                update_error_msgs({ Code: 'Error reading MMKV', error })
+            }
+        }
         return (
             <ScrollView
                 style={{ flex: 1 }}
@@ -247,8 +253,7 @@ export default function CustomExam({ navigation }) {
             >
                 <View style={styles.container}>
                     <Text>{JSON.stringify(get_error_msgs(), null, 2)}</Text>
-                    <Text>{JSON.stringify(get_act(), null, 2)}</Text>
-                    <Text>{JSON.stringify(get_bookmarks(), null, 2)}</Text>
+                    <Text>{JSON.stringify(read_mmkv(), null, 2)}</Text>
                     <Surface style={styles.surface}>
                         <Subheading style={styles.title}>المقررات</Subheading>
                         <SubjectCheckbox />
@@ -296,7 +301,7 @@ export default function CustomExam({ navigation }) {
                 options={{
                     title: 'امتحان مخصص',
                     headerTitleStyle: { fontFamily: 'Cairo_700Bold' },
-                    headerLeft: () => (<MaterialCommunityIcons size={24} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
+                    headerLeft: () => (<MaterialCommunityIcons size={30} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
                 }} />
         </Stack.Navigator>
     )

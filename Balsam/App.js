@@ -15,8 +15,7 @@ import Home from './screens/Home'
 import SubjectStack from './screens/SubjectStack'
 import CustomExam from './screens/CustomExam'
 import CustomDrawer from './screens/CustomDrawer'
-import { get_database, update_act, update_bookmarks, update_database, update_error_msgs } from './screens/db'
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { get_database, update_database, update_error_msgs } from './screens/db'
 
 
 const { Storage } = NativeModules;
@@ -68,7 +67,7 @@ export default function App() {
     }
     function set_last_time(file) {
       if (file.last_time == null) {
-        return file.last_time = DateTime.now().toISODate();
+        file.last_time = DateTime.now().toISODate();
       }
     }
     async function get_data() {
@@ -83,7 +82,7 @@ export default function App() {
               let file_output = JSON.parse(decoded_file);
               file_output.path = paths[i];
               set_last_time(file_output);
-              update_database([...get_database(), file_output])
+              update_database(file_output)
               update_error_msgs({ Code: 'File_output', file_output })
               update_error_msgs({ Code: 'database length', databaseLength: get_database().length })
             }
@@ -97,38 +96,13 @@ export default function App() {
     }
     async function check_permission() {
       try {
-        return await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE)
+        let check_permission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
+        check_permission ? setHasPermissons(true) : setHasPermissons(false)
       } catch (error) {
         update_error_msgs({ Code: 'check permission code', error })
       }
     }
-    async function get_async_storage() {
-      try {
-        let data = await AsyncStorage.multiGet(['@act_array', '@bookmarks'])
-        if (data != null) {
-          let act_array = decode_file(data[0][1]);
-          let bookmarks = decode_file(data[1][1]);
-          update_error_msgs({ Code: '@get_async: act-array', act_array })
-          update_error_msgs({ Code: '@get_async: bookmarks', bookmarks })
-          if (act_array.length > 1) {
-            update_act(JSON.parse(act_array))
-          }
-          if (bookmakrs.length > 1) {
-            update_bookmarks(JSON.parse(bookmarks))
-          }
-        } else {
-          try {
-            let encoded_array = CryptoJS.AES.encrypt("[]", 'nabeeladnanalinizam_20900!@#()').toString()
-            await AsyncStorage.multiSet([['@act_array', encoded_array], ['@bookmarks', encoded_array]])
-          } catch (error) {
-            update_error_msgs({ Code: 'multiSet error', error })
-          }
-        }
-      } catch (error) {
-        update_error_msgs({ Code: 'get_async storage', error })
-      }
-    }
-    if (check_permission()) {
+    if (hasPermissons) {
       get_async_storage()
       get_data();
       setLoading(false);
