@@ -103,7 +103,6 @@ export default function App() {
       }
     }
     if (hasPermissons) {
-      get_async_storage()
       get_data();
       setLoading(false);
     }
@@ -114,31 +113,40 @@ export default function App() {
 
   if (loading) {
     if (hasPermissons == false) {
-      return (
-        <View style={styles.container}>
-          <Animatable.Text animation='fadeInRight' style={styles.welcome}>مرحباً يا بلسم!</Animatable.Text>
-          <Animatable.Text animation='fadeInRight' delay={450} style={styles.headline}>تطبيق حل أسئلة صمم خصيصاً ليكون بلسماً لمشاكلك.</Animatable.Text>
-          <Animatable.View animation='fadeIn' delay={700} style={{ paddingTop: 10 }}>
-            <MaterialCommunityIcons name='lightbulb' size={20} color="grey" style={{ alignSelf: 'flex-start' }} />
-            <Text style={styles.text}> ملفات اختبارات بلسم بلاحقة
-        <Text style={{ fontWeight: 'bold', fontFamily: 'Cairo_700Bold', marginHorizontal: 10 }}>
-                quiz.
-        </Text>{'\n'}
-  يمكنك تحميل الملفات من قناتنا على التلغرام
-  <MaterialCommunityIcons style={{ paddingHorizontal: 3 }} name='telegram' size={16} color='grey' /> <Text style={{ paddingLeft: 5 }}>@Balsam_app</Text>    {'\n'}
-  تتم قراءة الملفات تلقائياً من مجلد التنزيلات
-        <MaterialCommunityIcons style={{ paddingHorizontal: 5 }} name='folder-download' size={16} color='grey' /> {'\n'}
+      if (fontsLoaded) {
+        return (
+          <View style={styles.container}>
+            <Animatable.Text animation='fadeInRight' style={styles.welcome}>مرحباً يا بلسم!</Animatable.Text>
+            <Animatable.Text animation='fadeInRight' delay={450} style={styles.headline}>تطبيق حل أسئلة صمم خصيصاً ليكون بلسماً لمشاكلك.</Animatable.Text>
+            <Animatable.View animation='fadeIn' delay={700} style={{ paddingTop: 10 }}>
+              <MaterialCommunityIcons name='lightbulb' size={20} color="grey" style={{ alignSelf: 'flex-start' }} />
+              <Text style={styles.text}> ملفات اختبارات بلسم بلاحقة
+          <Text style={{ fontWeight: 'bold', fontFamily: 'Cairo_700Bold', marginHorizontal: 10 }}>
+                  quiz.
+          </Text>{'\n'}
+    يمكنك تحميل الملفات من قناتنا على التلغرام
+    <MaterialCommunityIcons style={{ paddingHorizontal: 3 }} name='telegram' size={16} color='grey' /> <Text style={{ paddingLeft: 5 }}>@Balsam_app</Text>    {'\n'}
+    تتم قراءة الملفات تلقائياً من مجلد التنزيلات
+          <MaterialCommunityIcons style={{ paddingHorizontal: 5 }} name='folder-download' size={16} color='grey' /> {'\n'}
 
-            </Text>
-          </Animatable.View>
-          <Animatable.View animation='fadeInUp' delay={1000}>
-            <Button style={{ padding: 5 }} labelStyle={styles.button} color='#313131' onPress={() => ask_for_permission()}>الحصول على صلاحية الوصول للذاكرة</Button>
-          </Animatable.View>
-        </View>
-      )
+              </Text>
+            </Animatable.View>
+            <Animatable.View animation='fadeInUp' delay={1000}>
+              <Button style={{ padding: 5 }} labelStyle={styles.button} color='#313131' onPress={() => ask_for_permission()}>الحصول على صلاحية الوصول للذاكرة</Button>
+            </Animatable.View>
+          </View>
+        )
+      } else {
+        return (
+          <View style={{ flex: 1, backgroundColor: '#fff' }}>
+
+          </View>
+        )
+      }
+
     } else {
       return (
-        <Animatable.View animation='flash' iterationCount='infinite' duration={3500} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Animatable.View animation='flash' iterationCount='infinite' duration={3500} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
           <MaterialCommunityIcons name='folder-sync' size={35} color='grey' />
           <Text style={[styles.headline, { color: 'grey' }]} >جاري التحميل</Text>
         </Animatable.View>
