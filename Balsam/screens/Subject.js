@@ -49,7 +49,7 @@ export default function Subject({ navigation, route }) {
                         value={onlyCycles}
                         onValueChange={handle_switch}
                         trackColor={{ false: '#767577', true: '#ec9b99' }}
-                        thumbColor={{ false: '#f4f3f4', true: '#E53935' }} />
+                        thumbColor={onlyCycles ? '#E53935' : '#f4f3f4'} />
                 </View>
             </View>
         )

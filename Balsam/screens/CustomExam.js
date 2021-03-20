@@ -115,7 +115,7 @@ export default function CustomExam({ navigation }) {
                             value={randomQuestions}
                             onValueChange={() => setRandomQuestions(!randomQuestions)}
                             trackColor={{ false: '#767577', true: '#75d99e' }}
-                            thumbColor={{ false: '#f4f3f4', true: '#00C853' }}
+                            thumbColor={randomQuestions ? '#00C853' : '#f4f3f4'}
                             disabled={selectedSubject.length != 1 ? true : false}
                         />
                     </View>
@@ -129,7 +129,7 @@ export default function CustomExam({ navigation }) {
                             value={randomChoices}
                             onValueChange={() => setRandomChoices(!randomChoices)}
                             trackColor={{ false: '#767577', true: '#75d99e' }}
-                            thumbColor={{ false: '#f4f3f4', true: '#00C853' }}
+                            thumbColor={randomChoices ? '#00C853' : '#f4f3f4'}
                             disabled={selectedSubject.length != 1 ? true : false}
                         />
                     </View>
@@ -143,7 +143,7 @@ export default function CustomExam({ navigation }) {
                             value={onlyCycles}
                             onValueChange={() => handle_cycles_only()}
                             trackColor={{ false: '#767577', true: '#ec9b99' }}
-                            thumbColor={{ false: '#f4f3f4', true: colors.error }}
+                            thumbColor={onlyCycles ? colors.error : '#f4f3f4'}
                             disabled={selectedSubject.length != 1 ? true : false}
                         />
                     </View>
@@ -281,7 +281,7 @@ export default function CustomExam({ navigation }) {
                                     value={isAll}
                                     onValueChange={handleAll}
                                     trackColor={{ false: '#767577', true: '#75d99e' }}
-                                    thumbColor={{ false: '#f4f3f4', true: '#00C853' }}
+                                    thumbColor={isAll ? '#00C853' : '#f4f3f4'}
                                     disabled={selectedSubject.length != 1 ? true : false} />
                             </View>
                         </View>
