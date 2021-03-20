@@ -8,7 +8,7 @@ import Analytics from 'appcenter-analytics';
 import { useFonts } from 'expo-font';
 
 import { get_database, get_error_msgs, update_error_msgs } from './db'
-import { MMKV } from 'react-native-mmkv';
+
 
 export default function CustomExam({ navigation }) {
     let [fontsLoaded] = useFonts({
@@ -240,18 +240,7 @@ export default function CustomExam({ navigation }) {
                 })
             }
         }
-        function read_mmkv() {
-            try {
-                let output = MMKV.get('act_array')
-                if (output != null || undefined) {
-                    return output
-                } else {
-                    output = 'null or undefined'
-                }
-            } catch (error) {
-                update_error_msgs({ Code: 'Error reading MMKV', error })
-            }
-        }
+
         const get_subjects = () => {
             let output = [];
             get_database().forEach(file => output.push(file.subject))
@@ -266,7 +255,6 @@ export default function CustomExam({ navigation }) {
             >
                 <View style={styles.container}>
                     <Text>{JSON.stringify(get_error_msgs(), null, 2)}</Text>
-                    <Text>read mmkv: {JSON.stringify(read_mmkv(), null, 2)}</Text>
                     <Text>subjects: {JSON.stringify(get_subjects(), null, 2)}</Text>
                     <Surface style={styles.surface}>
                         <Subheading style={styles.title}>المقررات</Subheading>

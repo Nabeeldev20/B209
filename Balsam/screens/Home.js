@@ -14,7 +14,6 @@ import Exam from './Exam'
 import FinishScreen from './FinishScreen'
 import Activation from './Activation'
 import { get_database, update_database, is_quiz_valid, erase_database, update_error_msgs } from './db'
-import { MMKV } from 'react-native-mmkv';
 
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();
@@ -58,11 +57,6 @@ export default function Home({ navigation }) {
 
         function go_exam(quiz) {
             if (quiz.is_paid()) {
-                try {
-                    MMKV.set('act_array', JSON.stringify({ QuizTitle: quiz.title, QuizCode: quiz.code }))
-                } catch (error) {
-                    update_error_msgs({ Code: 'Writing MMKV', error })
-                }
                 navigation.push('Activation', { subject_name: quiz.subject, code: quiz.code })
             }
 

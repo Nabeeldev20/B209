@@ -40,9 +40,7 @@ export default function CustomDrawer({ navigation }) {
                         <MaterialCommunityIcons name='bookshelf' color='grey' size={20} />
                         <Text style={{ fontFamily: 'Cairo_600SemiBold', margin: 5, fontSize: 16, color: 'grey' }}>المقررات</Text>
                     </View>
-                    <ScrollView
-                        style={{ flex: 1 }}
-                        contentContainerStyle={{ flexGrow: 1 }}>
+                    <ScrollView>
                         {get_subjects().map(subject => {
                             return (
                                 <DrawerItem
