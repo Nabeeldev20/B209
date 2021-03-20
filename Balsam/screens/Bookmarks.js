@@ -71,8 +71,8 @@ export default function Bookmarks({ navigation, route }) {
                             {QuestionExplanation(item)}
                             <IconButton
                                 icon='bookmark-remove'
-                                color='grey'
                                 size={24}
+                                color='grey'
                                 onPress={() => remove_Bookmark(item)}
                                 style={{ alignSelf: 'flex-end' }}
                             />

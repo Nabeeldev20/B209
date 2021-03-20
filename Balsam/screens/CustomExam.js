@@ -77,7 +77,13 @@ export default function CustomExam({ navigation }) {
                         <FlatList
                             data={Files}
                             renderItem={({ item, i }) => (
-                                <View key={item.title} style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                                <View
+                                    key={item.title}
+                                    style={{
+                                        flex: 1,
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                    }}>
                                     <Checkbox
                                         status={quizArray.includes(item.title) ? 'checked' : 'unchecked'}
                                         onPress={() => quizArray.includes(item.title) ? setQuizArray(quizArray.filter(file => file != item.title)) : setQuizArray([...quizArray, item.title])}
@@ -108,7 +114,11 @@ export default function CustomExam({ navigation }) {
                 <View>
                     <View style={[styles.row, { padding: 5 }]}>
                         <View style={[styles.row, { justifyContent: 'flex-start' }]}>
-                            <MaterialCommunityIcons name='shuffle' size={20} style={{ marginRight: 3 }} color='grey' />
+                            <MaterialCommunityIcons
+                                name='shuffle'
+                                size={20}
+                                color='grey'
+                                style={{ marginRight: 3 }} />
                             <Text style={styles.text}>عشوائية بالأسئلة</Text>
                         </View>
                         <Switch
@@ -116,13 +126,17 @@ export default function CustomExam({ navigation }) {
                             onValueChange={() => setRandomQuestions(!randomQuestions)}
                             trackColor={{ false: '#767577', true: '#75d99e' }}
                             thumbColor={randomQuestions ? '#00C853' : '#f4f3f4'}
-                            disabled={selectedSubject.length != 1 ? true : false}
+                            disabled={selectedSubject.length != 1}
                         />
                     </View>
                     <Divider />
                     <View style={[styles.row, { padding: 5 }]}>
                         <View style={[styles.row, { justifyContent: 'flex-start' }]}>
-                            <MaterialCommunityIcons name='shuffle-variant' size={20} style={{ marginRight: 3 }} color='grey' />
+                            <MaterialCommunityIcons
+                                name='shuffle-variant'
+                                size={20}
+                                color='grey'
+                                style={{ marginRight: 3 }} />
                             <Text style={styles.text}>عشوائية بالخيارات</Text>
                         </View>
                         <Switch
@@ -130,13 +144,17 @@ export default function CustomExam({ navigation }) {
                             onValueChange={() => setRandomChoices(!randomChoices)}
                             trackColor={{ false: '#767577', true: '#75d99e' }}
                             thumbColor={randomChoices ? '#00C853' : '#f4f3f4'}
-                            disabled={selectedSubject.length != 1 ? true : false}
+                            disabled={selectedSubject.length != 1}
                         />
                     </View>
                     <Divider />
                     <View style={[styles.row, { padding: 5 }]}>
                         <View style={[styles.row, { justifyContent: 'flex-start' }]}>
-                            <MaterialCommunityIcons name='check-decagram' size={20} style={{ marginRight: 3 }} color='grey' />
+                            <MaterialCommunityIcons
+                                name='check-decagram'
+                                size={20}
+                                color='grey'
+                                style={{ marginRight: 3 }} />
                             <Text style={styles.text}>الدورات فقط</Text>
                         </View>
                         <Switch
@@ -144,7 +162,7 @@ export default function CustomExam({ navigation }) {
                             onValueChange={() => handle_cycles_only()}
                             trackColor={{ false: '#767577', true: '#ec9b99' }}
                             thumbColor={onlyCycles ? colors.error : '#f4f3f4'}
-                            disabled={selectedSubject.length != 1 ? true : false}
+                            disabled={selectedSubject.length != 1}
                         />
                     </View>
                 </View>
@@ -270,7 +288,7 @@ export default function CustomExam({ navigation }) {
                                     onValueChange={handleAll}
                                     trackColor={{ false: '#767577', true: '#75d99e' }}
                                     thumbColor={isAll ? '#00C853' : '#f4f3f4'}
-                                    disabled={selectedSubject.length != 1 ? true : false} />
+                                    disabled={selectedSubject.length != 1} />
                             </View>
                         </View>
 
@@ -283,19 +301,30 @@ export default function CustomExam({ navigation }) {
                         <ExamOptions />
                     </Surface>
                     <View style={{
-                        elevation: 2,
-                        backgroundColor: '#fff',
+                        padding: 12,
                         margin: 3
                     }}>
-                        <Pressable
-                            onPress={makeExam}
-                            android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}>
-                            <Surface style={[styles.surface, { alignItems: 'center', justifyContent: 'center', margin: 0 }]}>
+                        <Surface style={{
+                            borderWidth: 1,
+                            borderColor: '#D7D8D2'
+                        }}>
+                            <Pressable
+                                onPress={makeExam}
+                                android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
+                                style={{
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
                                 <Text
-                                    style={[styles.title, { textDecorationLine: selectedSubject.length != 1 || quizArray.length == 0 ? 'line-through' : null }]}
+                                    style={
+                                        [styles.title,
+                                        {
+                                            textDecorationLine: selectedSubject.length != 1 || quizArray.length == 0 ? 'line-through' : null,
+                                            color: selectedSubject.length != 1 || quizArray.length == 0 ? 'grey' : '#343434'
+                                        }]}
                                 >خوض الامتحان</Text>
-                            </Surface>
-                        </Pressable>
+                            </Pressable>
+                        </Surface>
                     </View>
                     <Text style={[styles.text, { alignSelf: 'center', fontSize: 12 }]}>عدد الأسئلة {make_questions().questions_number} </Text>
                 </View>
