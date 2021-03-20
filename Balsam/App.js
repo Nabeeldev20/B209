@@ -218,19 +218,16 @@ export default function App() {
     check_permission()
   }, [shouldAskForPermissions])
 
-
-
-
-  if (loading) {
-    if (shouldAskForPermissions == false) {
-      return (
-        <Animatable.View animation='flash' iterationCount='infinite' duration={3500} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
-          <MaterialCommunityIcons name='folder-sync' size={35} color='grey' />
-          <Text style={[styles.headline, { color: 'grey' }]} >جاري التحميل</Text>
-        </Animatable.View>
-      )
-    } else {
-      if (fontsLoaded) {
+  if (fontsLoaded) {
+    if (loading) {
+      if (shouldAskForPermissions == false) {
+        return (
+          <Animatable.View animation='flash' iterationCount='infinite' duration={3500} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
+            <MaterialCommunityIcons name='folder-sync' size={35} color='grey' />
+            <Text style={[styles.headline, { color: 'grey' }]} >جاري التحميل</Text>
+          </Animatable.View>
+        )
+      } else {
         return (
           <View style={styles.container}>
             <Animatable.Text animation='fadeInRight' style={styles.welcome}>مرحباً يا بلسم!</Animatable.Text>
@@ -253,40 +250,42 @@ export default function App() {
             </Animatable.View>
           </View>
         )
-      } else {
-        return (
-          <View style={{ flex: 1, backgroundColor: '#fff' }}>
-
-          </View>
-        )
       }
+    } else {
+      return (
+        <PaperProvider
+          theme={theme}
+          settings={{
+            icon: props => <MaterialCommunityIcons {...props} />,
+          }}>
+          <NavigationContainer>
+            <Drawer.Navigator
+              initialRouteName="Home"
+              drawerContent={(props) => <CustomDrawer {...props} />}
+              drawerType='slide'
+              drawerContentOptions={{
+                activeTintColor: '#e91e63',
+                itemStyle: { marginVertical: 3, padding: 0 },
+              }}
+            >
+              <Drawer.Screen name="Home" component={Home} options={{ title: 'الرئيسة' }} />
+              <Drawer.Screen name="SubjectStack" component={SubjectStack} />
+              <Drawer.Screen name="CustomExam" component={CustomExam} />
+            </Drawer.Navigator>
+          </NavigationContainer>
+        </PaperProvider>
+      );
     }
-
   } else {
     return (
-      <PaperProvider
-        theme={theme}
-        settings={{
-          icon: props => <MaterialCommunityIcons {...props} />,
-        }}>
-        <NavigationContainer>
-          <Drawer.Navigator
-            initialRouteName="Home"
-            drawerContent={(props) => <CustomDrawer {...props} />}
-            drawerType='slide'
-            drawerContentOptions={{
-              activeTintColor: '#e91e63',
-              itemStyle: { marginVertical: 3, padding: 0 },
-            }}
-          >
-            <Drawer.Screen name="Home" component={Home} options={{ title: 'الرئيسة' }} />
-            <Drawer.Screen name="SubjectStack" component={SubjectStack} />
-            <Drawer.Screen name="CustomExam" component={CustomExam} />
-          </Drawer.Navigator>
-        </NavigationContainer>
-      </PaperProvider>
-    );
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
+
+      </View>
+    )
   }
+
+
+
 }
 
 const styles = StyleSheet.create({

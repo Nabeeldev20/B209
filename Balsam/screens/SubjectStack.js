@@ -4,13 +4,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Subject from './Subject'
 import Bookmarks from './Bookmarks'
-import { useFonts } from 'expo-font';
+
 
 export default function SubjectStack({ navigation }) {
     const Stack = createStackNavigator();
-    let [fontsLoaded] = useFonts({
-        'Cairo_700Bold': require('../assets/fonts/Cairo-Bold.ttf'),
-    });
+
     return (
         <Stack.Navigator screenOptions={{ headerStyle: { height: 50 } }}>
             <Stack.Screen

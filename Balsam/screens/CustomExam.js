@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { View, Text, StyleSheet, FlatList, ScrollView, Dimensions } from 'react-native'
-import { Checkbox, Divider, Subheading, Switch, Surface, TouchableRipple, useTheme } from 'react-native-paper'
+import { View, Text, StyleSheet, FlatList, ScrollView, Dimensions, Pressable, Switch } from 'react-native'
+import { Checkbox, Divider, Subheading, Surface, useTheme } from 'react-native-paper'
 import { createStackNavigator } from '@react-navigation/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DateTime } from 'luxon'
@@ -114,7 +114,8 @@ export default function CustomExam({ navigation }) {
                         <Switch
                             value={randomQuestions}
                             onValueChange={() => setRandomQuestions(!randomQuestions)}
-                            color='#00C853'
+                            trackColor={{ false: '#767577', true: '#75d99e' }}
+                            thumbColor={{ false: '#f4f3f4', true: '#00C853' }}
                             disabled={selectedSubject.length != 1 ? true : false}
                         />
                     </View>
@@ -127,7 +128,8 @@ export default function CustomExam({ navigation }) {
                         <Switch
                             value={randomChoices}
                             onValueChange={() => setRandomChoices(!randomChoices)}
-                            color={colors.success}
+                            trackColor={{ false: '#767577', true: '#75d99e' }}
+                            thumbColor={{ false: '#f4f3f4', true: '#00C853' }}
                             disabled={selectedSubject.length != 1 ? true : false}
                         />
                     </View>
@@ -140,7 +142,8 @@ export default function CustomExam({ navigation }) {
                         <Switch
                             value={onlyCycles}
                             onValueChange={() => handle_cycles_only()}
-                            color={colors.error}
+                            trackColor={{ false: '#767577', true: '#ec9b99' }}
+                            thumbColor={{ false: '#f4f3f4', true: colors.error }}
                             disabled={selectedSubject.length != 1 ? true : false}
                         />
                     </View>
@@ -249,6 +252,11 @@ export default function CustomExam({ navigation }) {
                 update_error_msgs({ Code: 'Error reading MMKV', error })
             }
         }
+        const get_subjects = () => {
+            let output = [];
+            get_database().forEach(file => output.push(file.subject))
+            return [... new Set(output)]
+        }
         return (
             <ScrollView
                 style={{ flex: 1 }}
@@ -258,7 +266,8 @@ export default function CustomExam({ navigation }) {
             >
                 <View style={styles.container}>
                     <Text>{JSON.stringify(get_error_msgs(), null, 2)}</Text>
-                    <Text>{JSON.stringify(read_mmkv(), null, 2)}</Text>
+                    <Text>read mmkv: {JSON.stringify(read_mmkv(), null, 2)}</Text>
+                    <Text>subjects: {JSON.stringify(get_subjects(), null, 2)}</Text>
                     <Surface style={styles.surface}>
                         <Subheading style={styles.title}>المقررات</Subheading>
                         <SubjectCheckbox />
@@ -268,7 +277,12 @@ export default function CustomExam({ navigation }) {
                             <Subheading style={styles.title}>ملفات المقرر</Subheading>
                             <View style={styles.row}>
                                 <Text style={[styles.text, { marginRight: 5, color: 'grey' }]}> اختيار الكل</Text>
-                                <Switch value={isAll} onValueChange={handleAll} color='#00C853' disabled={selectedSubject.length != 1 ? true : false} />
+                                <Switch
+                                    value={isAll}
+                                    onValueChange={handleAll}
+                                    trackColor={{ false: '#767577', true: '#75d99e' }}
+                                    thumbColor={{ false: '#f4f3f4', true: '#00C853' }}
+                                    disabled={selectedSubject.length != 1 ? true : false} />
                             </View>
                         </View>
 
@@ -280,18 +294,21 @@ export default function CustomExam({ navigation }) {
                         <Subheading style={styles.title}>خيارات إضافية</Subheading>
                         <ExamOptions />
                     </Surface>
-
-                    <TouchableRipple
-                        rippleColor="rgba(0, 0, 0, .32)"
-                        onPress={makeExam}
-                        style={{ margin: 3 }}
-                    >
-                        <Surface style={[styles.surface, { alignItems: 'center', justifyContent: 'center', margin: 0 }]}>
-                            <Text
-                                style={[styles.title, { textDecorationLine: selectedSubject.length != 1 || quizArray.length == 0 ? 'line-through' : null }]}
-                            >خوض الامتحان</Text>
-                        </Surface>
-                    </TouchableRipple>
+                    <View style={{
+                        elevation: 2,
+                        backgroundColor: '#fff',
+                        margin: 3
+                    }}>
+                        <Pressable
+                            onPress={makeExam}
+                            android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}>
+                            <Surface style={[styles.surface, { alignItems: 'center', justifyContent: 'center', margin: 0 }]}>
+                                <Text
+                                    style={[styles.title, { textDecorationLine: selectedSubject.length != 1 || quizArray.length == 0 ? 'line-through' : null }]}
+                                >خوض الامتحان</Text>
+                            </Surface>
+                        </Pressable>
+                    </View>
                     <Text style={[styles.text, { alignSelf: 'center', fontSize: 12 }]}>عدد الأسئلة {make_questions().questions_number} </Text>
                 </View>
             </ScrollView>
@@ -329,10 +346,8 @@ const styles = StyleSheet.create({
     },
     surface: {
         padding: 12,
-        elevation: 2,
         borderWidth: 1,
         borderColor: '#D7D8D2',
-        backgroundColor: 'white',
         margin: 3
     },
     title: {

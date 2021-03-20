@@ -1,8 +1,7 @@
 import * as React from 'react'
-import { View, Text, StyleSheet, ScrollView, Dimensions, FlatList } from 'react-native'
-import { Title, TouchableRipple, Surface, Subheading, IconButton, useTheme } from 'react-native-paper'
+import { View, Text, StyleSheet, ScrollView, Dimensions, FlatList, Pressable } from 'react-native'
+import { Title, Surface, Subheading, IconButton, useTheme } from 'react-native-paper'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useFonts } from 'expo-font';
 
 import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
@@ -15,10 +14,7 @@ export default function Exam({ navigation, route }) {
     React.useEffect(() => {
         navigation.setOptions({ title: quiz.title })
     }, [quiz.title])
-    let [fontsLoaded] = useFonts({
-        'Cairo_700Bold': require('../assets/fonts/Cairo-Bold.ttf'),
-        'Cairo_600SemiBold': require('../assets/fonts/Cairo-SemiBold.ttf'),
-    });
+
     const [screenHeight, setScreenHeight] = React.useState(Dimensions.get('window'));
     const { height } = Dimensions.get('window');
     const scrollEnabled = () => {
@@ -43,17 +39,20 @@ export default function Exam({ navigation, route }) {
         if (hasAnswered) {
             return (
                 <Animatable.View ref={footer_animation} animation="fadeInUp" duration={1500}>
-                    <TouchableRipple
-                        onPress={move_to_next_question}
-                        rippleColor="rgba(0, 0, 0, .32)"
-                        style={{ width: '100%' }}
-                    >
-                        <Surface style={[styles.footer, styles.surface, { padding: 15, alignItems: 'center', width: '100%' }]}>
-                            <Text style={{ fontFamily: 'Cairo_700Bold', fontSize: 18 }}>
-                                {index == quiz.get_questions_number() - 1 ? 'عرض النتيجة' : 'السؤال التالي'}
-                            </Text>
-                        </Surface>
-                    </TouchableRipple>
+                    <View style={{
+                        elevation: 1,
+                        backgroundColor: '#fff'
+                    }}>
+                        <Pressable
+                            onPress={move_to_next_question}
+                            android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}>
+                            <Surface style={[styles.footer, styles.surface, { padding: 15, alignItems: 'center', width: '100%' }]}>
+                                <Text style={{ fontFamily: 'Cairo_700Bold', fontSize: 18 }}>
+                                    {index == quiz.get_questions_number() - 1 ? 'عرض النتيجة' : 'السؤال التالي'}
+                                </Text>
+                            </Surface>
+                        </Pressable>
+                    </View>
                 </Animatable.View>
             )
         }
@@ -74,25 +73,26 @@ export default function Exam({ navigation, route }) {
         }
     }
     const move_to_next_question = () => {
-        if (index == quiz.get_questions_number() - 1) {
+        if (index == (quiz.get_questions_number() - 1)) {
             navigation.replace('FinishScreen', { quiz, wrong_count: wrongAnswersCount, exam_time })
+        } else {
+            if (title) {
+                title.current?.fadeInRight()
+            }
+            if (choices_animation) {
+                choices_animation.current?.fadeIn()
+            }
+            setIndex(index + 1);
+            setHasAnswered(false);
+            setVisible(false);
         }
-        if (title) {
-            title.current?.fadeInRight()
-        }
-        if (choices_animation) {
-            choices_animation.current?.fadeIn()
-        }
-        setIndex(index + 1);
-        setHasAnswered(false);
-        setVisible(false);
     }
-    const add_to_bookmarks = (bookmark) => {
+    const add_to_bookmarks = (bookmark_q) => {
         if (inBookmark) {
-            update_bookmarks(get_bookmarks().filter(bookmark => bookmark.question.title != bookmark.question.title))
+            update_bookmarks(get_bookmarks().filter(bookmark => bookmark.question.title != bookmark_q.question.title))
             setInBookmark(false)
         } else {
-            update_bookmarks([...get_bookmarks(), bookmark]);
+            update_bookmarks([...get_bookmarks(), bookmark_q]);
             setInBookmark(true)
         }
     }
@@ -104,8 +104,10 @@ export default function Exam({ navigation, route }) {
             React.useEffect(() => {
                 navigation.addListener('beforeRemove', (e) => {
                     if (index !== quiz.get_questions_number() - 1) {
+                        e.preventDefault();
                         quiz.index = index;
                         save_file(quiz);
+                        navigation.dispatch(e.data.action)
                     }
                 })
             }, [index])
@@ -135,7 +137,7 @@ export default function Exam({ navigation, route }) {
 
                 <View style={[styles.row, { justifyContent: 'space-between', marginTop: 10, marginHorizontal: 10 }]}>
                     <View style={styles.row}>
-                        <MaterialCommunityIcons style={{ marginRight: 3 }} name='card-text' size={16} color='grey' />
+                        <MaterialCommunityIcons style={{ marginRight: 3 }} name='card-text' size={20} color='grey' />
 
                         <Text style={styles.header_text}>
                             {index + 1}
@@ -145,7 +147,7 @@ export default function Exam({ navigation, route }) {
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.header_text}>{quiz.get_remaining_time(index)}</Text>
-                        <MaterialCommunityIcons style={{ marginLeft: 3 }} name='timer-sand' size={16} color='grey' />
+                        <MaterialCommunityIcons style={{ marginLeft: 3 }} name='timer-sand' size={20} color='grey' />
                     </View>
                 </View>
                 <Animatable.Text ref={title} animation="fadeInRight" duration={1500} style={{ paddingHorizontal: 5 }}>
@@ -158,19 +160,26 @@ export default function Exam({ navigation, route }) {
                         extraData={quiz.get_question(index).choices.filter(ch => ch != '-')}
                         renderItem={({ item }) => {
                             return (
-                                <TouchableRipple
+                                <View
                                     key={item}
-                                    rippleColor={quiz.get_question(index).is_right(item) ? colors.success : colors.error}
-                                    onPress={() => check_answer(item)}
-                                    style={{ marginVertical: 3, marginHorizontal: 5 }}
-                                >
-                                    <Surface
-                                        style={[styles.surface, { backgroundColor: hasAnswered && quiz.get_question(index).is_right(item) ? colors.success : 'white' }]}>
-                                        <Subheading style={styles.choice} >
-                                            {item}
-                                        </Subheading>
-                                    </Surface>
-                                </TouchableRipple>
+                                    style={[
+                                        styles.surface,
+                                        {
+                                            backgroundColor: hasAnswered && quiz.get_question(index).is_right(item) ? colors.success : 'white',
+                                            marginVertical: 3,
+                                            marginHorizontal: 5,
+                                            padding: 5,
+                                        }]}>
+                                    <Pressable
+                                        onPress={() => check_answer(item)}
+                                        android_ripple={{ color: quiz.get_question(index).is_right(item) ? colors.success : colors.error, borderless: false }}>
+                                        <Surface>
+                                            <Subheading style={styles.choice} >
+                                                {item}
+                                            </Subheading>
+                                        </Surface>
+                                    </Pressable>
+                                </View>
                             )
                         }}
                     />
@@ -182,7 +191,7 @@ export default function Exam({ navigation, route }) {
                 <View style={{ flexDirection: 'row', width: '55%', justifyContent: quiz.title.includes('مخصص') ? 'flex-end' : 'space-between' }}>
                     {!quiz.title.includes('مخصص') ?
                         <IconButton
-                            icon={inBookmark ? 'bookmark' : 'bookmark-slash'}
+                            icon={inBookmark ? 'bookmark' : 'bookmark-off'}
                             color={inBookmark ? 'gold' : 'grey'}
                             size={30}
                             onPress={() => add_to_bookmarks({
@@ -229,8 +238,6 @@ const styles = StyleSheet.create({
         selectable: false
     },
     surface: {
-        padding: 5,
-        elevation: 1,
         borderWidth: 1,
         borderColor: '#D7D8D2'
     },
