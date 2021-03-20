@@ -110,81 +110,84 @@ export default function Home({ navigation }) {
                                 key={item.title}
                                 style={{
                                     marginVertical: 3,
+                                }}>
+                                <Surface style={{
                                     backgroundColor: '#fff',
                                     elevation: 2,
                                     borderWidth: 1,
                                     borderColor: '#D7D8D2',
                                 }}>
-                                <Pressable
-                                    onPress={() => go_exam(item)}
-                                    onLongPress={async () => {
-                                        setDialogData({
-                                            visible: true,
-                                            title: item.title,
-                                            path: item.path,
-                                            average_accuracy: item.get_average_accuracy(),
-                                            average_time: item.get_average_time(),
-                                            last_score: item.average_accuracy[item.average_accuracy.length - 1] ?? 0,
-                                            last_time_score: item.average_time[item.average_time.length - 1] ?? 0,
-                                            last_time: item.last_time
-                                        })
-                                        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                                    }}
-                                    android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
-                                    style={{
-                                        padding: 12,
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center'
-                                    }}>
+                                    <Pressable
+                                        onPress={() => go_exam(item)}
+                                        onLongPress={async () => {
+                                            setDialogData({
+                                                visible: true,
+                                                title: item.title,
+                                                path: item.path,
+                                                average_accuracy: item.get_average_accuracy(),
+                                                average_time: item.get_average_time(),
+                                                last_score: item.average_accuracy[item.average_accuracy.length - 1] ?? 0,
+                                                last_time_score: item.average_time[item.average_time.length - 1] ?? 0,
+                                                last_time: item.last_time
+                                            })
+                                            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                                        }}
+                                        android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
+                                        style={{
+                                            padding: 12,
+                                            flexDirection: 'row',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center'
+                                        }}>
 
-                                    <View>
-                                        <Text style={styles.title}>{item.title}</Text>
-                                        <View
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center'
-                                            }}>
-                                            <MaterialCommunityIcons
-                                                name={get_icon(item).name}
-                                                color={get_icon(item).color}
-                                                size={21}
-                                                style={{ marginLeft: 5 }} />
-                                            <Text style={styles.subtitle}>{item.subject}</Text>
-                                            {item.is_cycle() ? <Text style={[styles.cycle_university, { color: colors.error }]}>{item.cycle_university}</Text> : null}
+                                        <View>
+                                            <Text style={styles.title}>{item.title}</Text>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center'
+                                                }}>
+                                                <MaterialCommunityIcons
+                                                    name={get_icon(item).name}
+                                                    color={get_icon(item).color}
+                                                    size={21}
+                                                    style={{ marginLeft: 5 }} />
+                                                <Text style={styles.subtitle}>{item.subject}</Text>
+                                                {item.is_cycle() ? <Text style={[styles.cycle_university, { color: colors.error }]}>{item.cycle_university}</Text> : null}
+                                            </View>
                                         </View>
-                                    </View>
 
 
-                                    <View>
-                                        <View
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                justifyContent: 'flex-end'
-                                            }}>
-                                            <Text style={styles.numbers}>{item.get_questions_number()}</Text>
-                                            <MaterialCommunityIcons
-                                                name="format-list-numbered"
-                                                size={18}
-                                                color="grey"
-                                                style={{ marginLeft: 5 }} />
+                                        <View>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-end'
+                                                }}>
+                                                <Text style={styles.numbers}>{item.get_questions_number()}</Text>
+                                                <MaterialCommunityIcons
+                                                    name="format-list-numbered"
+                                                    size={18}
+                                                    color="grey"
+                                                    style={{ marginLeft: 5 }} />
+                                            </View>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center'
+                                                }}>
+                                                <Text style={styles.numbers}>{item.get_estimated_time()}</Text>
+                                                <MaterialCommunityIcons
+                                                    name="progress-clock"
+                                                    size={18}
+                                                    color="grey"
+                                                    style={{ marginLeft: 5 }} />
+                                            </View>
                                         </View>
-                                        <View
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center'
-                                            }}>
-                                            <Text style={styles.numbers}>{item.get_estimated_time()}</Text>
-                                            <MaterialCommunityIcons
-                                                name="progress-clock"
-                                                size={18}
-                                                color="grey"
-                                                style={{ marginLeft: 5 }} />
-                                        </View>
-                                    </View>
 
-                                </Pressable>
+                                    </Pressable>
+                                </Surface>
                             </Animatable.View>
                         )}
                     /> : <EmptyHome />}
