@@ -24,26 +24,36 @@ export default function Subject({ navigation, route }) {
 
     function Header() {
         return (
-            <View style={[styles.row, { justifyContent: get_bookmarks().filter(bookmark => bookmark.subject == subject_name).length >= 1 ? 'space-between' : 'flex-end', alignItems: 'baselines' }]}>
+            <View
+                style={[
+                    styles.row,
+                    {
+                        justifyContent: get_bookmarks().filter(bookmark => bookmark.subject == subject_name).length >= 1 ? 'space-between' : 'flex-end',
+                        alignItems: 'baselines'
+                    }]}>
                 {get_bookmarks().filter(bookmark => bookmark.subject == subject_name).length >= 1 ?
                     <Pressable
                         onPress={() => navigation.navigate('Bookmarks', { subject_name })}
                         android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
-                        style={{ marginVertical: 3 }}
-                    >
-                        <View style={styles.row}>
-                            <MaterialCommunityIcons style={{ marginRight: 3 }} name='bookmark-multiple' size={16} color='grey' />
-                            <Text style={styles.Header_text}>المحفوظات
+                        style={[styles.row, { marginVertical: 3 }]}>
+
+                        <MaterialCommunityIcons
+                            name='bookmark-multiple'
+                            size={20}
+                            color='grey'
+                            style={{ marginRight: 3 }} />
+                        <Text style={styles.Header_text}>المحفوظات
                                    ( {get_bookmarks().length})
-                            </Text>
-                        </View>
+                        </Text>
+
                     </Pressable> : null}
 
                 <View style={styles.row}>
                     <MaterialCommunityIcons
                         name='check-decagram'
                         color='grey'
-                        size={16} style={{ marginRight: 6 }} />
+                        size={16}
+                        style={{ marginRight: 6 }} />
                     <Text style={[styles.Header_text, { marginRight: 5 }]}>الدورات فقط</Text>
                     <Switch
                         value={onlyCycles}
