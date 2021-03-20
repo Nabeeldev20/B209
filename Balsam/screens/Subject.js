@@ -20,6 +20,7 @@ export default function Subject({ navigation, route }) {
     const [onlyCycles, setOnlyCycles] = React.useState(false);
     const [data, setData] = React.useState(get_database().filter(quiz => quiz.subject == subject_name))
     const [dialogData, setDialogData] = React.useState({ visible: false })
+    const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 })
 
 
     function Header() {
@@ -105,12 +106,48 @@ export default function Subject({ navigation, route }) {
             setData(database.filter(quiz => quiz.subject == subject_name))
         }
     }
-    function go_exam(item) {
-        Analytics.trackEvent('Exam', { Subject: item.subject, FileName: item.title });
-        item.get_shuffled_questions(true, true)
-        navigation.navigate('Home', {
-            screen: 'Exam', params: { quiz: item, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) }
-        })
+    function go_exam(quiz) {
+        function go() {
+            if (quiz.index > 0) {
+                setUnfinishedDialog({
+                    visible: true,
+                    index: quiz.index + 1,
+                    questions_number: quiz.get_questions_number(),
+                    quiz
+                })
+            } else {
+                Analytics.trackEvent('Exam', { Subject: quiz.subject, FileName: quiz.title });
+                quiz.get_shuffled_questions(true, true)
+                navigation.push('Exam', { quiz, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) })
+            }
+        }
+        if (quiz.is_paid()) {
+            function has_code(quiz_code) {
+                let codes = [];
+                get_act().forEach(item => {
+                    codes.push(item.code)
+                })
+                if (codes.includes(quiz_code)) {
+                    return true
+                }
+                return false
+            }
+            if (has_code(quiz.code) == false) {
+                navigation.push('Activation', { subject_name: quiz.subject, code: quiz.code })
+            }
+            go()
+        }
+        go()
+    }
+    function resume_exam({ quiz, continue_exam = false } = {}) {
+        if (continue_exam) {
+            navigation.push('Exam', { quiz, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) })
+        } else {
+            quiz.index = 0
+            quiz.get_shuffled_questions(true, true);
+            navigation.push('Exam', { quiz, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) });
+            setUnfinishedDialog({ visible: false })
+        }
     }
     function calculate_last_time(lastTime = DateTime.now().toISODate()) {
         let end = DateTime.fromISO(DateTime.now().toISODate());
@@ -231,6 +268,28 @@ export default function Subject({ navigation, route }) {
                     )}
                 />
                 <Portal>
+
+                    <Dialog
+                        visible={unfinishedDialog.visible}
+                        onDismiss={() => setUnfinishedDialog({ visible: false })}>
+                        <Dialog.Title style={[styles.dialog_title, { padding: 3 }]}>لم تنه الامتحان آخر مرة!</Dialog.Title>
+                        <Divider />
+                        <Dialog.Content style={{ padding: 3 }}>
+                            <Text style={styles.dialog_text}>توقفت عند السؤال {unfinishedDialog.index} من أصل {unfinishedDialog.questions_number}</Text>
+                        </Dialog.Content>
+                        <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
+                            <Button
+                                labelStyle={styles.dialog_button}
+                                onPress={() => resume_exam({ quiz: unfinishedDialog.quiz })}
+                            >البدء من جديد</Button>
+                            <Button
+                                color={colors.success}
+                                labelStyle={styles.dialog_button}
+                                onPress={() => resume_exam({ quiz: unfinishedDialog.quiz, continue_exam: true })}
+                            >تكملة الامتحان</Button>
+                        </Dialog.Actions>
+                    </Dialog>
+
                     <Dialog visible={dialogData.visible} onDismiss={() => setDialogData({ visible: false })}>
                         <Dialog.Title style={[styles.title, { padding: 10 }]}>{dialogData.title}</Dialog.Title>
                         <Divider />
@@ -321,6 +380,7 @@ export default function Subject({ navigation, route }) {
         <View style={styles.container}>
             <Header />
             <Files />
+
         </View >
     )
 }

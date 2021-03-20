@@ -13,7 +13,7 @@ import Analytics from 'appcenter-analytics';
 import Exam from './Exam'
 import FinishScreen from './FinishScreen'
 import Activation from './Activation'
-import { get_database, update_database, is_quiz_valid, erase_database, update_error_msgs } from './db'
+import { get_database, update_database, is_quiz_valid, erase_database, update_error_msgs, get_act } from './db'
 
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();
@@ -56,23 +56,37 @@ export default function Home({ navigation }) {
 
 
         function go_exam(quiz) {
+            function go() {
+                if (quiz.index > 0) {
+                    setUnfinishedDialog({
+                        visible: true,
+                        index: quiz.index + 1,
+                        questions_number: quiz.get_questions_number(),
+                        quiz
+                    })
+                } else {
+                    Analytics.trackEvent('Exam', { Subject: quiz.subject, FileName: quiz.title });
+                    quiz.get_shuffled_questions(true, true)
+                    navigation.push('Exam', { quiz, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) })
+                }
+            }
             if (quiz.is_paid()) {
-                navigation.push('Activation', { subject_name: quiz.subject, code: quiz.code })
+                function has_code(quiz_code) {
+                    let codes = [];
+                    get_act().forEach(item => {
+                        codes.push(item.code)
+                    })
+                    if (codes.includes(quiz_code)) {
+                        return true
+                    }
+                    return false
+                }
+                if (has_code(quiz.code) == false) {
+                    navigation.push('Activation', { subject_name: quiz.subject, code: quiz.code })
+                }
+                go()
             }
-
-            if (quiz.index > 0) {
-                setUnfinishedDialog({
-                    visible: true,
-                    index: quiz.index + 1,
-                    questions_number: quiz.get_questions_number(),
-                    quiz
-                })
-            } else {
-                Analytics.trackEvent('Exam', { Subject: quiz.subject, FileName: quiz.title });
-                quiz.get_shuffled_questions(true, true)
-                navigation.push('Exam', { quiz, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) })
-            }
-
+            go()
         }
         function resume_exam({ quiz, continue_exam = false } = {}) {
             if (continue_exam) {

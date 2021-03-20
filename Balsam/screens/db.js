@@ -20,7 +20,9 @@ function get_bookmarks() {
 function update_bookmarks(update) {
     bookmarks.push(...update);
 }
-
+function erase_bookmarks() {
+    bookmarks = []
+}
 function get_act() {
     return act_array
 }
@@ -37,7 +39,7 @@ async function save_file(quiz) {
         let encrypted = CryptoJS.AES.encrypt(JSON.stringify(quiz), 'nabeeladnanalinizam_20900!@#()').toString();
         await FileSystem.writeFile(path, encrypted);
     } catch (error) {
-
+        update_error_msgs({ Code: 'error writing to file' + error })
     }
 }
 function get_error_msgs() {
@@ -46,4 +48,17 @@ function get_error_msgs() {
 function update_error_msgs(data) {
     error_array.push(data)
 }
-export { get_database, update_database, get_bookmarks, update_bookmarks, get_act, update_act, save_file, is_quiz_valid, get_error_msgs, update_error_msgs, erase_database }
+export {
+    get_database,
+    update_database,
+    get_bookmarks,
+    erase_database,
+    update_bookmarks,
+    erase_bookmarks,
+    get_act,
+    update_act,
+    save_file,
+    is_quiz_valid,
+    get_error_msgs,
+    update_error_msgs
+}

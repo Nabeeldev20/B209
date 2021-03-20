@@ -8,7 +8,8 @@ import Hashids from 'hashids'
 import Analytics from 'appcenter-analytics';
 import { DateTime } from 'luxon'
 import { get_act, update_act } from './db'
-
+// TODO write to b.blsm
+// TODO ask user to turn on their wifi if mac == null
 export default function Activation({ navigation, route }) {
     const h = new Hashids("nabeel adnan ali nizam", 12, "abcdefghijklmnopqrstuvwxyz123456789");
     const { subject_name, code } = route.params;
