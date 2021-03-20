@@ -1,25 +1,22 @@
 import * as React from 'react'
-import { View, Text, StyleSheet, FlatList } from 'react-native'
-import { Switch, TouchableRipple, Surface, ProgressBar, Portal, Dialog, IconButton, Button, Divider } from 'react-native-paper'
+import { View, Text, StyleSheet, FlatList, Pressable, Switch } from 'react-native'
+import { Surface, Portal, Dialog, IconButton, Button, Divider } from 'react-native-paper'
 import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { FileSystem } from 'react-native-file-access';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
-import { useFonts } from 'expo-font';
 
 import { get_database, update_database, get_bookmarks, erase_database } from './db'
-
+// TODO fix paid file issues here
 export default function Subject({ navigation, route }) {
     const { subject_name } = route.params;
+
     React.useEffect(() => {
-        navigation.setOptions({ title: subject_name })
+        navigation.setOptions({ title: subject_name });
     }, [subject_name])
-    let [fontsLoaded] = useFonts({
-        'Cairo_700Bold': require('../assets/fonts/Cairo-Bold.ttf'),
-        'Cairo_600SemiBold': require('../assets/fonts/Cairo-SemiBold.ttf'),
-    });
+
     const [onlyCycles, setOnlyCycles] = React.useState(false);
     const [data, setData] = React.useState(get_database().filter(quiz => quiz.subject == subject_name))
     const [dialogData, setDialogData] = React.useState({ visible: false })
@@ -29,9 +26,9 @@ export default function Subject({ navigation, route }) {
         return (
             <View style={[styles.row, { justifyContent: get_bookmarks().filter(bookmark => bookmark.subject == subject_name).length >= 1 ? 'space-between' : 'flex-end', alignItems: 'baselines' }]}>
                 {get_bookmarks().filter(bookmark => bookmark.subject == subject_name).length >= 1 ?
-                    <TouchableRipple
+                    <Pressable
                         onPress={() => navigation.navigate('Bookmarks', { subject_name })}
-                        rippleColor="rgba(0, 0, 0, .32)"
+                        android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
                         style={{ marginVertical: 3 }}
                     >
                         <View style={styles.row}>
@@ -40,7 +37,7 @@ export default function Subject({ navigation, route }) {
                                    ( {get_bookmarks().length})
                             </Text>
                         </View>
-                    </TouchableRipple> : null}
+                    </Pressable> : null}
 
                 <View style={styles.row}>
                     <MaterialCommunityIcons
@@ -48,7 +45,11 @@ export default function Subject({ navigation, route }) {
                         color='grey'
                         size={16} style={{ marginRight: 6 }} />
                     <Text style={[styles.Header_text, { marginRight: 5 }]}>الدورات فقط</Text>
-                    <Switch value={onlyCycles} onValueChange={handle_switch} color='#E53935' />
+                    <Switch
+                        value={onlyCycles}
+                        onValueChange={handle_switch}
+                        trackColor={{ false: '#767577', true: '#ec9b99' }}
+                        thumbColor={onlyCycles ? '#E53935' : '#f4f3f4'} />
                 </View>
             </View>
         )
@@ -83,7 +84,11 @@ export default function Subject({ navigation, route }) {
         //db.js
         erase_database()
         update_database(...data.filter(quiz => quiz.title != title));
-        await FileSystem.unlink(path)
+        try {
+            await FileSystem.unlink(path)
+        } catch (error) {
+
+        }
     }
     if (data.length > 0) {
         if (data[0].subject != subject_name) {
@@ -127,69 +132,78 @@ export default function Subject({ navigation, route }) {
                     extraData={data}
                     ListEmptyComponent={empty_state_cycle}
                     renderItem={({ item, index }) => (
-                        <Animatable.View animation="fadeInRight" delay={index * 350} duration={1500}>
-                            <TouchableRipple
+                        <Animatable.View
+                            animation="fadeInRight"
+                            delay={index * 350}
+                            duration={1500}>
+                            <View
                                 key={item.title}
-                                onPress={() => go_exam(item)}
-                                onLongPress={async () => {
-                                    setDialogData({
-                                        visible: true,
-                                        title: item.title,
-                                        path: item.path,
-                                        average_accuracy: item.get_average_accuracy(),
-                                        average_time: item.get_average_time(),
-                                        last_score: item.average_accuracy[item.average_accuracy.length - 1] || 0,
-                                        last_time_score: item.average_time[item.average_time.length - 1] || 0,
-                                        last_time: item.last_time
-                                    })
-                                    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                                }}
-                                rippleColor="rgba(0, 0, 0, .32)"
-                                style={{ marginVertical: 3 }}
-                            >
-                                <Surface style={styles.Listcontainer}>
-                                    <View>
-                                        <Text style={styles.title}>{item.title}</Text>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <MaterialCommunityIcons
-                                                name={get_icon(item).name}
-                                                color={get_icon(item).color}
-                                                size={16} style={{ marginLeft: 5 }} />
-                                            {item.is_cycle() ? <Text style={styles.cycle_university}>{item.cycle_university}</Text> : null}
+                                style={[
+                                    styles.Listcontainer,
+                                    {
+                                        marginVertical: 3,
+                                        backgroundColor: 'white',
+                                        elevation: 2
+                                    }]}>
+                                <Pressable
+                                    onPress={() => go_exam(item)}
+                                    onLongPress={async () => {
+                                        setDialogData({
+                                            visible: true,
+                                            title: item.title,
+                                            path: item.path,
+                                            average_accuracy: item.get_average_accuracy(),
+                                            average_time: item.get_average_time(),
+                                            last_score: item.average_accuracy[item.average_accuracy.length - 1] || 0,
+                                            last_time_score: item.average_time[item.average_time.length - 1] || 0,
+                                            last_time: item.last_time
+                                        })
+                                        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                                    }}
+                                    android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}>
 
-                                            <Text style={styles.subtitle}>منذ {calculate_last_time(item.last_time)}</Text>
-                                            <ProgressBar progress={0.5} color='blue' />
+                                    <Surface>
+                                        <View>
+                                            <Text style={styles.title}>{item.title}</Text>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <MaterialCommunityIcons
+                                                    name={get_icon(item).name}
+                                                    color={get_icon(item).color}
+                                                    size={20} style={{ marginLeft: 5 }} />
+                                                {item.is_cycle() ? <Text style={styles.cycle_university}>{item.cycle_university}</Text> : null}
+                                                <Text style={styles.subtitle}>منذ {calculate_last_time(item.last_time)}</Text>
+                                            </View>
                                         </View>
-                                    </View>
 
 
-                                    <View>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                                            <Text style={styles.numbers}>{item.get_questions_number()}</Text>
-                                            <MaterialCommunityIcons name="format-list-numbered" size={16} color="grey" style={{ marginLeft: 5 }} />
+                                        <View>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                                <Text style={styles.numbers}>{item.get_questions_number()}</Text>
+                                                <MaterialCommunityIcons name="format-list-numbered" size={20} color="grey" style={{ marginLeft: 5 }} />
+                                            </View>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Text style={styles.numbers}>{item.get_estimated_time()}</Text>
+                                                <MaterialCommunityIcons name="progress-clock" size={20} color="grey" style={{ marginLeft: 5 }} />
+                                            </View>
                                         </View>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                            <Text style={styles.numbers}>{item.get_estimated_time()}</Text>
-                                            <MaterialCommunityIcons name="progress-clock" size={16} color="grey" style={{ marginLeft: 5 }} />
-                                        </View>
-                                    </View>
-                                </Surface>
-                            </TouchableRipple>
+                                    </Surface>
+                                </Pressable>
+                            </View>
                         </Animatable.View>
                     )}
                 />
                 <Portal>
                     <Dialog visible={dialogData.visible} onDismiss={() => setDialogData({ visible: false })}>
-                        <Dialog.Title style={[styles.title, { margin: 5, padding: 10 }]}>{dialogData.title}</Dialog.Title>
+                        <Dialog.Title style={[styles.title, { padding: 10 }]}>{dialogData.title}</Dialog.Title>
                         <Divider />
 
-                        <Dialog.Content style={{ margin: 3, padding: 3 }}>
+                        <Dialog.Content style={{ padding: 5 }}>
 
 
 
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
-                                    <MaterialCommunityIcons name='target-variant' size={16} style={{ marginRight: 3 }} color='grey' />
+                                    <MaterialCommunityIcons name='target-variant' size={20} style={{ marginRight: 3 }} color='grey' />
                                     <Text style={styles.dialog_text}>متوسط التحصيل في المقرر</Text>
                                 </View>
                                 <Text style={styles.dialog_text}>{dialogData.average_accuracy}</Text>
@@ -199,7 +213,7 @@ export default function Subject({ navigation, route }) {
 
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
-                                    <MaterialCommunityIcons name='history' size={16} style={{ marginRight: 3 }} color='grey' />
+                                    <MaterialCommunityIcons name='history' size={20} style={{ marginRight: 3 }} color='grey' />
                                     <Text style={styles.dialog_text}>متوسط الوقت في المقرر</Text>
                                 </View>
                                 <Text style={styles.dialog_text}>{dialogData.average_time}</Text>
@@ -208,7 +222,7 @@ export default function Subject({ navigation, route }) {
 
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
-                                    <MaterialCommunityIcons name='calendar-today' size={16} style={{ marginRight: 3 }} color='grey' />
+                                    <MaterialCommunityIcons name='calendar-today' size={20} style={{ marginRight: 3 }} color='grey' />
                                     <Text style={styles.dialog_text}>آخر مرة </Text>
                                 </View>
                                 <Text style={styles.dialog_text}>{calculate_last_time(dialogData.last_time)}</Text>
@@ -217,7 +231,11 @@ export default function Subject({ navigation, route }) {
 
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
-                                    <MaterialCommunityIcons name='file-check' color='#313131' size={16} style={{ marginRight: 3 }} color='grey' />
+                                    <MaterialCommunityIcons
+                                        name='file-check'
+                                        color='grey'
+                                        size={20}
+                                        style={{ marginRight: 3 }} />
                                     <Text style={styles.dialog_text}>آخر نتيجة</Text>
                                 </View>
                                 <Text style={styles.dialog_text}>% {dialogData.last_score}</Text>
@@ -228,7 +246,7 @@ export default function Subject({ navigation, route }) {
 
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
-                                    <MaterialCommunityIcons name='clock-check' size={16} style={{ marginRight: 3 }} color='grey' />
+                                    <MaterialCommunityIcons name='clock-check' size={20} style={{ marginRight: 3 }} color='grey' />
                                     <Text style={styles.dialog_text}>آخر توقيت</Text>
                                 </View>
                                 <Text style={styles.dialog_text}>{dialogData.last_time_score} د</Text>
@@ -241,7 +259,11 @@ export default function Subject({ navigation, route }) {
 
 
                         <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
-                            <IconButton icon='trash' size={20} color='red' onPress={() => remove_file(dialogData.title, dialogData.path)} />
+                            <IconButton
+                                icon='file-remove'
+                                color='#E53935'
+                                size={20}
+                                onPress={() => remove_file(dialogData.title, dialogData.path)} />
                             <Button
                                 onPress={() => setDialogData({ visible: false })}
                                 labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo_700Bold' }}
@@ -278,17 +300,14 @@ const styles = StyleSheet.create({
         height: 25,
         letterSpacing: 0,
         selectable: false
-
     },
     Listcontainer: {
         padding: 12,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        elevation: 2,
         borderWidth: 1,
         borderColor: '#D7D8D2',
-        backgroundColor: 'white'
     },
     title: {
         fontFamily: 'Cairo_700Bold',

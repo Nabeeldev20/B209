@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
-import { Surface, TouchableRipple, Divider } from 'react-native-paper'
+import { View, Text, StyleSheet, Pressable } from 'react-native'
+import { Surface, Divider } from 'react-native-paper'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DateTime } from 'luxon'
 import * as Animatable from 'react-native-animatable';
@@ -75,7 +75,9 @@ export default function FinishScreen({ navigation, route }) {
         if (!quiz.title.includes('مخصص')) {
             React.useEffect(() => {
                 navigation.addListener('beforeRemove', (e) => {
+                    e.preventDefault();
                     update_quiz();
+                    navigation.dispatch(e.data.action)
                 })
             }, [])
 
@@ -98,17 +100,17 @@ export default function FinishScreen({ navigation, route }) {
                     <Divider style={{ margin: 4 }} />
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', padding: 10 }}>
                         <View style={{ alignItems: 'center' }}>
-                            <MaterialCommunityIcons name='chart-bell-curve-cumulative' size={16} />
+                            <MaterialCommunityIcons name='chart-bell-curve-cumulative' size={24} />
                             <Text style={styles.exam_result}>الدقة</Text>
                             <Text style={styles.exam_result}>%{get_ratio_score()}</Text>
                         </View>
                         <View style={{ alignItems: 'center' }}>
-                            <MaterialCommunityIcons name='timer-sand' size={16} />
+                            <MaterialCommunityIcons name='timer-sand' size={24} />
                             <Text style={styles.exam_result}>الوقت</Text>
                             <Text style={styles.exam_result}>{get_time()} د</Text>
                         </View>
                         <View style={{ alignItems: 'center' }}>
-                            <MaterialCommunityIcons name='playlist-remove' size={16} />
+                            <MaterialCommunityIcons name='playlist-remove' size={24} />
                             <Text style={styles.exam_result}>الخطأ</Text>
                             <Text style={styles.exam_result}>{wrong_count}</Text>
                         </View>
@@ -119,7 +121,9 @@ export default function FinishScreen({ navigation, route }) {
                     <Surface style={styles.surface}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 5 }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <MaterialCommunityIcons name='target-variant' size={16} style={{ marginRight: 15 }} />
+                                <MaterialCommunityIcons
+                                    name='target-variant'
+                                    size={20} style={{ marginRight: 15 }} />
                                 <Text style={styles.exam_result}>متوسط التحصيل في مقرر {quiz.subject}</Text>
                             </View>
                             <Text style={styles.exam_result}>%{quiz.get_average_accuracy()}</Text>
@@ -127,72 +131,89 @@ export default function FinishScreen({ navigation, route }) {
                         <Divider />
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 5 }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <MaterialCommunityIcons name='history' size={16} style={{ marginRight: 15 }} />
+                                <MaterialCommunityIcons
+                                    name='history'
+                                    size={20}
+                                    style={{ marginRight: 15 }} />
                                 <Text style={styles.exam_result}>متوسط الوقت لمقرر {quiz.subject}</Text>
                             </View>
                             <Text style={styles.exam_result}>%{quiz.get_average_time()}</Text>
                         </View>
                     </Surface> : null}
-
-                <TouchableRipple
-                    onPress={() => go_exam()}
-                    rippleColor="rgba(0, 0, 0, .32)"
-                    style={{
-                        marginHorizontal: 50,
-                        marginVertical: 20,
-                    }}>
-                    <Surface style={styles.doItAgain}>
-                        <Text style={{ fontFamily: 'Cairo_700Bold', fontSize: 15 }}>خوض الاختبار مجدداً</Text>
-                        <MaterialCommunityIcons name='refresh' color='green' size={25} style={{ marginLeft: 10 }} />
-                    </Surface>
-                </TouchableRipple>
-
+                <View style={{
+                    marginHorizontal: 50,
+                    marginVertical: 20,
+                    backgroundColor: 'white',
+                    elevation: 3,
+                    padding: 15
+                }}>
+                    <Pressable
+                        onPress={() => go_exam()}
+                        android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}>
+                        <Surface style={styles.doItAgain}>
+                            <Text style={{ fontFamily: 'Cairo_700Bold', fontSize: 15 }}>خوض الاختبار مجدداً</Text>
+                            <MaterialCommunityIcons
+                                name='refresh'
+                                color='#00C853'
+                                size={25} style={{ marginLeft: 10 }} />
+                        </Surface>
+                    </Pressable>
+                </View>
                 {!quiz.title.includes('مخصص') ?
 
                     <View style={{ flex: 1 }}>
                         {get_recommendation(0).visible ?
                             <View>
                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 8 }}>
-                                    <MaterialCommunityIcons name='telescope' color='grey' size={16} style={{ marginRight: 3 }} />
+                                    <MaterialCommunityIcons name='telescope' color='grey' size={20} style={{ marginRight: 3 }} />
                                     <Text style={{ fontFamily: 'Cairo_600SemiBold', color: 'grey' }}>اختبارت أخرى لحلها: </Text>
                                 </View>
-
-                                <TouchableRipple
+                                <View
                                     key={get_recommendation(0).title}
-                                    onPress={() => go_exam(get_recommendation(0).quiz)}
-                                    rippleColor="rgba(0, 0, 0, .32)"
                                     style={{
                                         margin: 5,
+                                        elevation: 2,
+                                        backgroundColor: 'white',
+                                        padding: 15
                                     }}>
-                                    <Surface style={styles.recommendation}>
-                                        <Text style={{ fontFamily: 'Cairo_700Bold' }}>{get_recommendation(0).title}</Text>
+                                    <Pressable
+                                        onPress={() => go_exam(get_recommendation(0).quiz)}
+                                        android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}>
 
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                                            <Text>{get_recommendation(0).questions_number}</Text>
-                                            <MaterialCommunityIcons name="format-list-numbered" size={16} color="grey" style={{ marginLeft: 5 }} />
-                                        </View>
-                                    </Surface>
-                                </TouchableRipple>
+                                        <Surface style={styles.recommendation}>
+                                            <Text style={{ fontFamily: 'Cairo_700Bold' }}>{get_recommendation(0).title}</Text>
 
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                                <Text>{get_recommendation(0).questions_number}</Text>
+                                                <MaterialCommunityIcons name="format-list-numbered" size={20} color="grey" style={{ marginLeft: 5 }} />
+                                            </View>
+                                        </Surface>
+                                    </Pressable>
+                                </View>
                             </View> : <EmptySpace />}
 
                         {get_recommendation(1).visible ?
-                            <TouchableRipple
+                            <View
                                 key={get_recommendation(1).title}
-                                onPress={() => go_exam(get_recommendation(1).quiz)}
-                                rippleColor="rgba(0, 0, 0, .32)"
                                 style={{
                                     margin: 5,
+                                    elevation: 2,
+                                    backgroundColor: 'white',
+                                    padding: 15
                                 }}>
-                                <Surface style={styles.recommendation}>
-                                    <Text style={{ fontFamily: 'Cairo_700Bold' }}>{get_recommendation(1).title}</Text>
+                                <Pressable
+                                    onPress={() => go_exam(get_recommendation(1).quiz)}
+                                    android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}>
+                                    <Surface style={styles.recommendation}>
+                                        <Text style={{ fontFamily: 'Cairo_700Bold' }}>{get_recommendation(1).title}</Text>
 
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                                        <Text>{get_recommendation(1).questions_number}</Text>
-                                        <MaterialCommunityIcons name="format-list-numbered" size={16} color="grey" style={{ marginLeft: 5 }} />
-                                    </View>
-                                </Surface>
-                            </TouchableRipple> : null}
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                            <Text>{get_recommendation(1).questions_number}</Text>
+                                            <MaterialCommunityIcons name="format-list-numbered" size={20} color="grey" style={{ marginLeft: 5 }} />
+                                        </View>
+                                    </Surface>
+                                </Pressable>
+                            </View> : null}
                     </View> : null}
             </View>
         </Animatable.View>
@@ -228,12 +249,8 @@ const styles = StyleSheet.create({
         lineHeight: 20
     },
     recommendation: {
-
-        padding: 15,
-        elevation: 2,
         borderWidth: 1,
         borderColor: '#D7D8D2',
-        backgroundColor: 'white',
         justifyContent: 'space-between',
         alignItems: 'center',
         flexDirection: 'row'
@@ -242,10 +259,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 15,
         borderWidth: 1,
         borderColor: '#D7D8D2',
-        backgroundColor: 'white',
-        elevation: 3,
     }
 })

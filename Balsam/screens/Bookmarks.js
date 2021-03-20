@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, FlatList, Button } from 'react-native'
 import { Divider, Surface, Headline, IconButton } from 'react-native-paper'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Animatable from 'react-native-animatable';
-import { useFonts } from 'expo-font';
 
 import { get_bookmarks, update_bookmarks } from './db'
 
@@ -14,10 +13,7 @@ export default function Bookmarks({ navigation, route }) {
     React.useEffect(() => {
         navigation.setOptions({ title: 'محفوظات' + ' ' + subject_name })
     }, [subject_name])
-    let [fontsLoaded] = useFonts({
-        'Cairo_700Bold': require('../assets/fonts/Cairo-Bold.ttf'),
-        'Cairo_600SemiBold': require('../assets/fonts/Cairo-SemiBold.ttf'),
-    });
+
     const [bookmarksData, setBookmarksData] = React.useState(get_bookmarks().filter(bookmark => bookmark.subject == subject_name))
 
     const QuestionExplanation = (item) => {
@@ -26,7 +22,7 @@ export default function Bookmarks({ navigation, route }) {
                 <View>
                     <Divider />
                     <View style={styles.row}>
-                        <MaterialCommunityIcons style={{ marginRight: 4 }} name='bookmark-remove' color='grey' size={16} />
+                        <MaterialCommunityIcons style={{ marginRight: 4 }} name='comment-question' color='grey' size={20} />
                         <Text style={styles.text}>{item.question.explanation}</Text>
                     </View>
                 </View>
@@ -59,7 +55,7 @@ export default function Bookmarks({ navigation, route }) {
                     <Animatable.View animation="fadeInRight" delay={index * 350} duration={1500}>
                         <Surface style={styles.surface}>
                             <View style={styles.row} >
-                                <MaterialCommunityIcons style={{ marginRight: 4 }} name='comment-question' color='grey' size={16} />
+                                <MaterialCommunityIcons style={{ marginRight: 4 }} name='comment-question' color='grey' size={20} />
                                 <Headline style={styles.headline}>{item.question.title}
                                     <Text style={styles.text}>({item.subject})</Text></Headline>
                             </View>
@@ -74,9 +70,9 @@ export default function Bookmarks({ navigation, route }) {
                             })}
                             {QuestionExplanation(item)}
                             <IconButton
-                                icon='trash'
+                                icon='bookmark-remove'
                                 color='grey'
-                                size={20}
+                                size={24}
                                 onPress={() => remove_Bookmark(item)}
                                 style={{ alignSelf: 'flex-end' }}
                             />

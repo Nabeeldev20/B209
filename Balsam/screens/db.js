@@ -32,9 +32,13 @@ function update_act(data) {
     act_array.push(...data);
 }
 async function save_file(quiz) {
-    let path = quiz.path;
-    let encrypted = CryptoJS.AES.encrypt(JSON.stringify(quiz), 'nabeeladnanalinizam_20900!@#()').toString();
-    await FileSystem.writeFile(path, encrypted)
+    try {
+        let path = quiz.path;
+        let encrypted = CryptoJS.AES.encrypt(JSON.stringify(quiz), 'nabeeladnanalinizam_20900!@#()').toString();
+        await FileSystem.writeFile(path, encrypted);
+    } catch (error) {
+
+    }
 }
 function get_error_msgs() {
     return error_array;
