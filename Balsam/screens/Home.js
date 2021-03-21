@@ -42,9 +42,10 @@ export default function Home({ navigation }) {
     }
 
     function Home_component({ navigation }) {
+        let data = get_database()
         const [dialogData, setDialogData] = React.useState({ visible: false })
         const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 })
-        const [database, setDatabase] = React.useState(get_database())
+        const [database, setDatabase] = React.useState(data)
         async function remove_file(title, path) {
             setDatabase(database.filter(quiz => quiz.title != title));
             setDialogData({ visible: false })
@@ -218,8 +219,7 @@ export default function Home({ navigation }) {
                         visible={unfinishedDialog.visible}
                         onDismiss={() => setUnfinishedDialog({ visible: false })}>
                         <Dialog.Title style={styles.dialog_title}>لم تنه الامتحان آخر مرة!</Dialog.Title>
-                        <Divider />
-                        <Dialog.Content>
+                        <Dialog.Content style={{ padding: 3 }}>
                             <Text style={styles.dialog_text}>توقفت عند السؤال {unfinishedDialog.index} من أصل {unfinishedDialog.questions_number}</Text>
                         </Dialog.Content>
                         <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
@@ -239,8 +239,6 @@ export default function Home({ navigation }) {
                         visible={dialogData.visible}
                         onDismiss={() => setDialogData({ visible: false })}>
                         <Dialog.Title style={styles.title}>{dialogData.title}</Dialog.Title>
-                        <Divider />
-
                         <Dialog.Content >
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
@@ -327,7 +325,7 @@ export default function Home({ navigation }) {
                 component={Home_component}
                 options={{
                     title: 'بلســم',
-                    headerTitleStyle: { fontFamily: 'Cairo-Bold', fontSize: 17 },
+                    headerTitleStyle: { fontFamily: 'Cairo-Bold', fontSize: 16 },
                     headerLeft: () => (<MaterialCommunityIcons size={30} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
                 }} />
             <Stack.Screen
@@ -335,7 +333,7 @@ export default function Home({ navigation }) {
                 options={({ route }) => ({
                     headerTitleStyle: {
                         color: '#313131',
-                        fontSize: 16,
+                        fontSize: 14,
                         fontFamily: 'Cairo-Bold'
                     }
                 })}
@@ -347,7 +345,7 @@ export default function Home({ navigation }) {
                     title: route.params.quiz.title,
                     headerTitleStyle: {
                         color: '#313131',
-                        fontSize: 16,
+                        fontSize: 14,
                         fontFamily: 'Cairo-Bold'
                     }
                 })} />
@@ -357,9 +355,8 @@ export default function Home({ navigation }) {
                 options={({ route }) => ({
                     headerTitleStyle: {
                         color: '#313131',
-                        fontSize: 16,
+                        fontSize: 14,
                         fontFamily: 'Cairo-Bold',
-                        height: 26
                     }
                 })} />
         </Stack.Navigator>
@@ -384,7 +381,7 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: 'Cairo-Bold',
         fontSize: 18,
-        marginTop: 0
+        padding: 3
     },
     subtitle: {
         fontFamily: 'Cairo-SemiBold',
@@ -406,6 +403,7 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         alignItems: 'center',
+        padding: 5
     },
     dialog_text: {
         fontFamily: 'Cairo-SemiBold',
