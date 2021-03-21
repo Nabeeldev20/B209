@@ -9,7 +9,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import CryptoJS from 'crypto-js';
 import { Dirs, FileSystem } from 'react-native-file-access';
 import * as Animatable from 'react-native-animatable';
-import { useFonts } from 'expo-font';
 
 import Home from './screens/Home'
 import SubjectStack from './screens/SubjectStack'
@@ -54,11 +53,6 @@ export default function App() {
       update_error_msgs({ Code: 'asking for premission', error })
     }
   }
-
-  const [fontsLoaded] = useFonts({
-    'Cairo_Bold': require('./assets/fonts/Cairo-Bold.ttf'),
-    'Cairo_SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
-  });
 
 
   React.useEffect(() => {
@@ -125,7 +119,9 @@ export default function App() {
       }
       file.get_remaining_time = function get_remaining_time(index) {
         let diff = this.questions.length - index;
-        diff == 1 ? diff = 0.6 : diff = diff
+        if (diff == 1) {
+          diff = 0.6
+        }
         let time = ((diff * this.estimated_time_for_question) / 60).toFixed(2).toString().split('');
         if (time.length == 4) {
           time.unshift('0')
@@ -254,82 +250,109 @@ export default function App() {
             let encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), 'nabeeladnanalinizam_20900!@#()').toString();
             await FileSystem.writeFile(path, encrypted)
           } catch (error) {
-            update_error_msgs({ Code: 'error writing b.blsm file first time', error })
+            update_error_msgs({ Code: 'error writing b.blsm file first time', error: error.code })
           }
         }
       } catch (error) {
         update_error_msgs({ Code: 'Error in read_blsm', error })
       }
     }
+    async function write_no_crypto() {
+      try {
+        let is_file = await FileSystem.exists('/storage/emulated/0/Download' + '/balsam.txt');
+        if (is_file == false) {
+          try {
+            await FileSystem.writeFile('/storage/emulated/0/Download' + '/balsam.txt', 'text without crypto')
+          } catch (error) {
+            update_error_msgs({ Code: 'Writing file @write_no_crypto', error })
+          }
+        }
+      } catch (error) {
+        update_error_msgs({ Code: 'Writing file @write_no_crypto || checking if exsists', error })
+
+      }
+    }
+    async function write_with_crypto() {
+      try {
+        let is_file = await FileSystem.exists('/storage/emulated/0/Download' + '/balsamCrypto.txt');
+        let encrypted = CryptoJS.AES.encrypt(JSON.stringify({ name: 'nabeel', age: 20 }), 'nabeeladnanalinizam_20900!@#()').toString();
+        if (is_file == false) {
+          try {
+            await FileSystem.writeFile('/storage/emulated/0/Download' + '/balsamCrypto.txt', encrypted)
+          } catch (error) {
+            update_error_msgs({ Code: 'Writing file @write_with_crypto', error })
+          }
+        }
+      } catch (error) {
+        update_error_msgs({ Code: 'Writing file @write_with_crypto || checking if exsists', error })
+
+      }
+    }
     check_permission();
-    read_blsm();
+    //read_blsm();
+    write_no_crypto();
+    write_with_crypto()
   }, [shouldAskForPermissions])
 
-  if (fontsLoaded) {
-    if (loading) {
-      if (shouldAskForPermissions == false) {
-        return (
-          <Animatable.View animation='flash' iterationCount='infinite' duration={3500} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
-            <MaterialCommunityIcons name='folder-sync' size={35} color='grey' />
-            <Text style={[styles.headline, { color: 'grey' }]} >جاري التحميل</Text>
-          </Animatable.View>
-        )
-      } else {
-        return (
-          <View style={styles.container}>
-            <Animatable.Text animation='fadeInRight' style={styles.welcome}>مرحباً يا بلسم!</Animatable.Text>
-            <Animatable.Text animation='fadeInRight' delay={450} style={styles.headline}>تطبيق حل أسئلة صمم خصيصاً ليكون بلسماً لمشاكلك.</Animatable.Text>
-            <Animatable.View animation='fadeIn' delay={700} style={{ paddingTop: 10 }}>
-              <MaterialCommunityIcons name='lightbulb' size={20} color="grey" style={{ alignSelf: 'flex-start' }} />
-              <Text style={styles.text}> ملفات اختبارات بلسم بلاحقة
+
+  if (loading) {
+    if (shouldAskForPermissions == false) {
+      return (
+        <Animatable.View animation='flash' iterationCount='infinite' duration={3500} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
+          <MaterialCommunityIcons name='folder-sync' size={35} color='grey' />
+          <Text style={[styles.headline, { color: 'grey' }]} >جاري التحميل</Text>
+        </Animatable.View>
+      )
+    } else {
+      return (
+        <View style={styles.container}>
+          <Animatable.Text animation='fadeInRight' style={styles.welcome}>مرحباً يا بلسم!</Animatable.Text>
+          <Animatable.Text animation='fadeInRight' delay={450} style={styles.headline}>تطبيق حل أسئلة صمم خصيصاً ليكون بلسماً لمشاكلك.</Animatable.Text>
+          <Animatable.View animation='fadeIn' delay={700} style={{ paddingTop: 10 }}>
+            <MaterialCommunityIcons name='lightbulb' size={20} color="grey" style={{ alignSelf: 'flex-start' }} />
+            <Text style={styles.text}> ملفات اختبارات بلسم بلاحقة
           <Text style={{ fontWeight: 'bold', fontFamily: 'Cairo_700Bold', marginHorizontal: 10 }}>
-                  quiz.
+                quiz.
           </Text>{'\n'}
     يمكنك تحميل الملفات من قناتنا على التلغرام
     <MaterialCommunityIcons style={{ paddingHorizontal: 3 }} name='telegram' size={16} color='grey' /> <Text style={{ paddingLeft: 5 }}>@Balsam_app</Text>    {'\n'}
     تتم قراءة الملفات تلقائياً من مجلد التنزيلات
           <MaterialCommunityIcons style={{ paddingHorizontal: 5 }} name='folder-download' size={16} color='grey' /> {'\n'}
 
-              </Text>
-            </Animatable.View>
-            <Animatable.View animation='fadeInUp' delay={1000}>
-              <Button style={{ padding: 5 }} labelStyle={styles.button} color='#313131' onPress={() => ask_for_permission()}>الحصول على صلاحية الوصول للذاكرة</Button>
-            </Animatable.View>
-          </View>
-        )
-      }
-    } else {
-      return (
-        <PaperProvider
-          theme={theme}
-          settings={{
-            icon: props => <MaterialCommunityIcons {...props} />,
-          }}>
-          <NavigationContainer>
-            <Drawer.Navigator
-              initialRouteName="Home"
-              drawerContent={(props) => <CustomDrawer {...props} />}
-              drawerType='slide'
-              drawerContentOptions={{
-                activeTintColor: '#e91e63',
-                itemStyle: { marginVertical: 3, padding: 0 },
-              }}
-            >
-              <Drawer.Screen name="Home" component={Home} options={{ title: 'الرئيسة' }} />
-              <Drawer.Screen name="SubjectStack" component={SubjectStack} />
-              <Drawer.Screen name="CustomExam" component={CustomExam} />
-            </Drawer.Navigator>
-          </NavigationContainer>
-        </PaperProvider>
-      );
+            </Text>
+          </Animatable.View>
+          <Animatable.View animation='fadeInUp' delay={1000}>
+            <Button style={{ padding: 5 }} labelStyle={styles.button} color='#313131' onPress={() => ask_for_permission()}>الحصول على صلاحية الوصول للذاكرة</Button>
+          </Animatable.View>
+        </View>
+      )
     }
   } else {
     return (
-      <View style={{ flex: 1, backgroundColor: '#fff' }}>
-
-      </View>
-    )
+      <PaperProvider
+        theme={theme}
+        settings={{
+          icon: props => <MaterialCommunityIcons {...props} />,
+        }}>
+        <NavigationContainer>
+          <Drawer.Navigator
+            initialRouteName="Home"
+            drawerContent={(props) => <CustomDrawer {...props} />}
+            drawerType='slide'
+            drawerContentOptions={{
+              activeTintColor: '#e91e63',
+              itemStyle: { marginVertical: 3, padding: 0 },
+            }}
+          >
+            <Drawer.Screen name="Home" component={Home} options={{ title: 'الرئيسة' }} />
+            <Drawer.Screen name="SubjectStack" component={SubjectStack} />
+            <Drawer.Screen name="CustomExam" component={CustomExam} />
+          </Drawer.Navigator>
+        </NavigationContainer>
+      </PaperProvider>
+    );
   }
+
 
 
 

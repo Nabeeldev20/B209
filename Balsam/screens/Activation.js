@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { View, Text, StyleSheet, Linking, ToastAndroid } from 'react-native'
+import { View, Text, StyleSheet, Linking, ToastAndroid, ScrollView, Dimensions } from 'react-native'
 import { Surface, TextInput, HelperText, Badge, Button } from 'react-native-paper'
 import * as Animatable from 'react-native-animatable';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -12,14 +12,21 @@ import * as Network from 'expo-network';
 
 // TODO write to b.blsm
 // TODO ask user to turn on their wifi if mac == null
+// TODO show message 
 export default function Activation({ navigation, route }) {
     const h = new Hashids("nabeel adnan ali nizam", 12, "abcdefghijklmnopqrstuvwxyz123456789");
     const { subject_name, code } = route.params;
     React.useEffect(() => {
         navigation.setOptions({ title: 'تفعيل بنك' + ' ' + subject_name })
-
     }, [subject_name]);
-
+    const [screenHeight, setScreenHeight] = React.useState(Dimensions.get('window'));
+    const { height } = Dimensions.get('window');
+    const scrollEnabled = () => {
+        return screenHeight > height ? true : false
+    }
+    const onContentSizeChange = (contentHeight) => {
+        setScreenHeight(contentHeight);
+    }
 
     const [storeCode, setStoreCode] = React.useState('');
     const [keyCode, setKeyCode] = React.useState('');
@@ -87,126 +94,128 @@ export default function Activation({ navigation, route }) {
         }
     }
     async function save() {
-        Analytics.trackEvent('Activation', { Subject: subject_name, QuizCode: code, StoreCode: storeCode });
-        update_act([...get_act(), code]);
-        let mac = get_mac();
+        //  Analytics.trackEvent('Activation', { Subject: subject_name, QuizCode: code, StoreCode: storeCode });
         try {
             let mac_address = await Network.getMacAddressAsync();
-            if (mac_address != null && mac != null) {
-                if (mac_address == mac) {
-                    save_blsm()
-                }
-            }
-            if (mac == null && mac_address != null) {
-                update_mac(mac_address);
-                save_blsm()
-            }
-            if (mac != null && mac_address == null) {
+            if (mac_address != null) {
                 ToastAndroid.showWithGravity(
-                    "قم من فضلك بتشغيل الوايفاي",
+                    mac_address,
                     ToastAndroid.LONG,
                     ToastAndroid.BOTTOM
                 );
             }
+            ToastAndroid.showWithGravity(
+                "test ;)",
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM
+            );
+
         } catch (error) {
-            update_error_msgs({ Code: 'Error fetching mac ' + error })
+            update_error_msgs({ Code: 'Error fetching mac ', error })
         }
     }
     is_input_valid_animation();
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.welcome}> ثلاث خطوات بسيطة لتفعيل البنك</Text>
-            <Text style={styles.text}>لكي يتم التفعيل بصورة صحيحة يجب تشغيل الـ wifi</Text>
-            <Animatable.View ref={n1}>
-                <Surface style={styles.surface}>
-                    <View style={styles.row}>
-                        <View style={styles.badge}>
-                            <Badge style={styles.badge_color} size={24} color='white'>1</Badge>
+        <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ flexGrow: 1 }}
+            scrollEnabled={scrollEnabled}
+            onContentSizeChange={onContentSizeChange}>
+            <View style={styles.container}>
+                <Text style={styles.welcome}> ثلاث خطوات بسيطة لتفعيل البنك</Text>
+                <Text style={styles.text}>لكي يتم التفعيل بصورة صحيحة يجب تشغيل الـ wifi</Text>
+                <Animatable.View ref={n1}>
+                    <Surface style={styles.surface}>
+                        <View style={styles.row}>
+                            <View style={styles.badge}>
+                                <Badge style={styles.badge_color} size={24} color='white'>1</Badge>
+                            </View>
+                            <Text style={styles.text}>أدخل كود المكتبة من فضلك:</Text>
                         </View>
-                        <Text style={styles.text}>أدخل كود المكتبة من فضلك:</Text>
-                    </View>
-                    <TextInput
-                        type="flat"
-                        value={storeCode}
-                        dense
-                        onChangeText={text => setStoreCode(text)}
-                        left={<TextInput.Icon name={() => <MaterialCommunityIcons name='store' size={20} />} />}
-                    />
-                    <HelperText style={{ fontFamily: 'Cairo_400Regular' }} type="error" visible={hasErrors()}>كود المكتبة مكوّن من 12 خانة</HelperText>
-                </Surface>
+                        <TextInput
+                            type="flat"
+                            value={storeCode}
+                            dense
+                            onChangeText={text => setStoreCode(text)}
+                            left={<TextInput.Icon name={() => <MaterialCommunityIcons name='store' size={20} />} />}
+                        />
+                        <HelperText style={{ fontFamily: 'Cairo_400Regular' }} type="error" visible={hasErrors()}>كود المكتبة مكوّن من 12 خانة</HelperText>
+                    </Surface>
 
-            </Animatable.View>
+                </Animatable.View>
 
 
 
-            <Animatable.View ref={n2} >
-                <Surface style={styles.surface}>
-                    <View style={styles.row}>
-                        <View style={styles.badge}>
-                            <Badge style={styles.badge_color} size={24} color='white'>2</Badge>
-                        </View>
+                <Animatable.View ref={n2} >
+                    <Surface style={styles.surface}>
+                        <View style={styles.row}>
+                            <View style={styles.badge}>
+                                <Badge style={styles.badge_color} size={24} color='white'>2</Badge>
+                            </View>
 
-                        <Text style={styles.text}>
-                            انسخ كود بنك
+                            <Text style={styles.text}>
+                                انسخ كود بنك
                         <Text style={{ fontFamily: 'Cairo_700Bold' }}> {subject_name} </Text>
                          من فضلك
                         {'\n'} <Text style={{ fontFamily: 'Cairo_700Bold' }}> ثمَّ</Text> أرسل رسالة عن طريق
                         <View style={[styles.row, { paddingHorizontal: 5 }]}>
-                                <Text style={styles.link} onPress={() => Linking.openURL('https://t.me/Balsam_dev')}>@Balsam_dev</Text>
-                                <MaterialCommunityIcons name='telegram' size={16} />
-                            </View>
+                                    <Text style={styles.link} onPress={() => Linking.openURL('https://t.me/Balsam_dev')}>@Balsam_dev</Text>
+                                    <MaterialCommunityIcons name='telegram' size={16} />
+                                </View>
                           على التلغرام لنرسل لك مفتاح التفعيل
                     </Text>
 
-                    </View>
-                    <Animatable.View
-                        animation='flash'
-                        delay={700}
-                        style={{ width: "50%", alignSelf: 'center', padding: 5 }}>
-                        <Button
-                            mode='contained'
-                            labelStyle={styles.button}
-                            color='#B2EBF2'
-                            icon='content-copy'
-                            disabled={storeCode.length < 12}
-                            contentStyle={{ flexDirection: 'row-reverse' }}
-                            onPress={() => copy()}>نسخ الكود</Button>
-                    </Animatable.View>
-                </Surface>
-            </Animatable.View>
-
-
-            <Animatable.View ref={n3}>
-                <Surface style={styles.surface}>
-                    <View style={styles.row}>
-                        <View style={styles.badge}>
-                            <Badge style={styles.badge_color} size={24} color='white'>3</Badge>
                         </View>
-                        <Text style={styles.text}>أدخل مفتاح التفعيل من فضلك: </Text>
-                    </View>
-                    <TextInput
-                        mode="'outlined"
-                        value={keyCode}
-                        dense
-                        onChangeText={text => setKeyCode(text)}
-                        left={<TextInput.Icon name={() => <MaterialCommunityIcons name='key' size={20} />} />}
-                    />
-                    <Animatable.View ref={act_button} style={{ paddingTop: 5 }}>
-                        <Button
-                            mode='contained'
-                            labelStyle={styles.button}
-                            color='#00C853'
-                            icon='lock-open'
-                            disabled={keyCode != h.decode(get_act_code())}
-                            contentStyle={{ flexDirection: 'row-reverse' }}
-                            onPress={() => save()}>
-                            تفعيل البنك
+                        <Animatable.View
+                            animation='flash'
+                            delay={700}
+                            style={{ width: "50%", alignSelf: 'center', padding: 5 }}>
+                            <Button
+                                mode='contained'
+                                labelStyle={styles.button}
+                                color='#B2EBF2'
+                                icon='content-copy'
+                                disabled={storeCode.length < 12}
+                                contentStyle={{ flexDirection: 'row-reverse' }}
+                                onPress={() => copy()}>نسخ الكود</Button>
+                        </Animatable.View>
+                    </Surface>
+                </Animatable.View>
+
+
+                <Animatable.View ref={n3}>
+                    <Surface style={styles.surface}>
+                        <View style={styles.row}>
+                            <View style={styles.badge}>
+                                <Badge style={styles.badge_color} size={24} color='white'>3</Badge>
+                            </View>
+                            <Text style={styles.text}>أدخل مفتاح التفعيل من فضلك: </Text>
+                        </View>
+                        <TextInput
+                            mode="'outlined"
+                            keyboardType='numeric'
+                            value={keyCode}
+                            dense
+                            onChangeText={text => setKeyCode(text)}
+                            left={<TextInput.Icon name={() => <MaterialCommunityIcons name='key' size={20} />} />}
+                        />
+                        <Animatable.View ref={act_button} style={{ paddingTop: 5 }}>
+                            <Button
+                                mode='contained'
+                                labelStyle={styles.button}
+                                color='#00C853'
+                                icon='lock-open'
+                                disabled={keyCode != h.decode(get_act_code())}
+                                contentStyle={{ flexDirection: 'row-reverse' }}
+                                onPress={() => save()}>
+                                تفعيل البنك
                 </Button>
-                    </Animatable.View>
-                </Surface>
-            </Animatable.View >
-        </View >
+                        </Animatable.View>
+                    </Surface>
+                </Animatable.View >
+            </View >
+        </ScrollView>
     )
 }
 const styles = StyleSheet.create({

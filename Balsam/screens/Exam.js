@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { View, Text, StyleSheet, ScrollView, Dimensions, FlatList, Pressable } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, Dimensions, FlatList, Pressable, ToastAndroid } from 'react-native'
 import { Title, Surface, Subheading, IconButton, useTheme } from 'react-native-paper'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -116,6 +116,11 @@ export default function Exam({ navigation, route }) {
                 navigation.addListener('beforeRemove', (e) => {
                     if (index !== quiz.get_questions_number() - 1) {
                         e.preventDefault();
+                        ToastAndroid.showWithGravity(
+                            "جاري حفظ التقدم",
+                            ToastAndroid.SHORT,
+                            ToastAndroid.BOTTOM
+                        );
                         quiz.index = index;
                         save_file(quiz);
                         navigation.dispatch(e.data.action)
@@ -217,7 +222,7 @@ export default function Exam({ navigation, route }) {
                                             onPress={() => check_answer(item)}
                                             android_ripple={{ color: quiz.get_question(index).is_right(item) ? colors.success : colors.error, borderless: false }}
                                             style={{
-                                                alignItems: 'center',
+                                                alignItems: 'flex-start',
                                                 padding: 15
                                             }}>
                                             <Subheading style={styles.choice} >
@@ -244,11 +249,6 @@ export default function Exam({ navigation, route }) {
                         icon={inBookmark ? 'bookmark' : 'bookmark-off'}
                         size={34}
                         color={inBookmark ? 'gold' : 'grey'}
-                        style={{
-                            alignSelf: 'flex-start',
-                            position: 'absolute',
-                            paddingLeft: 20
-                        }}
                         onPress={() => add_to_bookmarks({
                             question: quiz.get_question(index),
                             explanation: quiz.get_question(index).explanation,
@@ -259,7 +259,8 @@ export default function Exam({ navigation, route }) {
                     fontFamily: 'Cairo_600SemiBold',
                     alignSelf: 'center',
                     color: 'grey',
-                    fontSize: 11
+                    fontSize: 11,
+                    padding: 5
                 }}>بلســـم</Text>
                 <Footer />
             </View>

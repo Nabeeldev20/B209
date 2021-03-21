@@ -88,10 +88,12 @@ export default function Home({ navigation }) {
                 }
                 if (has_code(quiz.code) == false) {
                     navigation.push('Activation', { subject_name: quiz.subject, code: quiz.code })
+                } else {
+                    go()
                 }
+            } else {
                 go()
             }
-            go()
         }
         function resume_exam({ quiz, continue_exam = false } = {}) {
             if (continue_exam) {
@@ -169,7 +171,7 @@ export default function Home({ navigation }) {
                                                 <MaterialCommunityIcons
                                                     name={get_icon(item).name}
                                                     color={get_icon(item).color}
-                                                    size={21}
+                                                    size={18}
                                                     style={{ marginLeft: 5 }} />
                                                 <Text style={styles.subtitle}>{item.subject}</Text>
                                                 {item.is_cycle() ? <Text style={[styles.cycle_university, { color: colors.error }]}>{item.cycle_university}</Text> : null}
@@ -215,9 +217,9 @@ export default function Home({ navigation }) {
                     <Dialog
                         visible={unfinishedDialog.visible}
                         onDismiss={() => setUnfinishedDialog({ visible: false })}>
-                        <Dialog.Title style={[styles.dialog_title, { padding: 3 }]}>لم تنه الامتحان آخر مرة!</Dialog.Title>
+                        <Dialog.Title style={styles.dialog_title}>لم تنه الامتحان آخر مرة!</Dialog.Title>
                         <Divider />
-                        <Dialog.Content style={{ padding: 3 }}>
+                        <Dialog.Content>
                             <Text style={styles.dialog_text}>توقفت عند السؤال {unfinishedDialog.index} من أصل {unfinishedDialog.questions_number}</Text>
                         </Dialog.Content>
                         <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
@@ -236,10 +238,10 @@ export default function Home({ navigation }) {
                     <Dialog
                         visible={dialogData.visible}
                         onDismiss={() => setDialogData({ visible: false })}>
-                        <Dialog.Title style={[styles.title, { padding: 3 }]}>{dialogData.title}</Dialog.Title>
+                        <Dialog.Title style={styles.title}>{dialogData.title}</Dialog.Title>
                         <Divider />
 
-                        <Dialog.Content style={{ padding: 3 }}>
+                        <Dialog.Content >
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
@@ -404,7 +406,6 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 5
     },
     dialog_text: {
         fontFamily: 'Cairo_600SemiBold',
