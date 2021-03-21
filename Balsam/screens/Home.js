@@ -13,7 +13,7 @@ import Analytics from 'appcenter-analytics';
 import Exam from './Exam'
 import FinishScreen from './FinishScreen'
 import Activation from './Activation'
-import { get_database, update_database, is_quiz_valid, erase_database, update_error_msgs, get_act } from './db'
+import { get_database, update_database, erase_database, update_error_msgs, get_act } from './db'
 
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();

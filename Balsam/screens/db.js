@@ -84,7 +84,6 @@ export {
     get_act,
     update_act,
     save_file,
-    is_quiz_valid,
     get_error_msgs,
     update_error_msgs,
     get_cache_array,
