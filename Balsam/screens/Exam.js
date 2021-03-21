@@ -313,6 +313,6 @@ const styles = StyleSheet.create({
     header_text: {
         color: 'grey',
         fontSize: 16,
-        fontFamily: 'Cairo_400Regular'
+        fontFamily: 'Cairo-Regular'
     }
 })

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { View, Text, StyleSheet, FlatList, Pressable, Switch } from 'react-native'
-import { Surface, Portal, Dialog, IconButton, Button, Divider } from 'react-native-paper'
+import { Surface, Portal, Dialog, IconButton, Button, Divider, useTheme } from 'react-native-paper'
 import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -9,7 +9,6 @@ import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
 
 import { get_database, update_database, get_bookmarks, erase_database } from './db'
-// TODO fix paid file issues here
 export default function Subject({ navigation, route }) {
     const { subject_name } = route.params;
 
@@ -21,7 +20,7 @@ export default function Subject({ navigation, route }) {
     const [data, setData] = React.useState(get_database().filter(quiz => quiz.subject == subject_name))
     const [dialogData, setDialogData] = React.useState({ visible: false })
     const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 })
-
+    const { colors } = useTheme();
 
     function Header() {
         return (
@@ -73,7 +72,7 @@ export default function Subject({ navigation, route }) {
                     name='file-hidden'
                     color='grey'
                     size={50} style={{ marginLeft: 5 }} />
-                <Text style={{ fontFamily: 'Cairo_700Bold', color: 'grey' }}>الدنيا دوارة بس لا يوجد دورات هنا</Text>
+                <Text style={{ fontFamily: 'Cairo-Bold', color: 'grey' }}>الدنيا دوارة بس لا يوجد دورات هنا</Text>
             </Animatable.View>
         )
     }
@@ -107,45 +106,43 @@ export default function Subject({ navigation, route }) {
         }
     }
     function go_exam(quiz) {
-        function go_exam(quiz) {
-            function go() {
-                if (quiz.index > 0) {
-                    setUnfinishedDialog({
-                        visible: true,
-                        index: quiz.index + 1,
-                        questions_number: quiz.get_questions_number(),
-                        quiz
-                    })
-                } else {
-                    Analytics.trackEvent('Exam', { Subject: quiz.subject, FileName: quiz.title });
-                    quiz.get_shuffled_questions(true, true)
-                    navigation.push('Exam', {
-                        quiz,
-                        exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
-                        random_questions: true,
-                        random_choices: true
-                    })
-                }
+        function go() {
+            if (quiz.index > 0) {
+                setUnfinishedDialog({
+                    visible: true,
+                    index: quiz.index + 1,
+                    questions_number: quiz.get_questions_number(),
+                    quiz
+                })
+            } else {
+                Analytics.trackEvent('Exam', { Subject: quiz.subject, FileName: quiz.title });
+                quiz.get_shuffled_questions(true, true)
+                navigation.push('Exam', {
+                    quiz,
+                    exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+                    random_questions: true,
+                    random_choices: true
+                })
             }
-            if (quiz.is_paid()) {
-                function has_code(quiz_code) {
-                    let codes = [];
-                    get_act().forEach(item => {
-                        codes.push(item.code)
-                    })
-                    if (codes.includes(quiz_code)) {
-                        return true
-                    }
-                    return false
+        }
+        if (quiz.is_paid()) {
+            function has_code(quiz_code) {
+                let codes = [];
+                get_act().forEach(item => {
+                    codes.push(item.code)
+                })
+                if (codes.includes(quiz_code)) {
+                    return true
                 }
-                if (has_code(quiz.code) == false) {
-                    navigation.push('Activation', { subject_name: quiz.subject, code: quiz.code })
-                } else {
-                    go()
-                }
+                return false
+            }
+            if (has_code(quiz.code) == false) {
+                navigation.push('Activation', { subject_name: quiz.subject, code: quiz.code })
             } else {
                 go()
             }
+        } else {
+            go()
         }
     }
     function resume_exam({ quiz, continue_exam = false } = {}) {
@@ -380,7 +377,7 @@ export default function Subject({ navigation, route }) {
                                 onPress={() => setDialogData({ visible: false })}
                                 labelStyle={{
                                     letterSpacing: 0,
-                                    fontFamily: 'Cairo_700Bold'
+                                    fontFamily: 'Cairo-Bold'
                                 }}
                             >حسناً</Button>
                         </Dialog.Actions>
@@ -411,7 +408,7 @@ const styles = StyleSheet.create({
         padding: 5
     },
     Header_text: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 15,
         height: 25,
         letterSpacing: 0,
@@ -426,13 +423,13 @@ const styles = StyleSheet.create({
         borderColor: '#D7D8D2',
     },
     title: {
-        fontFamily: 'Cairo_700Bold',
+        fontFamily: 'Cairo-Bold',
         fontSize: 18,
         marginTop: 0,
         selectable: false
     },
     subtitle: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 15,
         lineHeight: 20,
         color: 'grey',
@@ -440,7 +437,7 @@ const styles = StyleSheet.create({
         selectable: false
     },
     numbers: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 17,
         color: 'grey',
         lineHeight: 23,
@@ -453,7 +450,7 @@ const styles = StyleSheet.create({
         selectable: false
     },
     dialog_text: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 15,
         lineHeight: 20,
         marginLeft: 5,

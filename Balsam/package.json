@@ -19,7 +19,7 @@
     "appcenter": "4.0.2",
     "appcenter-analytics": "4.0.2",
     "appcenter-crashes": "4.0.2",
-    "crypto-js": "^4.0.0",
+    "crypto-js": "3.3.0",
     "expo-font": "^9.0.0",
     "expo-haptics": "^9.0.0",
     "expo-network": "^3.0.0",

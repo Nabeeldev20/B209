@@ -70,11 +70,7 @@ export default function FinishScreen({ navigation, route }) {
         quiz.index = 0;
         quiz.taken_number += 1;
         quiz.last_time = DateTime.now().toISODate();
-        try {
-            await FileSystem.writeFile(quiz.path, JSON.stringify(quiz));
-        } catch (error) {
-            update_error_msgs({ Code: 'Error writing @finishScreen', error })
-        }
+        save_file(quiz)
     }
     function update_data() {
         if (!quiz.title.includes('مخصص')) {
@@ -82,7 +78,7 @@ export default function FinishScreen({ navigation, route }) {
                 navigation.addListener('beforeRemove', (e) => {
                     e.preventDefault();
                     update_quiz();
-                    navigation.dispatch(e.data.action)
+                    navigation.dispatch(e.data.action);
                 })
             }, [])
 
@@ -206,7 +202,7 @@ export default function FinishScreen({ navigation, route }) {
                                 justifyContent: 'center',
                                 padding: 15
                             }}>
-                            <Text style={{ fontFamily: 'Cairo_700Bold', fontSize: 15 }}>خوض الاختبار مجدداً</Text>
+                            <Text style={{ fontFamily: 'Cairo-Bold', fontSize: 15 }}>خوض الاختبار مجدداً</Text>
                             <MaterialCommunityIcons
                                 name='refresh'
                                 size={25}
@@ -230,7 +226,7 @@ export default function FinishScreen({ navigation, route }) {
                                         size={20}
                                         color='grey'
                                         style={{ marginRight: 3 }} />
-                                    <Text style={{ fontFamily: 'Cairo_600SemiBold', color: 'grey' }}>اختبارت أخرى لحلها: </Text>
+                                    <Text style={{ fontFamily: 'Cairo-SemiBold', color: 'grey' }}>اختبارت أخرى لحلها: </Text>
                                 </View>
                                 <View
                                     key={get_recommendation(0).title}
@@ -254,7 +250,7 @@ export default function FinishScreen({ navigation, route }) {
                                             }}>
 
                                             <Surface style={styles.recommendation}>
-                                                <Text style={{ fontFamily: 'Cairo_700Bold' }}>{get_recommendation(0).title}</Text>
+                                                <Text style={{ fontFamily: 'Cairo-Bold' }}>{get_recommendation(0).title}</Text>
 
                                                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
                                                     <Text>{get_recommendation(0).questions_number}</Text>
@@ -293,7 +289,7 @@ export default function FinishScreen({ navigation, route }) {
                                         }}>
 
                                         <Surface style={styles.recommendation}>
-                                            <Text style={{ fontFamily: 'Cairo_700Bold' }}>{get_recommendation(1).title}</Text>
+                                            <Text style={{ fontFamily: 'Cairo-Bold' }}>{get_recommendation(1).title}</Text>
 
                                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
                                                 <Text>{get_recommendation(1).questions_number}</Text>
@@ -319,12 +315,12 @@ const styles = StyleSheet.create({
         padding: 5,
     },
     message: {
-        fontFamily: 'Cairo_900Black',
+        fontFamily: 'Cairo-Black',
         fontSize: 35,
         color: '#4CAF50',
     },
     numbers: {
-        fontFamily: 'Cairo_900Black',
+        fontFamily: 'Cairo-Black',
         fontSize: 30,
         color: '#4CAF50',
     },
@@ -337,7 +333,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     exam_result: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 16,
         lineHeight: 20
     },

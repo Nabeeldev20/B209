@@ -27,7 +27,7 @@ export default function Home({ navigation }) {
                     name='file-download'
                     color='grey'
                     size={50} style={{ marginLeft: 5 }} />
-                <Text style={{ fontFamily: 'Cairo_700Bold', color: 'grey' }}>جرّب إضافة بعض الملفات</Text>
+                <Text style={{ fontFamily: 'Cairo-Bold', color: 'grey' }}>جرّب إضافة بعض الملفات</Text>
             </Animatable.View>
         )
     }
@@ -42,9 +42,10 @@ export default function Home({ navigation }) {
     }
 
     function Home_component({ navigation }) {
+        let data = get_database()
         const [dialogData, setDialogData] = React.useState({ visible: false })
         const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 })
-        const [database, setDatabase] = React.useState(get_database())
+        const [database, setDatabase] = React.useState(data)
         async function remove_file(title, path) {
             setDatabase(database.filter(quiz => quiz.title != title));
             setDialogData({ visible: false })
@@ -218,8 +219,7 @@ export default function Home({ navigation }) {
                         visible={unfinishedDialog.visible}
                         onDismiss={() => setUnfinishedDialog({ visible: false })}>
                         <Dialog.Title style={styles.dialog_title}>لم تنه الامتحان آخر مرة!</Dialog.Title>
-                        <Divider />
-                        <Dialog.Content>
+                        <Dialog.Content style={{ padding: 3 }}>
                             <Text style={styles.dialog_text}>توقفت عند السؤال {unfinishedDialog.index} من أصل {unfinishedDialog.questions_number}</Text>
                         </Dialog.Content>
                         <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
@@ -239,8 +239,6 @@ export default function Home({ navigation }) {
                         visible={dialogData.visible}
                         onDismiss={() => setDialogData({ visible: false })}>
                         <Dialog.Title style={styles.title}>{dialogData.title}</Dialog.Title>
-                        <Divider />
-
                         <Dialog.Content >
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
@@ -312,7 +310,7 @@ export default function Home({ navigation }) {
                                 onPress={() => remove_file(dialogData.title, dialogData.path)} />
                             <Button
                                 onPress={() => setDialogData({ visible: false })}
-                                labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo_700Bold' }}
+                                labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo-Bold' }}
                             >حسناً</Button>
                         </Dialog.Actions>
                     </Dialog>
@@ -321,13 +319,15 @@ export default function Home({ navigation }) {
         )
     }
     return (
-        <Stack.Navigator screenOptions={{ headerStyle: { height: 50 } }}>
+        <Stack.Navigator
+            initialRouteName='Home'
+            screenOptions={{ headerStyle: { height: 50 } }}>
             <Stack.Screen
                 name="Home"
                 component={Home_component}
                 options={{
                     title: 'بلســم',
-                    headerTitleStyle: { fontFamily: 'Cairo_700Bold', fontSize: 17 },
+                    headerTitleStyle: { fontFamily: 'Cairo-Bold', fontSize: 16 },
                     headerLeft: () => (<MaterialCommunityIcons size={30} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
                 }} />
             <Stack.Screen
@@ -335,8 +335,8 @@ export default function Home({ navigation }) {
                 options={({ route }) => ({
                     headerTitleStyle: {
                         color: '#313131',
-                        fontSize: 16,
-                        fontFamily: 'Cairo_700Bold'
+                        fontSize: 14,
+                        fontFamily: 'Cairo-Bold'
                     }
                 })}
                 component={Exam} />
@@ -347,8 +347,8 @@ export default function Home({ navigation }) {
                     title: route.params.quiz.title,
                     headerTitleStyle: {
                         color: '#313131',
-                        fontSize: 16,
-                        fontFamily: 'Cairo_700Bold'
+                        fontSize: 14,
+                        fontFamily: 'Cairo-Bold'
                     }
                 })} />
             <Stack.Screen
@@ -357,9 +357,8 @@ export default function Home({ navigation }) {
                 options={({ route }) => ({
                     headerTitleStyle: {
                         color: '#313131',
-                        fontSize: 16,
-                        fontFamily: 'Cairo_700Bold',
-                        height: 26
+                        fontSize: 14,
+                        fontFamily: 'Cairo-Bold',
                     }
                 })} />
         </Stack.Navigator>
@@ -382,19 +381,19 @@ const styles = StyleSheet.create({
         borderColor: '#D7D8D2',
     },
     title: {
-        fontFamily: 'Cairo_700Bold',
+        fontFamily: 'Cairo-Bold',
         fontSize: 18,
-        marginTop: 0
+        padding: 3
     },
     subtitle: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 15,
         lineHeight: 20,
         color: 'grey',
         marginLeft: 15
     },
     numbers: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 17,
         color: 'grey',
         lineHeight: 23
@@ -406,9 +405,10 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         alignItems: 'center',
+        padding: 5
     },
     dialog_text: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 15,
         lineHeight: 20,
         marginLeft: 5,
@@ -416,11 +416,11 @@ const styles = StyleSheet.create({
         selectable: false
     },
     dialog_title: {
-        fontFamily: 'Cairo_700Bold',
+        fontFamily: 'Cairo-Bold',
         fontSize: 18,
     },
     dialog_button: {
         letterSpacing: 0,
-        fontFamily: 'Cairo_700Bold'
+        fontFamily: 'Cairo-Bold'
     }
 })

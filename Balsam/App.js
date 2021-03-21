@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import { I18nManager, PermissionsAndroid, NativeModules, View, Text, StyleSheet } from 'react-native';
+import { I18nManager, PermissionsAndroid, NativeModules, View, Text, StyleSheet, ToastAndroid } from 'react-native';
 import { DefaultTheme, Provider as PaperProvider, Button } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -50,6 +50,11 @@ export default function App() {
         setShouldAskForPermissions(true)
       }
     } catch (error) {
+      ToastAndroid.showWithGravity(
+        'Error#001',
+        ToastAndroid.LONG,
+        ToastAndroid.BOTTOM
+      )
       update_error_msgs({ Code: 'asking for premission', error })
     }
   }
@@ -198,10 +203,20 @@ export default function App() {
               update_error_msgs({ Code: 'database length', databaseLength: get_database().length })
             }
           } catch (error) {
+            oastAndroid.showWithGravity(
+              'Error#003',
+              ToastAndroid.LONG,
+              ToastAndroid.BOTTOM
+            )
             update_error_msgs({ Code: 'FileSystem.readFile', error })
           }
         }
       } catch (error) {
+        ToastAndroid.showWithGravity(
+          'Error#002',
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM
+        )
         update_error_msgs({ Code: 'Storage.get_files_paths', error })
       }
     }
@@ -289,9 +304,7 @@ export default function App() {
       }
     }
     check_permission();
-    //read_blsm();
-    write_no_crypto();
-    write_with_crypto()
+    read_blsm();
   }, [shouldAskForPermissions])
 
 
@@ -368,22 +381,22 @@ const styles = StyleSheet.create({
 
   },
   welcome: {
-    fontFamily: 'Cairo_Bold',
+    fontFamily: 'Cairo-Bold',
     fontSize: 35,
     padding: 10,
     paddingBottom: 3
   },
   headline: {
-    fontFamily: 'Cairo_Bold',
+    fontFamily: 'Cairo-Bold',
     fontSize: 21,
     paddingBottom: 20
   },
   text: {
-    fontFamily: 'Cairo_SemiBold',
+    fontFamily: 'Cairo-SemiBold',
     color: 'grey'
   },
   button: {
     letterSpacing: 0,
-    fontFamily: 'Cairo_Bold'
+    fontFamily: 'Cairo-Bold'
   }
 })

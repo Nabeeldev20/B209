@@ -44,7 +44,7 @@ export default function Activation({ navigation, route }) {
     }, [])
 
     function hasErrors() {
-        if (storeCode.length > 0) return storeCode.length < 5;
+        if (storeCode.length > 0) return storeCode.length < 12;
         return false
     }
 
@@ -94,22 +94,32 @@ export default function Activation({ navigation, route }) {
         }
     }
     async function save() {
-        //  Analytics.trackEvent('Activation', { Subject: subject_name, QuizCode: code, StoreCode: storeCode });
+        function update_data() {
+            update_act([...get_act(), code]);
+            save_blsm();
+            navigation.navigate('Home')
+        }
+        Analytics.trackEvent('Activation', { Subject: subject_name, QuizCode: code, StoreCode: storeCode });
         try {
-            let mac_address = await Network.getMacAddressAsync();
-            if (mac_address != null) {
+            let mac_address = null
+            mac_address = await Network.getMacAddressAsync();
+            let mac = get_mac();
+            if (mac != null && mac_address != null) {
+                if (mac == mac_address) {
+                    update_data()
+                }
+            }
+            if (mac == null && mac_address != null) {
+                update_mac(mac_address);
+                update_data()
+            }
+            if (mac != null && mac_address == null) {
                 ToastAndroid.showWithGravity(
-                    mac_address,
+                    'قم بتشغيل الـ wifi من فضلك',
                     ToastAndroid.LONG,
                     ToastAndroid.BOTTOM
-                );
+                )
             }
-            ToastAndroid.showWithGravity(
-                "test ;)",
-                ToastAndroid.LONG,
-                ToastAndroid.BOTTOM
-            );
-
         } catch (error) {
             update_error_msgs({ Code: 'Error fetching mac ', error })
         }
@@ -140,7 +150,7 @@ export default function Activation({ navigation, route }) {
                             onChangeText={text => setStoreCode(text)}
                             left={<TextInput.Icon name={() => <MaterialCommunityIcons name='store' size={20} />} />}
                         />
-                        <HelperText style={{ fontFamily: 'Cairo_400Regular' }} type="error" visible={hasErrors()}>كود المكتبة مكوّن من 12 خانة</HelperText>
+                        <HelperText style={{ fontFamily: 'Cairo-Regular' }} type="error" visible={hasErrors()}>كود المكتبة مكوّن من 12 خانة</HelperText>
                     </Surface>
 
                 </Animatable.View>
@@ -156,9 +166,9 @@ export default function Activation({ navigation, route }) {
 
                             <Text style={styles.text}>
                                 انسخ كود بنك
-                        <Text style={{ fontFamily: 'Cairo_700Bold' }}> {subject_name} </Text>
+                        <Text style={{ fontFamily: 'Cairo-Bold' }}> {subject_name} </Text>
                          من فضلك
-                        {'\n'} <Text style={{ fontFamily: 'Cairo_700Bold' }}> ثمَّ</Text> أرسل رسالة عن طريق
+                        {'\n'} <Text style={{ fontFamily: 'Cairo-Bold' }}> ثمَّ</Text> أرسل رسالة عن طريق
                         <View style={[styles.row, { paddingHorizontal: 5 }]}>
                                     <Text style={styles.link} onPress={() => Linking.openURL('https://t.me/Balsam_dev')}>@Balsam_dev</Text>
                                     <MaterialCommunityIcons name='telegram' size={16} />
@@ -229,7 +239,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     button: {
-        fontFamily: 'Cairo_700Bold',
+        fontFamily: 'Cairo-Bold',
         letterSpacing: 0,
         height: 25
     },
@@ -249,17 +259,17 @@ const styles = StyleSheet.create({
         backgroundColor: '#CFD8DC'
     },
     text: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 15,
         textAlign: 'left'
     },
     welcome: {
-        fontFamily: 'Cairo_700Bold',
+        fontFamily: 'Cairo-Bold',
         fontSize: 18,
         color: 'grey'
     },
     link: {
         paddingHorizontal: 5,
-        fontFamily: 'Cairo_700Bold'
+        fontFamily: 'Cairo-Bold'
     }
 })
