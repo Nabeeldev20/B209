@@ -67,7 +67,12 @@ export default function Home({ navigation }) {
                 } else {
                     Analytics.trackEvent('Exam', { Subject: quiz.subject, FileName: quiz.title });
                     quiz.get_shuffled_questions(true, true)
-                    navigation.push('Exam', { quiz, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) })
+                    navigation.push('Exam', {
+                        quiz,
+                        exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+                        random_questions: true,
+                        random_choices: true
+                    })
                 }
             }
             if (quiz.is_paid()) {

@@ -432,7 +432,8 @@ export default function CustomExam({ navigation }) {
                     params: {
                         quiz,
                         exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
-                        random: { random_questions, random_choices }
+                        random_questions,
+                        random_choices
                     }
                 })
             }

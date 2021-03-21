@@ -7,10 +7,8 @@ import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
 import { get_bookmarks, update_bookmarks, save_file } from './db'
 
-
-
 export default function Exam({ navigation, route }) {
-    let { quiz, exam_time } = route.params;
+    let { quiz, exam_time, random_questions, random_choices } = route.params;
     React.useEffect(() => {
         navigation.setOptions({ title: quiz.title })
     }, [quiz.title])
@@ -81,7 +79,13 @@ export default function Exam({ navigation, route }) {
     }
     const move_to_next_question = () => {
         if (index == (quiz.get_questions_number() - 1)) {
-            navigation.replace('FinishScreen', { quiz, wrong_count: wrongAnswersCount, exam_time })
+            navigation.replace('FinishScreen', {
+                quiz,
+                wrong_count: wrongAnswersCount,
+                exam_time,
+                random_questions,
+                random_choices
+            })
         } else {
             if (title) {
                 title.current?.fadeInRight()

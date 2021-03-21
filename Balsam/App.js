@@ -111,23 +111,29 @@ export default function App() {
         return this.questions[index]
       }
       file.get_estimated_time = function get_estimated_time() {
-        let time = ((this.questions.length * this.estimated_time_for_question) / 60).toFixed(2).toString().split('');
-        if (time.length == 4) {
-          time.unshift('0')
+        if (this.questions.length > 1) {
+          let time = ((this.questions.length * this.estimated_time_for_question) / 60).toFixed(2).toString().split('');
+          if (time.length == 4) {
+            time.unshift('0')
+            time[2] = ':'
+            return time.join('')
+          }
           time[2] = ':'
           return time.join('')
         }
-        time[2] = ':'
-        return time.join('')
+        return '00:45'
       }
       file.get_remaining_time = function get_remaining_time(index) {
-        let time = (((this.questions.length - index) * this.estimated_time_for_question) / 60).toFixed(2).toString().split('');
+        let diff = this.questions.length - index;
+        diff == 1 ? diff = 0.6 : diff = diff
+        let time = ((diff * this.estimated_time_for_question) / 60).toFixed(2).toString().split('');
         if (time.length == 4) {
           time.unshift('0')
           time[2] = ':'
           return time.join('')
         }
         time[2] = ':'
+
         return time.join('')
       }
       file.set_estimated_time_per_question = function set_estimated_time_per_question(time) {
