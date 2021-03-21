@@ -319,7 +319,9 @@ export default function Home({ navigation }) {
         )
     }
     return (
-        <Stack.Navigator screenOptions={{ headerStyle: { height: 50 } }}>
+        <Stack.Navigator
+            initialRouteName='Home'
+            screenOptions={{ headerStyle: { height: 50 } }}>
             <Stack.Screen
                 name="Home"
                 component={Home_component}

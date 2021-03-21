@@ -44,7 +44,7 @@ export default function Activation({ navigation, route }) {
     }, [])
 
     function hasErrors() {
-        if (storeCode.length > 0) return storeCode.length < 5;
+        if (storeCode.length > 0) return storeCode.length < 12;
         return false
     }
 
@@ -94,22 +94,32 @@ export default function Activation({ navigation, route }) {
         }
     }
     async function save() {
-        //  Analytics.trackEvent('Activation', { Subject: subject_name, QuizCode: code, StoreCode: storeCode });
+        function update_data() {
+            update_act([...get_act(), code]);
+            save_blsm();
+            navigation.navigate('Home')
+        }
+        Analytics.trackEvent('Activation', { Subject: subject_name, QuizCode: code, StoreCode: storeCode });
         try {
-            let mac_address = await Network.getMacAddressAsync();
-            if (mac_address != null) {
+            let mac_address = null
+            mac_address = await Network.getMacAddressAsync();
+            let mac = get_mac();
+            if (mac != null && mac_address != null) {
+                if (mac == mac_address) {
+                    update_data()
+                }
+            }
+            if (mac == null && mac_address != null) {
+                update_mac(mac_address);
+                update_data()
+            }
+            if (mac != null && mac_address == null) {
                 ToastAndroid.showWithGravity(
-                    mac_address,
+                    'قم بتشغيل الـ wifi من فضلك',
                     ToastAndroid.LONG,
                     ToastAndroid.BOTTOM
-                );
+                )
             }
-            ToastAndroid.showWithGravity(
-                "test ;)",
-                ToastAndroid.LONG,
-                ToastAndroid.BOTTOM
-            );
-
         } catch (error) {
             update_error_msgs({ Code: 'Error fetching mac ', error })
         }

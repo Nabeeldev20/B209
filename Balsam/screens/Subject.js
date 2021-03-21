@@ -106,45 +106,43 @@ export default function Subject({ navigation, route }) {
         }
     }
     function go_exam(quiz) {
-        function go_exam(quiz) {
-            function go() {
-                if (quiz.index > 0) {
-                    setUnfinishedDialog({
-                        visible: true,
-                        index: quiz.index + 1,
-                        questions_number: quiz.get_questions_number(),
-                        quiz
-                    })
-                } else {
-                    Analytics.trackEvent('Exam', { Subject: quiz.subject, FileName: quiz.title });
-                    quiz.get_shuffled_questions(true, true)
-                    navigation.push('Exam', {
-                        quiz,
-                        exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
-                        random_questions: true,
-                        random_choices: true
-                    })
-                }
+        function go() {
+            if (quiz.index > 0) {
+                setUnfinishedDialog({
+                    visible: true,
+                    index: quiz.index + 1,
+                    questions_number: quiz.get_questions_number(),
+                    quiz
+                })
+            } else {
+                Analytics.trackEvent('Exam', { Subject: quiz.subject, FileName: quiz.title });
+                quiz.get_shuffled_questions(true, true)
+                navigation.push('Exam', {
+                    quiz,
+                    exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+                    random_questions: true,
+                    random_choices: true
+                })
             }
-            if (quiz.is_paid()) {
-                function has_code(quiz_code) {
-                    let codes = [];
-                    get_act().forEach(item => {
-                        codes.push(item.code)
-                    })
-                    if (codes.includes(quiz_code)) {
-                        return true
-                    }
-                    return false
+        }
+        if (quiz.is_paid()) {
+            function has_code(quiz_code) {
+                let codes = [];
+                get_act().forEach(item => {
+                    codes.push(item.code)
+                })
+                if (codes.includes(quiz_code)) {
+                    return true
                 }
-                if (has_code(quiz.code) == false) {
-                    navigation.push('Activation', { subject_name: quiz.subject, code: quiz.code })
-                } else {
-                    go()
-                }
+                return false
+            }
+            if (has_code(quiz.code) == false) {
+                navigation.push('Activation', { subject_name: quiz.subject, code: quiz.code })
             } else {
                 go()
             }
+        } else {
+            go()
         }
     }
     function resume_exam({ quiz, continue_exam = false } = {}) {

@@ -304,9 +304,7 @@ export default function App() {
       }
     }
     check_permission();
-    //read_blsm();
-    write_no_crypto();
-    write_with_crypto()
+    read_blsm();
   }, [shouldAskForPermissions])
 
 

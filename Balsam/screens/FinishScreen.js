@@ -70,11 +70,7 @@ export default function FinishScreen({ navigation, route }) {
         quiz.index = 0;
         quiz.taken_number += 1;
         quiz.last_time = DateTime.now().toISODate();
-        try {
-            await FileSystem.writeFile(quiz.path, JSON.stringify(quiz));
-        } catch (error) {
-            update_error_msgs({ Code: 'Error writing @finishScreen', error })
-        }
+        save_file(quiz)
     }
     function update_data() {
         if (!quiz.title.includes('مخصص')) {
@@ -82,7 +78,7 @@ export default function FinishScreen({ navigation, route }) {
                 navigation.addListener('beforeRemove', (e) => {
                     e.preventDefault();
                     update_quiz();
-                    navigation.dispatch(e.data.action)
+                    navigation.dispatch(e.data.action);
                 })
             }, [])
 
