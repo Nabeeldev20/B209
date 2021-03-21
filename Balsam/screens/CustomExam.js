@@ -5,25 +5,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
-import { useFonts } from 'expo-font';
-
-import { get_database, get_error_msgs, update_error_msgs } from './db'
+import { get_database, get_error_msgs, update_error_msgs, get_bookmarks } from './db'
 
 
 export default function CustomExam({ navigation }) {
-    let [fontsLoaded] = useFonts({
-        'Cairo_700Bold': require('../assets/fonts/Cairo-Bold.ttf'),
-        'Cairo_600SemiBold': require('../assets/fonts/Cairo-SemiBold.ttf'),
-    });
     const Stack = createStackNavigator();
     const { colors } = useTheme();
-    const [selectedSubject, setSelectedSubject] = React.useState([]);
-    const [onlyCycles, setOnlyCycles] = React.useState(false);
-    const [randomQuestions, setRandomQuestions] = React.useState(true);
-    const [randomChoices, setRandomChoices] = React.useState(true);
-    const [quizArray, setQuizArray] = React.useState([])
-    const [isAll, setIsAll] = React.useState(false);
-
 
     const [screenHeight, setScreenHeight] = React.useState(Dimensions.get('window'));
     const { height } = Dimensions.get('window');
@@ -33,85 +20,221 @@ export default function CustomExam({ navigation }) {
     const onContentSizeChange = (contentHeight) => {
         setScreenHeight(contentHeight);
     }
-
+    const [selected_subject, set_selected_subject] = React.useState('');
+    const [selected_quizzes, set_selected_quizzes] = React.useState([]);
+    const [selected_all, set_selected_all] = React.useState(false);
+    const [random_questions, set_random_questions] = React.useState(true);
+    const [random_choices, set_random_choices] = React.useState(true);
+    const [selected_cycles, set_selected_cycles] = React.useState(false)
     function custom_exam({ navigation }) {
-
-        const SubjectCheckbox = () => {
-            let subjects = [];
-            get_database().forEach(quiz => subjects.push(quiz.subject));
-            return (
-                <FlatList
-                    data={[...new Set(subjects)]}
-                    extraData={[...new Set(subjects)]}
-                    ListEmptyComponent={empty_subject}
-                    renderItem={({ item }) => (
-                        <View key={item} style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                            <Checkbox
-                                status={selectedSubject.includes(item) ? 'checked' : 'unchecked'}
-                                onPress={() => selectedSubject.length == 1 ? (setSelectedSubject([]), setQuizArray([]), setIsAll(false)) : setSelectedSubject([item])}
-                                color='#00C853' />
-                            <Text
-                                style={[styles.text, { color: selectedSubject.includes(item) ? '#00C853' : 'grey' }]}
-                                onPress={() => selectedSubject.length == 1 ? (setSelectedSubject([]), setQuizArray([]), setIsAll(false)) : setSelectedSubject([item])}
-                            >{item}</Text>
-                        </View>
-                    )}
-                    numColumns={2}
-                />
-            );
-        }
-        const empty_subject = () => {
-            return (
-                <View style={{ alignItems: 'center', justifyContent: 'center', margin: 10 }}>
-                    <MaterialCommunityIcons name='file-download' size={24} color='grey' />
-                    <Text style={styles.text}> جرّب إضافة بعض الملفات </Text>
-                </View>
-            )
-        }
-        const SubjectFilesList = () => {
-            const Files = get_database().filter(quiz => quiz.subject == selectedSubject[0]);
-            if (selectedSubject.length == 1) {
-                return (
-
-                    <View>
-                        <FlatList
-                            data={Files}
-                            renderItem={({ item, i }) => (
-                                <View
-                                    key={item.title}
-                                    style={{
-                                        flex: 1,
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                    }}>
-                                    <Checkbox
-                                        status={quizArray.includes(item.title) ? 'checked' : 'unchecked'}
-                                        onPress={() => quizArray.includes(item.title) ? setQuizArray(quizArray.filter(file => file != item.title)) : setQuizArray([...quizArray, item.title])}
-                                        color='#00C853' />
-                                    <Text
-                                        style={styles.text}
-                                        onPress={() => quizArray.includes(item.title) ? setQuizArray(quizArray.filter(file => file != item.title)) : setQuizArray([...quizArray, item.title])}
-                                    >{item.title}</Text>
-                                </View>
-                            )}
-                            ItemSeparatorComponent={() => (<Divider />)}
-                            numColumns={2}
-                        />
-                    </View>
-
-                )
-            } else {
+        function SubjectsCheckboxes() {
+            function get_subjects() {
+                let output = [];
+                get_database().forEach(item => {
+                    output.push(item.subject)
+                })
+                return [...new Set(output)]
+            }
+            function is_selected(item) {
+                if (selected_subject == item) return true
+                return false
+            }
+            function select(item) {
+                if (selected_subject == item) {
+                    set_selected_subject('');
+                    set_selected_quizzes([]);
+                    set_selected_all(false);
+                } else {
+                    set_selected_subject(item)
+                }
+            }
+            function NoSubjects() {
                 return (
                     <View style={{ alignItems: 'center', justifyContent: 'center', margin: 10 }}>
-                        <MaterialCommunityIcons name='file-plus' size={24} color='grey' />
-                        <Text style={styles.text}>اختر مقرراً من فضلك</Text>
+                        <MaterialCommunityIcons name='file-download' size={24} color='grey' />
+                        <Text style={styles.text}> جرّب إضافة بعض الملفات </Text>
                     </View>
                 )
             }
-        }
-        const ExamOptions = () => {
             return (
-                <View>
+                <Surface style={{
+                    margin: 4,
+                    elevation: 1,
+                    padding: 3,
+                    borderWidth: 1,
+                    borderColor: '#d7d8d2'
+                }}>
+                    <Subheading style={{
+                        fontFamily: 'Cairo_700Bold',
+                        color: '#343434',
+                        padding: 10
+                    }}>المقررات</Subheading>
+                    <FlatList
+                        data={get_subjects()}
+                        extraData={get_subjects()}
+                        numColumns={2}
+                        ListEmptyComponent={NoSubjects}
+                        renderItem={({ item }) => {
+                            return (
+                                <Pressable
+                                    key={item}
+                                    onPress={() => select(item)}
+                                    style={{
+                                        flex: 1,
+                                        flexDirection: 'row',
+                                        alignItems: 'center'
+                                    }}>
+                                    <Checkbox
+                                        onPress={() => select(item)}
+                                        status={is_selected(item) ? 'checked' : 'unchecked'}
+                                        color='#00C853' />
+                                    <Text style={{
+                                        fontFamily: 'Cairo_600SemiBold',
+                                        fontSize: 14,
+                                        color: 'grey'
+                                    }}>{item}</Text>
+                                </Pressable>
+                            )
+                        }} />
+
+                </Surface>
+            )
+        }
+        function QuizzesCheckBoxes() {
+            function is_selected(item) {
+                if (selected_quizzes.includes(item)) return true
+                return false
+            }
+            function unselect(item) {
+                return selected_quizzes.filter(title => title != item)
+
+            }
+            function select(item) {
+                if (is_selected(item)) {
+                    set_selected_quizzes(unselect(item))
+                } else {
+                    set_selected_quizzes([...selected_quizzes, item])
+                }
+            }
+            function handle_selected_all() {
+                if (selected_all) {
+                    set_selected_all(false);
+                    set_selected_quizzes([])
+                } else {
+                    set_selected_all(true);
+                    set_selected_cycles(false)
+                    set_selected_quizzes([...get_quizzes().all])
+                }
+            }
+            function NoQuizzes() {
+                if (selected_subject == '') {
+                    return (
+                        <View style={{ alignItems: 'center', justifyContent: 'center', margin: 10 }}>
+                            <MaterialCommunityIcons name='book-plus' size={24} color='grey' />
+                            <Text style={styles.text}>اختر مقرراً من فضلك</Text>
+                        </View>
+                    )
+                }
+                return (
+                    <View style={{ alignItems: 'center', justifyContent: 'center', margin: 10 }}>
+                        <MaterialCommunityIcons name='file-key' size={24} color='grey' />
+                        <Text style={styles.text}>ملفات البنوك المفعلة + المجانية</Text>
+                    </View>
+                )
+            }
+            return (
+                <Surface style={{
+                    margin: 4,
+                    elevation: 1,
+                    padding: 3,
+                    borderWidth: 1,
+                    borderColor: '#d7d8d2'
+                }}>
+                    <View style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: 3
+                    }}>
+                        <Subheading style={{
+                            fontFamily: 'Cairo_700Bold',
+                            color: '#313131',
+                            padding: 5
+                        }}>اختبارات المقرر</Subheading>
+                        <View style={styles.row}>
+                            <Text style={[styles.text, { marginRight: 5, color: 'grey' }]}> اختيار الكل</Text>
+                            <Switch
+                                value={selected_all}
+                                onValueChange={() => handle_selected_all()}
+                                trackColor={{ false: '#767577', true: '#75d99e' }}
+                                thumbColor={selected_all ? '#00C853' : '#f4f3f4'}
+                                disabled={selected_subject == ''} />
+                        </View>
+                    </View>
+                    <FlatList
+                        data={get_quizzes().all}
+                        extraData={get_quizzes().all}
+                        numColumns={2}
+                        ListEmptyComponent={NoQuizzes}
+                        renderItem={({ item }) => {
+                            return (
+                                <Pressable
+                                    key={item}
+                                    onPress={() => select(item)}
+                                    style={{
+                                        flex: 1,
+                                        flexDirection: 'row',
+                                        alignItems: 'center'
+                                    }}>
+                                    <Checkbox
+                                        onPress={() => select(item)}
+                                        status={is_selected(item) ? 'checked' : 'unchecked'}
+                                        color='#00C853' />
+                                    <Text style={{
+                                        fontFamily: 'Cairo_600SemiBold',
+                                        fontSize: 14,
+                                        color: 'grey'
+                                    }}>{item}</Text>
+                                </Pressable>
+                            )
+                        }} />
+                </Surface>
+            )
+        }
+        function QuizOptions() {
+            function handle_selected_cycles() {
+                function get_cycles() {
+                    let { all, cycles } = get_quizzes();
+                    let output = []
+                    for (let i = 0; i < all.length; i++) {
+                        if (cycles.includes(all[i])) {
+                            output.push(all[i])
+                        }
+                    }
+                    return output
+                }
+                if (selected_cycles) {
+                    set_selected_cycles(false);
+                    set_selected_quizzes([])
+                } else {
+                    set_selected_cycles(true);
+                    set_selected_all(false);
+                    set_selected_quizzes([...get_cycles()])
+                }
+            }
+            return (
+                <Surface style={{
+                    margin: 4,
+                    elevation: 1,
+                    padding: 3,
+                    borderWidth: 1,
+                    borderColor: '#d7d8d2'
+                }}>
+                    <Subheading style={{
+                        fontFamily: 'Cairo_700Bold',
+                        color: '#343434',
+                        padding: 5
+                    }}>خيارات إضافية</Subheading>
                     <View style={[styles.row, { padding: 5 }]}>
                         <View style={[styles.row, { justifyContent: 'flex-start' }]}>
                             <MaterialCommunityIcons
@@ -122,12 +245,11 @@ export default function CustomExam({ navigation }) {
                             <Text style={styles.text}>عشوائية بالأسئلة</Text>
                         </View>
                         <Switch
-                            value={randomQuestions}
-                            onValueChange={() => setRandomQuestions(!randomQuestions)}
+                            value={random_questions}
+                            onValueChange={() => set_random_questions(!random_questions)}
                             trackColor={{ false: '#767577', true: '#75d99e' }}
-                            thumbColor={randomQuestions ? '#00C853' : '#f4f3f4'}
-                            disabled={selectedSubject.length != 1}
-                        />
+                            thumbColor={random_questions ? '#00C853' : '#f4f3f4'}
+                            disabled={selected_quizzes.length == 0} />
                     </View>
                     <Divider />
                     <View style={[styles.row, { padding: 5 }]}>
@@ -140,12 +262,12 @@ export default function CustomExam({ navigation }) {
                             <Text style={styles.text}>عشوائية بالخيارات</Text>
                         </View>
                         <Switch
-                            value={randomChoices}
-                            onValueChange={() => setRandomChoices(!randomChoices)}
+                            value={random_choices}
+                            onValueChange={() => set_random_choices(!random_choices)}
                             trackColor={{ false: '#767577', true: '#75d99e' }}
-                            thumbColor={randomChoices ? '#00C853' : '#f4f3f4'}
-                            disabled={selectedSubject.length != 1}
-                        />
+                            thumbColor={random_choices ? '#00C853' : '#f4f3f4'}
+                            disabled={selected_quizzes.length == 0} />
+
                     </View>
                     <Divider />
                     <View style={[styles.row, { padding: 5 }]}>
@@ -158,55 +280,110 @@ export default function CustomExam({ navigation }) {
                             <Text style={styles.text}>الدورات فقط</Text>
                         </View>
                         <Switch
-                            value={onlyCycles}
-                            onValueChange={() => handle_cycles_only()}
+                            value={selected_cycles}
+                            onValueChange={() => handle_selected_cycles()}
                             trackColor={{ false: '#767577', true: '#ec9b99' }}
-                            thumbColor={onlyCycles ? colors.error : '#f4f3f4'}
-                            disabled={selectedSubject.length != 1}
-                        />
+                            thumbColor={selected_cycles ? '#E53935' : '#f4f3f4'}
+                            disabled={selected_quizzes.length == 0} />
                     </View>
+                    <Divider />
+                    <View style={[styles.row, { padding: 5 }]}>
+                        <View style={[styles.row, { justifyContent: 'flex-start' }]}>
+                            <MaterialCommunityIcons
+                                name='format-list-numbered-rtl'
+                                size={20}
+                                color='grey'
+                                style={{ marginRight: 3 }} />
+                            <Text style={styles.text}>عدد الأسئلة</Text>
+                        </View>
+                        <Text style={styles.text} >{get_questions().length}</Text>
+                    </View>
+                </Surface>
+            )
+        }
+        function GoExam() {
+            function is_ready() {
+                if (selected_subject == '' || selected_quizzes.length == 0) return false;
+                return true
+            }
+            return (
+                <View style={{
+                    margin: 5,
+                }}>
+                    <Surface style={{
+                        borderWidth: 2,
+                        borderColor: is_ready() ? colors.success : '#D7D8D2'
+                    }}>
+                        <Pressable
+                            onPress={make_exam}
+                            android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
+                            style={{
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: 15
+                            }}>
+                            <Text
+                                style={
+                                    [styles.title,
+                                    {
+                                        textDecorationLine: is_ready() ? null : 'line-through',
+                                        color: is_ready() ? '#343434' : 'grey',
+                                    }]}
+                            >خوض الامتحان</Text>
+                        </Pressable>
+                    </Surface>
                 </View>
             )
         }
-        const handleAll = () => {
-            if (selectedSubject.length == 1) {
-                let array = get_database().filter(quiz => quiz.subject == selectedSubject[0]);
+        function get_quizzes() {
+            function get_codes() {
                 let output = [];
-                array.forEach(item => output.push(item.title));
-                setQuizArray([...new Set(output)]);
-                if (isAll) {
-                    setQuizArray([]);
-                    setIsAll(!isAll)
-                }
-                setIsAll(!isAll)
+                get_act().forEach(item => {
+                    output.push(item.code)
+                })
+                return output
             }
-        }
-        const handle_cycles_only = () => {
-            let array = get_database().filter(quiz => quiz.subject == selectedSubject[0])
-            let output = [];
-            array.forEach(item => item.is_cycle() ? output.push(item.title) : null);
-            setQuizArray([...new Set(output)]);
-            if (onlyCycles) {
-                setQuizArray([]);
-                setOnlyCycles(!onlyCycles)
-            }
-            setOnlyCycles(!onlyCycles)
-        }
-        function make_questions() {
-            let output = [];
-            get_database().filter(quiz => quiz.subject == selectedSubject[0]).forEach(file => {
-                if (quizArray.includes(file.title)) {
-                    output = [...output, ...file.questions]
+            function is_valid(quiz) {
+                if (quiz.is_paid()) {
+                    if (get_codes().includes(quiz.code)) {
+                        return true
+                    }
+                    return false
+                } else {
+                    return true
                 }
-            })
-            return { questions: output, questions_number: output.length }
+            }
+            function fetch_quizzes() {
+                let all = [];
+                let cycles = []
+                let data = get_database().filter(file => file.subject == selected_subject);
+                for (let i = 0; i < data.length; i++) {
+                    if (is_valid(data[i])) {
+                        all.push(data[i].title);
+                        if (data[i].is_cycle()) {
+                            cycles.push(data[i].title)
+                        }
+                    }
+                }
+                return { all, cycles }
+            }
+            return fetch_quizzes()
         }
-
-        const makeExam = () => {
-            if (quizArray.length > 0) {
-                const quiz = {
-                    title: `امتحان مخصص في ${selectedSubject[0]}`,
-                    questions: make_questions().questions,
+        function get_questions() {
+            let data = get_database();
+            let output = []
+            for (let i = 0; i < data.length; i++) {
+                if (selected_quizzes.includes(data[i].title)) {
+                    output = [...output, ...data[i].questions]
+                }
+            }
+            return output
+        }
+        function make_exam() {
+            if (selected_quizzes.length > 0) {
+                let quiz = {
+                    title: `امتحان مخصص في ${selected_subject}`,
+                    questions: get_questions(),
                     index: 0,
                     get_question(index) {
                         return this.questions[index]
@@ -247,86 +424,32 @@ export default function CustomExam({ navigation }) {
                         }
                     }
                 }
-                Analytics.trackEvent('Custom Exam', { Subject: selectedSubject[0] });
-                quiz.get_shuffled_questions(randomQuestions, randomChoices)
+                Analytics.trackEvent('Custom Exam', { Subject: selected_subject });
+                quiz.get_shuffled_questions(random_questions, random_choices);
+                console.log(quiz)
                 navigation.navigate('Home', {
                     screen: 'Exam',
                     params: {
                         quiz,
-                        exam_time: DateTime.fromISO(DateTime.now().toISOTime())
+                        exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+                        random: { random_questions, random_choices }
                     }
                 })
             }
         }
-
-        const get_subjects = () => {
-            let output = [];
-            get_database().forEach(file => output.push(file.subject))
-            return [... new Set(output)]
-        }
         return (
             <ScrollView
                 style={{ flex: 1 }}
-                contentContainerStyle={styles.scrollview}
+                contentContainerStyle={{ flexGrow: 1 }}
                 scrollEnabled={scrollEnabled}
-                onContentSizeChange={onContentSizeChange}
-            >
+                onContentSizeChange={onContentSizeChange}>
                 <View style={styles.container}>
                     <Text>{JSON.stringify(get_error_msgs(), null, 2)}</Text>
-                    <Text>subjects: {JSON.stringify(get_subjects(), null, 2)}</Text>
-                    <Surface style={styles.surface}>
-                        <Subheading style={styles.title}>المقررات</Subheading>
-                        <SubjectCheckbox />
-                    </Surface>
-                    <Surface style={styles.surface}>
-                        <View style={styles.row}>
-                            <Subheading style={styles.title}>ملفات المقرر</Subheading>
-                            <View style={styles.row}>
-                                <Text style={[styles.text, { marginRight: 5, color: 'grey' }]}> اختيار الكل</Text>
-                                <Switch
-                                    value={isAll}
-                                    onValueChange={handleAll}
-                                    trackColor={{ false: '#767577', true: '#75d99e' }}
-                                    thumbColor={isAll ? '#00C853' : '#f4f3f4'}
-                                    disabled={selectedSubject.length != 1} />
-                            </View>
-                        </View>
-
-                        <SubjectFilesList />
-
-                    </Surface>
-
-                    <Surface style={styles.surface}>
-                        <Subheading style={styles.title}>خيارات إضافية</Subheading>
-                        <ExamOptions />
-                    </Surface>
-                    <View style={{
-                        padding: 12,
-                        margin: 3
-                    }}>
-                        <Surface style={{
-                            borderWidth: 1,
-                            borderColor: '#D7D8D2'
-                        }}>
-                            <Pressable
-                                onPress={makeExam}
-                                android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
-                                style={{
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}>
-                                <Text
-                                    style={
-                                        [styles.title,
-                                        {
-                                            textDecorationLine: selectedSubject.length != 1 || quizArray.length == 0 ? 'line-through' : null,
-                                            color: selectedSubject.length != 1 || quizArray.length == 0 ? 'grey' : '#343434'
-                                        }]}
-                                >خوض الامتحان</Text>
-                            </Pressable>
-                        </Surface>
-                    </View>
-                    <Text style={[styles.text, { alignSelf: 'center', fontSize: 12 }]}>عدد الأسئلة {make_questions().questions_number} </Text>
+                    <Text>boookmarks: {JSON.stringify(get_bookmarks(), null, 2)}</Text>
+                    <SubjectsCheckboxes />
+                    <QuizzesCheckBoxes />
+                    <QuizOptions />
+                    <GoExam />
                 </View>
             </ScrollView>
         )
@@ -370,9 +493,6 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: 'Cairo_700Bold',
         color: '#313131'
-    },
-    scrollview: {
-        flexGrow: 1,
     },
     empty: {
         flex: 1,
