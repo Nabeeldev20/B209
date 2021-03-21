@@ -368,22 +368,22 @@ const styles = StyleSheet.create({
 
   },
   welcome: {
-    fontFamily: 'Cairo_Bold',
+    fontFamily: 'Cairo-Bold',
     fontSize: 35,
     padding: 10,
     paddingBottom: 3
   },
   headline: {
-    fontFamily: 'Cairo_Bold',
+    fontFamily: 'Cairo-Bold',
     fontSize: 21,
     paddingBottom: 20
   },
   text: {
-    fontFamily: 'Cairo_SemiBold',
+    fontFamily: 'Cairo-SemiBold',
     color: 'grey'
   },
   button: {
     letterSpacing: 0,
-    fontFamily: 'Cairo_Bold'
+    fontFamily: 'Cairo-Bold'
   }
 })

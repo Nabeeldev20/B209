@@ -97,14 +97,14 @@ const styles = StyleSheet.create({
         margin: 3
     },
     headline: {
-        fontFamily: 'Cairo_700Bold',
+        fontFamily: 'Cairo-Bold',
         fontSize: 16,
         selectable: false,
         padding: 3,
         textAlign: 'flex-start'
     },
     text: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 14,
         selectable: false,
         padding: 3,

@@ -140,7 +140,7 @@ export default function Activation({ navigation, route }) {
                             onChangeText={text => setStoreCode(text)}
                             left={<TextInput.Icon name={() => <MaterialCommunityIcons name='store' size={20} />} />}
                         />
-                        <HelperText style={{ fontFamily: 'Cairo_400Regular' }} type="error" visible={hasErrors()}>كود المكتبة مكوّن من 12 خانة</HelperText>
+                        <HelperText style={{ fontFamily: 'Cairo-Regular' }} type="error" visible={hasErrors()}>كود المكتبة مكوّن من 12 خانة</HelperText>
                     </Surface>
 
                 </Animatable.View>
@@ -156,9 +156,9 @@ export default function Activation({ navigation, route }) {
 
                             <Text style={styles.text}>
                                 انسخ كود بنك
-                        <Text style={{ fontFamily: 'Cairo_700Bold' }}> {subject_name} </Text>
+                        <Text style={{ fontFamily: 'Cairo-Bold' }}> {subject_name} </Text>
                          من فضلك
-                        {'\n'} <Text style={{ fontFamily: 'Cairo_700Bold' }}> ثمَّ</Text> أرسل رسالة عن طريق
+                        {'\n'} <Text style={{ fontFamily: 'Cairo-Bold' }}> ثمَّ</Text> أرسل رسالة عن طريق
                         <View style={[styles.row, { paddingHorizontal: 5 }]}>
                                     <Text style={styles.link} onPress={() => Linking.openURL('https://t.me/Balsam_dev')}>@Balsam_dev</Text>
                                     <MaterialCommunityIcons name='telegram' size={16} />
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     button: {
-        fontFamily: 'Cairo_700Bold',
+        fontFamily: 'Cairo-Bold',
         letterSpacing: 0,
         height: 25
     },
@@ -249,17 +249,17 @@ const styles = StyleSheet.create({
         backgroundColor: '#CFD8DC'
     },
     text: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 15,
         textAlign: 'left'
     },
     welcome: {
-        fontFamily: 'Cairo_700Bold',
+        fontFamily: 'Cairo-Bold',
         fontSize: 18,
         color: 'grey'
     },
     link: {
         paddingHorizontal: 5,
-        fontFamily: 'Cairo_700Bold'
+        fontFamily: 'Cairo-Bold'
     }
 })

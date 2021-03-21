@@ -65,7 +65,7 @@ export default function CustomExam({ navigation }) {
                     borderColor: '#d7d8d2'
                 }}>
                     <Subheading style={{
-                        fontFamily: 'Cairo_700Bold',
+                        fontFamily: 'Cairo-Bold',
                         color: '#343434',
                         padding: 10
                     }}>المقررات</Subheading>
@@ -89,7 +89,7 @@ export default function CustomExam({ navigation }) {
                                         status={is_selected(item) ? 'checked' : 'unchecked'}
                                         color='#00C853' />
                                     <Text style={{
-                                        fontFamily: 'Cairo_600SemiBold',
+                                        fontFamily: 'Cairo-SemiBold',
                                         fontSize: 14,
                                         color: 'grey'
                                     }}>{item}</Text>
@@ -157,7 +157,7 @@ export default function CustomExam({ navigation }) {
                         padding: 3
                     }}>
                         <Subheading style={{
-                            fontFamily: 'Cairo_700Bold',
+                            fontFamily: 'Cairo-Bold',
                             color: '#313131',
                             padding: 5
                         }}>اختبارات المقرر</Subheading>
@@ -191,7 +191,7 @@ export default function CustomExam({ navigation }) {
                                         status={is_selected(item) ? 'checked' : 'unchecked'}
                                         color='#00C853' />
                                     <Text style={{
-                                        fontFamily: 'Cairo_600SemiBold',
+                                        fontFamily: 'Cairo-SemiBold',
                                         fontSize: 14,
                                         color: 'grey'
                                     }}>{item}</Text>
@@ -231,7 +231,7 @@ export default function CustomExam({ navigation }) {
                     borderColor: '#d7d8d2'
                 }}>
                     <Subheading style={{
-                        fontFamily: 'Cairo_700Bold',
+                        fontFamily: 'Cairo-Bold',
                         color: '#343434',
                         padding: 5
                     }}>خيارات إضافية</Subheading>
@@ -469,7 +469,7 @@ export default function CustomExam({ navigation }) {
                 component={custom_exam}
                 options={{
                     title: 'امتحان مخصص',
-                    headerTitleStyle: { fontFamily: 'Cairo_700Bold' },
+                    headerTitleStyle: { fontFamily: 'Cairo-Bold' },
                     headerLeft: () => (<MaterialCommunityIcons size={30} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
                 }} />
         </Stack.Navigator>
@@ -482,7 +482,7 @@ const styles = StyleSheet.create({
         padding: 5
     },
     text: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 14,
         color: 'grey'
     },
@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
         margin: 3
     },
     title: {
-        fontFamily: 'Cairo_700Bold',
+        fontFamily: 'Cairo-Bold',
         color: '#313131'
     },
     empty: {

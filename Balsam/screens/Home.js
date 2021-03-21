@@ -27,7 +27,7 @@ export default function Home({ navigation }) {
                     name='file-download'
                     color='grey'
                     size={50} style={{ marginLeft: 5 }} />
-                <Text style={{ fontFamily: 'Cairo_700Bold', color: 'grey' }}>جرّب إضافة بعض الملفات</Text>
+                <Text style={{ fontFamily: 'Cairo-Bold', color: 'grey' }}>جرّب إضافة بعض الملفات</Text>
             </Animatable.View>
         )
     }
@@ -312,7 +312,7 @@ export default function Home({ navigation }) {
                                 onPress={() => remove_file(dialogData.title, dialogData.path)} />
                             <Button
                                 onPress={() => setDialogData({ visible: false })}
-                                labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo_700Bold' }}
+                                labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo-Bold' }}
                             >حسناً</Button>
                         </Dialog.Actions>
                     </Dialog>
@@ -327,7 +327,7 @@ export default function Home({ navigation }) {
                 component={Home_component}
                 options={{
                     title: 'بلســم',
-                    headerTitleStyle: { fontFamily: 'Cairo_700Bold', fontSize: 17 },
+                    headerTitleStyle: { fontFamily: 'Cairo-Bold', fontSize: 17 },
                     headerLeft: () => (<MaterialCommunityIcons size={30} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
                 }} />
             <Stack.Screen
@@ -336,7 +336,7 @@ export default function Home({ navigation }) {
                     headerTitleStyle: {
                         color: '#313131',
                         fontSize: 16,
-                        fontFamily: 'Cairo_700Bold'
+                        fontFamily: 'Cairo-Bold'
                     }
                 })}
                 component={Exam} />
@@ -348,7 +348,7 @@ export default function Home({ navigation }) {
                     headerTitleStyle: {
                         color: '#313131',
                         fontSize: 16,
-                        fontFamily: 'Cairo_700Bold'
+                        fontFamily: 'Cairo-Bold'
                     }
                 })} />
             <Stack.Screen
@@ -358,7 +358,7 @@ export default function Home({ navigation }) {
                     headerTitleStyle: {
                         color: '#313131',
                         fontSize: 16,
-                        fontFamily: 'Cairo_700Bold',
+                        fontFamily: 'Cairo-Bold',
                         height: 26
                     }
                 })} />
@@ -382,19 +382,19 @@ const styles = StyleSheet.create({
         borderColor: '#D7D8D2',
     },
     title: {
-        fontFamily: 'Cairo_700Bold',
+        fontFamily: 'Cairo-Bold',
         fontSize: 18,
         marginTop: 0
     },
     subtitle: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 15,
         lineHeight: 20,
         color: 'grey',
         marginLeft: 15
     },
     numbers: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 17,
         color: 'grey',
         lineHeight: 23
@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     dialog_text: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 15,
         lineHeight: 20,
         marginLeft: 5,
@@ -416,11 +416,11 @@ const styles = StyleSheet.create({
         selectable: false
     },
     dialog_title: {
-        fontFamily: 'Cairo_700Bold',
+        fontFamily: 'Cairo-Bold',
         fontSize: 18,
     },
     dialog_button: {
         letterSpacing: 0,
-        fontFamily: 'Cairo_700Bold'
+        fontFamily: 'Cairo-Bold'
     }
 })
