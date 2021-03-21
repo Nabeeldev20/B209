@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
-import { get_database, get_error_msgs, get_bookmarks, get_act } from './db'
+import { get_database, get_error_msgs, get_bookmarks, get_act, get_cache_array } from './db'
 
 
 export default function CustomExam({ navigation }) {
