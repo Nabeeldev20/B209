@@ -209,9 +209,8 @@ export default function Exam({ navigation, route }) {
                                         marginHorizontal: 5,
                                     }}>
                                     <Surface style={{
-                                        backgroundColor: hasAnswered && quiz.get_question(index).is_right(item) ? colors.success : 'white',
-                                        borderWidth: 1,
-                                        borderColor: '#D7D8D2',
+                                        borderColor: hasAnswered && quiz.get_question(index).is_right(item) ? colors.success : '#D7D8D2',
+                                        borderWidth: hasAnswered && quiz.get_question(index).is_right(item) ? 2 : 1,
                                         elevation: 2,
                                     }}>
                                         <Pressable

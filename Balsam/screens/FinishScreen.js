@@ -55,7 +55,7 @@ export default function FinishScreen({ navigation, route }) {
         return { visible: false }
     }
     function go_exam(exam = quiz) {
-        exam.get_shuffled_questions();
+        exam.get_shuffled_questions(random_questions, random_choices);
         exam.index = 0;
         navigation.replace('Exam', {
             quiz: exam,
@@ -68,6 +68,7 @@ export default function FinishScreen({ navigation, route }) {
         quiz.update_average_time(Math.ceil(get_time() * 60));
         quiz.update_average_accuracy(get_ratio_score());
         quiz.index = 0;
+        quiz.taken_number += 1;
         quiz.last_time = DateTime.now().toISODate();
         save_file(quiz)
     }

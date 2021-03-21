@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
-import { get_database, get_error_msgs, update_error_msgs, get_bookmarks } from './db'
+import { get_database, get_error_msgs, get_bookmarks, get_act } from './db'
 
 
 export default function CustomExam({ navigation }) {
@@ -392,13 +392,16 @@ export default function CustomExam({ navigation }) {
                         return this.questions.length
                     },
                     get_remaining_time(index) {
-                        let time = (((this.questions.length - index) * 45) / 60).toFixed(2).toString().split('');
+                        let diff = this.questions.length - index;
+                        diff == 1 ? diff = 0.6 : diff = diff
+                        let time = ((diff * this.estimated_time_for_question) / 60).toFixed(2).toString().split('');
                         if (time.length == 4) {
                             time.unshift('0')
                             time[2] = ':'
                             return time.join('')
                         }
                         time[2] = ':'
+
                         return time.join('')
                     },
                     get_shuffled_questions(onlyQuestions = true, onlyChoices = true) {
@@ -426,7 +429,6 @@ export default function CustomExam({ navigation }) {
                 }
                 Analytics.trackEvent('Custom Exam', { Subject: selected_subject });
                 quiz.get_shuffled_questions(random_questions, random_choices);
-                console.log(quiz)
                 navigation.navigate('Home', {
                     screen: 'Exam',
                     params: {
@@ -446,7 +448,9 @@ export default function CustomExam({ navigation }) {
                 onContentSizeChange={onContentSizeChange}>
                 <View style={styles.container}>
                     <Text>{JSON.stringify(get_error_msgs(), null, 2)}</Text>
-                    <Text>boookmarks: {JSON.stringify(get_bookmarks(), null, 2)}</Text>
+                    <Text>bookmarks: {JSON.stringify(get_bookmarks(), null, 2)}</Text>
+                    <Text>act: {JSON.stringify(get_act(), null, 2)}</Text>
+                    <Text>cache: {JSON.stringify(get_cache_array(), null, 2)}</Text>
                     <SubjectsCheckboxes />
                     <QuizzesCheckBoxes />
                     <QuizOptions />

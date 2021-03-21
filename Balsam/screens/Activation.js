@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { View, Text, StyleSheet, Linking } from 'react-native'
+import { View, Text, StyleSheet, Linking, ToastAndroid } from 'react-native'
 import { Surface, TextInput, HelperText, Badge, Button } from 'react-native-paper'
 import * as Animatable from 'react-native-animatable';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -7,7 +7,9 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import Hashids from 'hashids'
 import Analytics from 'appcenter-analytics';
 import { DateTime } from 'luxon'
-import { get_act, update_act } from './db'
+import { get_act, update_act, get_cache_array, update_cache_array, save_blsm, get_mac, update_error_msgs, update_mac } from './db'
+import * as Network from 'expo-network';
+
 // TODO write to b.blsm
 // TODO ask user to turn on their wifi if mac == null
 export default function Activation({ navigation, route }) {
@@ -15,7 +17,9 @@ export default function Activation({ navigation, route }) {
     const { subject_name, code } = route.params;
     React.useEffect(() => {
         navigation.setOptions({ title: 'تفعيل بنك' + ' ' + subject_name })
-    }, [subject_name])
+
+    }, [subject_name]);
+
 
     const [storeCode, setStoreCode] = React.useState('');
     const [keyCode, setKeyCode] = React.useState('');
@@ -36,42 +40,84 @@ export default function Activation({ navigation, route }) {
         if (storeCode.length > 0) return storeCode.length < 5;
         return false
     }
-    function get_ID() {
-        for (let i = 0; i < get_act().length; i++) {
-            if (get_act()[i].code == code) {
-                return {
-                    en: get_act()[i].en,
-                    index: i
-                }
+
+    function get_act_code() {
+        function has_cache_code(quiz_code) {
+            let data = get_cache_array()
+            let output = []
+            for (let i = 0; i < data.length; i++) {
+                output.push(data[i].QuizCode)
             }
+            if (output.includes(quiz_code)) return true
+            return false
+        }
+        function generate_code() {
+            function random_num(min, max) {
+                return Math.floor(Math.random() * (max - min + 1) + min);
+            }
+            return h.encode(random_num(1000000, 10000));
+        }
+
+        if (has_cache_code(code)) {
+            return get_cache_array().find(item => item.QuizCode == code).HashCode
+        } else {
+            let new_code = {
+                QuizCode: code,
+                HashCode: generate_code()
+            }
+            update_cache_array([...get_cache_array(), new_code]);
+            save_blsm()
+            return new_code.HashCode
         }
     }
     function copy() {
         Clipboard.setString(`
-        Balsam: @Balsam_dev || ${DateTime.now().toISODate()}
+        Telegram: @Balsam_dev || ${DateTime.now().toISODate()}
         ${storeCode}
         --
-        ${get_ID().en}
+        ${get_act_code()} - ${code}
         --
         شكراً لك 
     `);
     }
     function is_input_valid_animation() {
-        let d = h.decode(get_ID().en)
+        let d = h.decode(get_act_code())
         if (d.length > 0 && d == keyCode) {
             act_button.current?.tada();
         }
     }
-    function save() {
-        Analytics.trackEvent('Activation', { Subject: subject_name, QuizCode: code });
-        get_act()[get_ID().index].valid = true;
-        update_act(get_act());
+    async function save() {
+        Analytics.trackEvent('Activation', { Subject: subject_name, QuizCode: code, StoreCode: storeCode });
+        update_act([...get_act(), code]);
+        let mac = get_mac();
+        try {
+            let mac_address = await Network.getMacAddressAsync();
+            if (mac_address != null && mac != null) {
+                if (mac_address == mac) {
+                    save_blsm()
+                }
+            }
+            if (mac == null && mac_address != null) {
+                update_mac(mac_address);
+                save_blsm()
+            }
+            if (mac != null && mac_address == null) {
+                ToastAndroid.showWithGravity(
+                    "قم من فضلك بتشغيل الوايفاي",
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM
+                );
+            }
+        } catch (error) {
+            update_error_msgs({ Code: 'Error fetching mac ' + error })
+        }
     }
     is_input_valid_animation();
 
     return (
         <View style={styles.container}>
             <Text style={styles.welcome}> ثلاث خطوات بسيطة لتفعيل البنك</Text>
+            <Text style={styles.text}>لكي يتم التفعيل بصورة صحيحة يجب تشغيل الـ wifi</Text>
             <Animatable.View ref={n1}>
                 <Surface style={styles.surface}>
                     <View style={styles.row}>
@@ -122,7 +168,7 @@ export default function Activation({ navigation, route }) {
                             mode='contained'
                             labelStyle={styles.button}
                             color='#B2EBF2'
-                            icon='copy'
+                            icon='content-copy'
                             disabled={storeCode.length < 12}
                             contentStyle={{ flexDirection: 'row-reverse' }}
                             onPress={() => copy()}>نسخ الكود</Button>
@@ -152,7 +198,7 @@ export default function Activation({ navigation, route }) {
                             labelStyle={styles.button}
                             color='#00C853'
                             icon='lock-open'
-                            disabled={keyCode != h.decode(get_ID().en)}
+                            disabled={keyCode != h.decode(get_act_code())}
                             contentStyle={{ flexDirection: 'row-reverse' }}
                             onPress={() => save()}>
                             تفعيل البنك

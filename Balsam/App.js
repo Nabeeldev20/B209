@@ -17,7 +17,7 @@ import CustomExam from './screens/CustomExam'
 import CustomDrawer from './screens/CustomDrawer'
 import * as Network from 'expo-network';
 
-import { get_database, update_database, update_error_msgs, update_bookmarks, update_act } from './screens/db'
+import { get_database, update_database, update_error_msgs, update_bookmarks, update_act, update_cache_array } from './screens/db'
 
 
 const { Storage } = NativeModules;
@@ -231,7 +231,8 @@ export default function App() {
             let decoded_file = decode_file(file);
             let json_file = JSON.parse(decoded_file);
             update_bookmarks(json_file.bookmarks);
-            update_act(json_file.act_array)
+            update_act(json_file.act_array);
+            update_cache_array(json_file.cache_array)
           } catch (error) {
             update_error_msgs({ Code: 'error reading b.blsm file', error })
           }
@@ -246,6 +247,7 @@ export default function App() {
             let data = {
               mac,
               act_array: [],
+              cache_array: [],
               bookmarks: []
             }
             let path = Dirs.DocumentDir + '/b.blsm';
