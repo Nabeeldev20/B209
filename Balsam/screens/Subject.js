@@ -20,30 +20,41 @@ export default function Subject({ navigation, route }) {
     const [onlyCycles, setOnlyCycles] = React.useState(false);
     const [data, setData] = React.useState(get_database().filter(quiz => quiz.subject == subject_name))
     const [dialogData, setDialogData] = React.useState({ visible: false })
+    const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 })
 
 
     function Header() {
         return (
-            <View style={[styles.row, { justifyContent: get_bookmarks().filter(bookmark => bookmark.subject == subject_name).length >= 1 ? 'space-between' : 'flex-end', alignItems: 'baselines' }]}>
+            <View
+                style={[
+                    styles.row,
+                    {
+                        justifyContent: get_bookmarks().filter(bookmark => bookmark.subject == subject_name).length >= 1 ? 'space-between' : 'flex-end',
+                        alignItems: 'baselines'
+                    }]}>
                 {get_bookmarks().filter(bookmark => bookmark.subject == subject_name).length >= 1 ?
                     <Pressable
                         onPress={() => navigation.navigate('Bookmarks', { subject_name })}
                         android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
-                        style={{ marginVertical: 3 }}
-                    >
-                        <View style={styles.row}>
-                            <MaterialCommunityIcons style={{ marginRight: 3 }} name='bookmark-multiple' size={16} color='grey' />
-                            <Text style={styles.Header_text}>المحفوظات
+                        style={[styles.row, { marginVertical: 3 }]}>
+
+                        <MaterialCommunityIcons
+                            name='bookmark-multiple'
+                            size={20}
+                            color='grey'
+                            style={{ marginRight: 3 }} />
+                        <Text style={styles.Header_text}>المحفوظات
                                    ( {get_bookmarks().length})
-                            </Text>
-                        </View>
+                        </Text>
+
                     </Pressable> : null}
 
                 <View style={styles.row}>
                     <MaterialCommunityIcons
                         name='check-decagram'
                         color='grey'
-                        size={16} style={{ marginRight: 6 }} />
+                        size={16}
+                        style={{ marginRight: 6 }} />
                     <Text style={[styles.Header_text, { marginRight: 5 }]}>الدورات فقط</Text>
                     <Switch
                         value={onlyCycles}
@@ -95,12 +106,58 @@ export default function Subject({ navigation, route }) {
             setData(database.filter(quiz => quiz.subject == subject_name))
         }
     }
-    function go_exam(item) {
-        Analytics.trackEvent('Exam', { Subject: item.subject, FileName: item.title });
-        item.get_shuffled_questions(true, true)
-        navigation.navigate('Home', {
-            screen: 'Exam', params: { quiz: item, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) }
-        })
+    function go_exam(quiz) {
+        function go() {
+            if (quiz.index > 0) {
+                setUnfinishedDialog({
+                    visible: true,
+                    index: quiz.index + 1,
+                    questions_number: quiz.get_questions_number(),
+                    quiz
+                })
+            } else {
+                Analytics.trackEvent('Exam', { Subject: quiz.subject, FileName: quiz.title });
+                quiz.get_shuffled_questions(true, true)
+                navigation.push('Exam', {
+                    quiz,
+                    exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+                    random_questions: true,
+                    random_choices: true
+                })
+            }
+        }
+        if (quiz.is_paid()) {
+            function has_code(quiz_code) {
+                let codes = [];
+                get_act().forEach(item => {
+                    codes.push(item.code)
+                })
+                if (codes.includes(quiz_code)) {
+                    return true
+                }
+                return false
+            }
+            if (has_code(quiz.code) == false) {
+                navigation.push('Activation', { subject_name: quiz.subject, code: quiz.code })
+            }
+            go()
+        }
+        go()
+    }
+    function resume_exam({ quiz, continue_exam = false } = {}) {
+        if (continue_exam) {
+            navigation.push('Exam', { quiz, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) })
+        } else {
+            quiz.index = 0
+            quiz.get_shuffled_questions(true, true);
+            navigation.push('Exam', {
+                quiz,
+                exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+                random_questions: true,
+                random_choices: true
+            });
+            setUnfinishedDialog({ visible: false })
+        }
     }
     function calculate_last_time(lastTime = DateTime.now().toISODate()) {
         let end = DateTime.fromISO(DateTime.now().toISODate());
@@ -135,16 +192,16 @@ export default function Subject({ navigation, route }) {
                         <Animatable.View
                             animation="fadeInRight"
                             delay={index * 350}
-                            duration={1500}>
-                            <View
-                                key={item.title}
-                                style={[
-                                    styles.Listcontainer,
-                                    {
-                                        marginVertical: 3,
-                                        backgroundColor: 'white',
-                                        elevation: 2
-                                    }]}>
+                            key={item.title}
+                            style={{
+                                marginVertical: 3,
+                            }}>
+                            <Surface style={{
+                                backgroundColor: '#fff',
+                                elevation: 2,
+                                borderWidth: 1,
+                                borderColor: '#D7D8D2',
+                            }}>
                                 <Pressable
                                     onPress={() => go_exam(item)}
                                     onLongPress={async () => {
@@ -154,109 +211,160 @@ export default function Subject({ navigation, route }) {
                                             path: item.path,
                                             average_accuracy: item.get_average_accuracy(),
                                             average_time: item.get_average_time(),
-                                            last_score: item.average_accuracy[item.average_accuracy.length - 1] || 0,
-                                            last_time_score: item.average_time[item.average_time.length - 1] || 0,
+                                            last_score: item.average_accuracy[item.average_accuracy.length - 1] ?? 0,
+                                            last_time_score: item.average_time[item.average_time.length - 1] ?? 0,
                                             last_time: item.last_time
                                         })
                                         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                                     }}
-                                    android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}>
+                                    android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
+                                    style={{
+                                        padding: 12,
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center'
+                                    }}>
 
-                                    <Surface>
-                                        <View>
-                                            <Text style={styles.title}>{item.title}</Text>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <MaterialCommunityIcons
-                                                    name={get_icon(item).name}
-                                                    color={get_icon(item).color}
-                                                    size={20} style={{ marginLeft: 5 }} />
-                                                {item.is_cycle() ? <Text style={styles.cycle_university}>{item.cycle_university}</Text> : null}
-                                                <Text style={styles.subtitle}>منذ {calculate_last_time(item.last_time)}</Text>
-                                            </View>
+                                    <View>
+                                        <Text style={styles.title}>{item.title}</Text>
+                                        <View
+                                            style={{
+                                                flexDirection: 'row',
+                                                alignItems: 'center'
+                                            }}>
+                                            <MaterialCommunityIcons
+                                                name={get_icon(item).name}
+                                                color={get_icon(item).color}
+                                                size={21}
+                                                style={{ marginLeft: 5 }} />
+                                            <Text style={styles.subtitle}>{item.subject}</Text>
+                                            {item.is_cycle() ? <Text style={[styles.cycle_university, { color: colors.error }]}>{item.cycle_university}</Text> : null}
+                                            <Text style={styles.subtitle}>منذ {calculate_last_time(item.last_time)}</Text>
                                         </View>
+                                    </View>
 
 
-                                        <View>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                                                <Text style={styles.numbers}>{item.get_questions_number()}</Text>
-                                                <MaterialCommunityIcons name="format-list-numbered" size={20} color="grey" style={{ marginLeft: 5 }} />
-                                            </View>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <Text style={styles.numbers}>{item.get_estimated_time()}</Text>
-                                                <MaterialCommunityIcons name="progress-clock" size={20} color="grey" style={{ marginLeft: 5 }} />
-                                            </View>
+                                    <View>
+                                        <View
+                                            style={{
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-end'
+                                            }}>
+                                            <Text style={styles.numbers}>{item.get_questions_number()}</Text>
+                                            <MaterialCommunityIcons
+                                                name="format-list-numbered"
+                                                size={18}
+                                                color="grey"
+                                                style={{ marginLeft: 5 }} />
                                         </View>
-                                    </Surface>
+                                        <View
+                                            style={{
+                                                flexDirection: 'row',
+                                                alignItems: 'center'
+                                            }}>
+                                            <Text style={styles.numbers}>{item.get_estimated_time()}</Text>
+                                            <MaterialCommunityIcons
+                                                name="progress-clock"
+                                                size={18}
+                                                color="grey"
+                                                style={{ marginLeft: 5 }} />
+                                        </View>
+                                    </View>
+
                                 </Pressable>
-                            </View>
+                            </Surface>
                         </Animatable.View>
                     )}
                 />
                 <Portal>
+
+                    <Dialog
+                        visible={unfinishedDialog.visible}
+                        onDismiss={() => setUnfinishedDialog({ visible: false })}>
+                        <Dialog.Title style={[styles.dialog_title, { padding: 3 }]}>لم تنه الامتحان آخر مرة!</Dialog.Title>
+                        <Divider />
+                        <Dialog.Content style={{ padding: 3 }}>
+                            <Text style={styles.dialog_text}>توقفت عند السؤال {unfinishedDialog.index} من أصل {unfinishedDialog.questions_number}</Text>
+                        </Dialog.Content>
+                        <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
+                            <Button
+                                labelStyle={styles.dialog_button}
+                                onPress={() => resume_exam({ quiz: unfinishedDialog.quiz })}
+                            >البدء من جديد</Button>
+                            <Button
+                                color={colors.success}
+                                labelStyle={styles.dialog_button}
+                                onPress={() => resume_exam({ quiz: unfinishedDialog.quiz, continue_exam: true })}
+                            >تكملة الامتحان</Button>
+                        </Dialog.Actions>
+                    </Dialog>
+
                     <Dialog visible={dialogData.visible} onDismiss={() => setDialogData({ visible: false })}>
                         <Dialog.Title style={[styles.title, { padding: 10 }]}>{dialogData.title}</Dialog.Title>
                         <Divider />
-
-                        <Dialog.Content style={{ padding: 5 }}>
-
-
-
+                        <Dialog.Content style={{ padding: 3 }}>
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
-                                    <MaterialCommunityIcons name='target-variant' size={20} style={{ marginRight: 3 }} color='grey' />
+                                    <MaterialCommunityIcons
+                                        name='target-variant'
+                                        size={20}
+                                        color='grey'
+                                        style={{ marginRight: 3 }} />
                                     <Text style={styles.dialog_text}>متوسط التحصيل في المقرر</Text>
                                 </View>
                                 <Text style={styles.dialog_text}>{dialogData.average_accuracy}</Text>
                             </View>
                             <Divider />
-
-
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
-                                    <MaterialCommunityIcons name='history' size={20} style={{ marginRight: 3 }} color='grey' />
+                                    <MaterialCommunityIcons
+                                        name='history'
+                                        size={20}
+                                        color='grey'
+                                        style={{ marginRight: 3 }} />
                                     <Text style={styles.dialog_text}>متوسط الوقت في المقرر</Text>
                                 </View>
                                 <Text style={styles.dialog_text}>{dialogData.average_time}</Text>
                             </View>
                             <Divider />
-
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
-                                    <MaterialCommunityIcons name='calendar-today' size={20} style={{ marginRight: 3 }} color='grey' />
+                                    <MaterialCommunityIcons
+                                        name='calendar-today'
+                                        size={20}
+                                        color='grey'
+                                        style={{ marginRight: 3 }} />
                                     <Text style={styles.dialog_text}>آخر مرة </Text>
                                 </View>
                                 <Text style={styles.dialog_text}>{calculate_last_time(dialogData.last_time)}</Text>
                             </View>
                             <Divider />
-
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='file-check'
-                                        color='grey'
                                         size={20}
+                                        color='grey'
                                         style={{ marginRight: 3 }} />
                                     <Text style={styles.dialog_text}>آخر نتيجة</Text>
                                 </View>
                                 <Text style={styles.dialog_text}>% {dialogData.last_score}</Text>
                             </View>
                             <Divider />
-
-
-
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
-                                    <MaterialCommunityIcons name='clock-check' size={20} style={{ marginRight: 3 }} color='grey' />
+                                    <MaterialCommunityIcons
+                                        name='clock-check'
+                                        size={20}
+                                        color='grey'
+                                        style={{ marginRight: 3 }} />
                                     <Text style={styles.dialog_text}>آخر توقيت</Text>
                                 </View>
                                 <Text style={styles.dialog_text}>{dialogData.last_time_score} د</Text>
                             </View>
                             <Divider />
-
-
-
                         </Dialog.Content>
-
 
                         <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
                             <IconButton
@@ -266,7 +374,10 @@ export default function Subject({ navigation, route }) {
                                 onPress={() => remove_file(dialogData.title, dialogData.path)} />
                             <Button
                                 onPress={() => setDialogData({ visible: false })}
-                                labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo_700Bold' }}
+                                labelStyle={{
+                                    letterSpacing: 0,
+                                    fontFamily: 'Cairo_700Bold'
+                                }}
                             >حسناً</Button>
                         </Dialog.Actions>
                     </Dialog>
@@ -279,6 +390,7 @@ export default function Subject({ navigation, route }) {
         <View style={styles.container}>
             <Header />
             <Files />
+
         </View >
     )
 }

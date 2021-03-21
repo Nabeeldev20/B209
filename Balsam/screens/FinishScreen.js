@@ -5,16 +5,11 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { DateTime } from 'luxon'
 import * as Animatable from 'react-native-animatable';
 import { get_database, save_file } from './db'
-import { useFonts } from 'expo-font';
 
-let database = get_database();
 
 export default function FinishScreen({ navigation, route }) {
-    const { quiz, wrong_count, exam_time } = route.params
-    let [fontsLoaded] = useFonts({
-        'Cairo_700Bold': require('../assets/fonts/Cairo-Bold.ttf'),
-        'Cairo_600SemiBold': require('../assets/fonts/Cairo-SemiBold.ttf'),
-    });
+    const { quiz, wrong_count, exam_time, random_questions, random_choices } = route.params;
+    let database = get_database();
     function get_ratio_score() {
         let right = quiz.get_questions_number() - wrong_count;
         return Math.ceil((right * 100) / quiz.get_questions_number())
@@ -60,14 +55,20 @@ export default function FinishScreen({ navigation, route }) {
         return { visible: false }
     }
     function go_exam(exam = quiz) {
-        exam.get_shuffled_questions();
+        exam.get_shuffled_questions(random_questions, random_choices);
         exam.index = 0;
-        navigation.replace('Exam', { quiz: exam, exam_time: DateTime.fromISO(DateTime.now().toLocaleString(DateTime.TIME_24_SIMPLE)) })
+        navigation.replace('Exam', {
+            quiz: exam,
+            exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+            random_questions,
+            random_choices
+        })
     }
     async function update_quiz() {
         quiz.update_average_time(Math.ceil(get_time() * 60));
         quiz.update_average_accuracy(get_ratio_score());
         quiz.index = 0;
+        quiz.taken_number += 1;
         quiz.last_time = DateTime.now().toISODate();
         save_file(quiz)
     }
@@ -85,10 +86,18 @@ export default function FinishScreen({ navigation, route }) {
     }
     update_data();
     return (
-        <Animatable.View style={styles.container} animation="fadeIn" duration={2000}>
+        <Animatable.View
+            style={styles.container}
+            animation="fadeIn"
+            duration={2000}>
             <View>
                 <Surface style={styles.surface}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 2 }}>
+                    <View style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginHorizontal: 2
+                    }}>
                         <Text style={[styles.message, { color: get_text_score(get_ratio_score()).color }]}>{get_text_score(get_ratio_score()).text}</Text>
                         <Animatable.Text
                             style={[styles.numbers, { color: get_text_score(get_ratio_score()).color }]}
@@ -98,19 +107,36 @@ export default function FinishScreen({ navigation, route }) {
                         </Animatable.Text>
                     </View>
                     <Divider style={{ margin: 4 }} />
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', padding: 10 }}>
+                    <View style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-evenly',
+                        padding: 10
+                    }}>
                         <View style={{ alignItems: 'center' }}>
-                            <MaterialCommunityIcons name='chart-bell-curve-cumulative' size={24} />
+                            <MaterialCommunityIcons
+                                name='chart-bell-curve-cumulative'
+                                size={18}
+                                color='grey'
+                                style={{ paddingBottom: 2 }} />
                             <Text style={styles.exam_result}>الدقة</Text>
                             <Text style={styles.exam_result}>%{get_ratio_score()}</Text>
                         </View>
                         <View style={{ alignItems: 'center' }}>
-                            <MaterialCommunityIcons name='timer-sand' size={24} />
+                            <MaterialCommunityIcons
+                                name='timer-sand'
+                                size={18}
+                                color='grey'
+                                style={{ paddingBottom: 2 }} />
                             <Text style={styles.exam_result}>الوقت</Text>
                             <Text style={styles.exam_result}>{get_time()} د</Text>
                         </View>
                         <View style={{ alignItems: 'center' }}>
-                            <MaterialCommunityIcons name='playlist-remove' size={24} />
+                            <MaterialCommunityIcons
+                                name='playlist-remove'
+                                size={18}
+                                color='grey'
+                                style={{ paddingBottom: 2 }} />
                             <Text style={styles.exam_result}>الخطأ</Text>
                             <Text style={styles.exam_result}>{wrong_count}</Text>
                         </View>
@@ -119,104 +145,167 @@ export default function FinishScreen({ navigation, route }) {
 
                 {!quiz.title.includes('مخصص') ?
                     <Surface style={styles.surface}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 5 }}>
+                        <View style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: 5
+                        }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <MaterialCommunityIcons
                                     name='target-variant'
-                                    size={20} style={{ marginRight: 15 }} />
+                                    size={18}
+                                    color='grey'
+                                    style={{ marginRight: 10 }} />
                                 <Text style={styles.exam_result}>متوسط التحصيل في مقرر {quiz.subject}</Text>
                             </View>
                             <Text style={styles.exam_result}>%{quiz.get_average_accuracy()}</Text>
                         </View>
                         <Divider />
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 5 }}>
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                padding: 5
+                            }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <MaterialCommunityIcons
                                     name='history'
-                                    size={20}
-                                    style={{ marginRight: 15 }} />
+                                    size={18}
+                                    color='grey'
+                                    style={{ marginRight: 10 }} />
                                 <Text style={styles.exam_result}>متوسط الوقت لمقرر {quiz.subject}</Text>
                             </View>
                             <Text style={styles.exam_result}>%{quiz.get_average_time()}</Text>
                         </View>
                     </Surface> : null}
-                <View style={{
-                    marginHorizontal: 50,
-                    marginVertical: 20,
-                    backgroundColor: 'white',
-                    elevation: 3,
-                    padding: 15
-                }}>
-                    <Pressable
-                        onPress={() => go_exam()}
-                        android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}>
-                        <Surface style={styles.doItAgain}>
+                <View
+                    style={{
+                        marginHorizontal: 50,
+                        marginVertical: 20,
+                        padding: 15,
+                    }}>
+                    <Surface
+                        style={{
+                            backgroundColor: 'white',
+                            elevation: 3,
+                            borderWidth: 1,
+                            borderColor: '#D7D8D2'
+                        }}>
+                        <Pressable
+                            onPress={() => go_exam()}
+                            android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: 15
+                            }}>
                             <Text style={{ fontFamily: 'Cairo_700Bold', fontSize: 15 }}>خوض الاختبار مجدداً</Text>
                             <MaterialCommunityIcons
                                 name='refresh'
+                                size={25}
                                 color='#00C853'
-                                size={25} style={{ marginLeft: 10 }} />
-                        </Surface>
-                    </Pressable>
+                                style={{ marginLeft: 10 }} />
+                        </Pressable>
+                    </Surface>
                 </View>
                 {!quiz.title.includes('مخصص') ?
 
                     <View style={{ flex: 1 }}>
                         {get_recommendation(0).visible ?
                             <View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 8 }}>
-                                    <MaterialCommunityIcons name='telescope' color='grey' size={20} style={{ marginRight: 3 }} />
+                                <View style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    marginLeft: 8
+                                }}>
+                                    <MaterialCommunityIcons
+                                        name='telescope'
+                                        size={20}
+                                        color='grey'
+                                        style={{ marginRight: 3 }} />
                                     <Text style={{ fontFamily: 'Cairo_600SemiBold', color: 'grey' }}>اختبارت أخرى لحلها: </Text>
                                 </View>
                                 <View
                                     key={get_recommendation(0).title}
                                     style={{
                                         margin: 5,
-                                        elevation: 2,
-                                        backgroundColor: 'white',
-                                        padding: 15
                                     }}>
-                                    <Pressable
-                                        onPress={() => go_exam(get_recommendation(0).quiz)}
-                                        android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}>
+                                    <Surface style={{
+                                        backgroundColor: 'white',
+                                        elevation: 2,
+                                        borderWidth: 1,
+                                        borderColor: '#D7D8D2',
+                                    }}>
+                                        <Pressable
+                                            onPress={() => go_exam(get_recommendation(0).quiz)}
+                                            android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
+                                            style={{
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                flexDirection: 'row',
+                                                padding: 15
+                                            }}>
 
-                                        <Surface style={styles.recommendation}>
-                                            <Text style={{ fontFamily: 'Cairo_700Bold' }}>{get_recommendation(0).title}</Text>
+                                            <Surface style={styles.recommendation}>
+                                                <Text style={{ fontFamily: 'Cairo_700Bold' }}>{get_recommendation(0).title}</Text>
 
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                                                <Text>{get_recommendation(0).questions_number}</Text>
-                                                <MaterialCommunityIcons name="format-list-numbered" size={20} color="grey" style={{ marginLeft: 5 }} />
-                                            </View>
-                                        </Surface>
-                                    </Pressable>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                                    <Text>{get_recommendation(0).questions_number}</Text>
+                                                    <MaterialCommunityIcons
+                                                        name="format-list-numbered"
+                                                        color="grey"
+                                                        size={20}
+                                                        style={{ marginLeft: 5 }} />
+                                                </View>
+                                            </Surface>
+                                        </Pressable>
+                                    </Surface>
                                 </View>
-                            </View> : <EmptySpace />}
+                            </View> : null}
 
                         {get_recommendation(1).visible ?
                             <View
                                 key={get_recommendation(1).title}
                                 style={{
                                     margin: 5,
-                                    elevation: 2,
-                                    backgroundColor: 'white',
-                                    padding: 15
                                 }}>
-                                <Pressable
-                                    onPress={() => go_exam(get_recommendation(1).quiz)}
-                                    android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}>
-                                    <Surface style={styles.recommendation}>
-                                        <Text style={{ fontFamily: 'Cairo_700Bold' }}>{get_recommendation(1).title}</Text>
+                                <Surface style={{
+                                    backgroundColor: 'white',
+                                    elevation: 2,
+                                    borderWidth: 1,
+                                    borderColor: '#D7D8D2',
+                                }}>
+                                    <Pressable
+                                        onPress={() => go_exam(get_recommendation(1).quiz)}
+                                        android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
+                                        style={{
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            flexDirection: 'row',
+                                            padding: 15
+                                        }}>
 
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                                            <Text>{get_recommendation(1).questions_number}</Text>
-                                            <MaterialCommunityIcons name="format-list-numbered" size={20} color="grey" style={{ marginLeft: 5 }} />
-                                        </View>
-                                    </Surface>
-                                </Pressable>
+                                        <Surface style={styles.recommendation}>
+                                            <Text style={{ fontFamily: 'Cairo_700Bold' }}>{get_recommendation(1).title}</Text>
+
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                                <Text>{get_recommendation(1).questions_number}</Text>
+                                                <MaterialCommunityIcons
+                                                    name="format-list-numbered"
+                                                    color="grey"
+                                                    size={20}
+                                                    style={{ marginLeft: 5 }} />
+                                            </View>
+                                        </Surface>
+                                    </Pressable>
+                                </Surface>
                             </View> : null}
                     </View> : null}
             </View>
-        </Animatable.View>
+        </Animatable.View >
     )
 }
 const styles = StyleSheet.create({
@@ -248,18 +337,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
         lineHeight: 20
     },
-    recommendation: {
-        borderWidth: 1,
-        borderColor: '#D7D8D2',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexDirection: 'row'
-    },
-    doItAgain: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1,
-        borderColor: '#D7D8D2',
-    }
 })

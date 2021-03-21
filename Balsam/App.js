@@ -7,15 +7,17 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DateTime } from 'luxon';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import CryptoJS from 'crypto-js';
-import { FileSystem } from 'react-native-file-access';
-import { useFonts } from 'expo-font';
+import { Dirs, FileSystem } from 'react-native-file-access';
 import * as Animatable from 'react-native-animatable';
+import { useFonts } from 'expo-font';
 
 import Home from './screens/Home'
 import SubjectStack from './screens/SubjectStack'
 import CustomExam from './screens/CustomExam'
 import CustomDrawer from './screens/CustomDrawer'
-import { get_database, update_database, update_error_msgs } from './screens/db'
+import * as Network from 'expo-network';
+
+import { get_database, update_database, update_error_msgs, update_bookmarks, update_act, update_cache_array } from './screens/db'
 
 
 const { Storage } = NativeModules;
@@ -37,10 +39,6 @@ export default function App() {
       info: '#2f7ac1'
     },
   };
-  let [fontsLoaded] = useFonts({
-    'Cairo_Bold': require('./assets/fonts/Cairo-Bold.ttf'),
-    'Cairo_SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
-  });
   const [loading, setLoading] = React.useState(true);
   const [shouldAskForPermissions, setShouldAskForPermissions] = React.useState(false)
   async function ask_for_permission() {
@@ -57,7 +55,10 @@ export default function App() {
     }
   }
 
-
+  const [fontsLoaded] = useFonts({
+    'Cairo_Bold': require('./assets/fonts/Cairo-Bold.ttf'),
+    'Cairo_SemiBold': require('./assets/fonts/Cairo-SemiBold.ttf'),
+  });
 
 
   React.useEffect(() => {
@@ -110,23 +111,29 @@ export default function App() {
         return this.questions[index]
       }
       file.get_estimated_time = function get_estimated_time() {
-        let time = ((this.questions.length * this.estimated_time_for_question) / 60).toFixed(2).toString().split('');
-        if (time.length == 4) {
-          time.unshift('0')
+        if (this.questions.length > 1) {
+          let time = ((this.questions.length * this.estimated_time_for_question) / 60).toFixed(2).toString().split('');
+          if (time.length == 4) {
+            time.unshift('0')
+            time[2] = ':'
+            return time.join('')
+          }
           time[2] = ':'
           return time.join('')
         }
-        time[2] = ':'
-        return time.join('')
+        return '00:45'
       }
       file.get_remaining_time = function get_remaining_time(index) {
-        let time = (((this.questions.length - index) * this.estimated_time_for_question) / 60).toFixed(2).toString().split('');
+        let diff = this.questions.length - index;
+        diff == 1 ? diff = 0.6 : diff = diff
+        let time = ((diff * this.estimated_time_for_question) / 60).toFixed(2).toString().split('');
         if (time.length == 4) {
           time.unshift('0')
           time[2] = ':'
           return time.join('')
         }
         time[2] = ':'
+
         return time.join('')
       }
       file.set_estimated_time_per_question = function set_estimated_time_per_question(time) {
@@ -215,7 +222,47 @@ export default function App() {
         update_error_msgs({ Code: 'check permission code', error })
       }
     }
-    check_permission()
+    async function read_blsm() {
+      try {
+        let is_file = await FileSystem.exists(Dirs.DocumentDir + '/b.blsm');
+        if (is_file) {
+          try {
+            let file = await FileSystem.readFile(Dirs.DocumentDir + '/b.blsm');
+            let decoded_file = decode_file(file);
+            let json_file = JSON.parse(decoded_file);
+            update_bookmarks(json_file.bookmarks);
+            update_act(json_file.act_array);
+            update_cache_array(json_file.cache_array)
+          } catch (error) {
+            update_error_msgs({ Code: 'error reading b.blsm file', error })
+          }
+        } else {
+          try {
+            let mac = null
+            try {
+              mac = await Network.getMacAddressAsync();
+            } catch (error) {
+              update_error_msgs({ Code: 'Error on fetching mac address', error })
+            }
+            let data = {
+              mac,
+              act_array: [],
+              cache_array: [],
+              bookmarks: []
+            }
+            let path = Dirs.DocumentDir + '/b.blsm';
+            let encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), 'nabeeladnanalinizam_20900!@#()').toString();
+            await FileSystem.writeFile(path, encrypted)
+          } catch (error) {
+            update_error_msgs({ Code: 'error writing b.blsm file first time', error })
+          }
+        }
+      } catch (error) {
+        update_error_msgs({ Code: 'Error in read_blsm', error })
+      }
+    }
+    check_permission();
+    read_blsm();
   }, [shouldAskForPermissions])
 
   if (fontsLoaded) {

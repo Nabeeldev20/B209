@@ -5,12 +5,10 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
-import { get_bookmarks, update_bookmarks, get_database, save_file } from './db'
-
-let database = get_database();
+import { get_bookmarks, update_bookmarks, save_file } from './db'
 
 export default function Exam({ navigation, route }) {
-    let { quiz, exam_time } = route.params;
+    let { quiz, exam_time, random_questions, random_choices } = route.params;
     React.useEffect(() => {
         navigation.setOptions({ title: quiz.title })
     }, [quiz.title])
@@ -38,19 +36,26 @@ export default function Exam({ navigation, route }) {
     const Footer = () => {
         if (hasAnswered) {
             return (
-                <Animatable.View ref={footer_animation} animation="fadeInUp" duration={1500}>
+                <Animatable.View
+                    ref={footer_animation}
+                    animation="fadeInUp"
+                    duration={1500}>
                     <View style={{
-                        elevation: 1,
-                        backgroundColor: '#fff'
+                        backgroundColor: '#fff',
+                        borderWidth: 2,
+                        borderColor: '#D7D8D2'
                     }}>
                         <Pressable
                             onPress={move_to_next_question}
-                            android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}>
-                            <Surface style={[styles.footer, styles.surface, { padding: 15, alignItems: 'center', width: '100%' }]}>
-                                <Text style={{ fontFamily: 'Cairo_700Bold', fontSize: 18 }}>
-                                    {index == quiz.get_questions_number() - 1 ? 'عرض النتيجة' : 'السؤال التالي'}
-                                </Text>
-                            </Surface>
+                            android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
+                            style={{
+                                padding: 15,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                            <Text style={{ fontFamily: 'Cairo_700Bold', fontSize: 18 }}>
+                                {index == quiz.get_questions_number() - 1 ? 'عرض النتيجة' : 'السؤال التالي'}
+                            </Text>
                         </Pressable>
                     </View>
                 </Animatable.View>
@@ -74,7 +79,13 @@ export default function Exam({ navigation, route }) {
     }
     const move_to_next_question = () => {
         if (index == (quiz.get_questions_number() - 1)) {
-            navigation.replace('FinishScreen', { quiz, wrong_count: wrongAnswersCount, exam_time })
+            navigation.replace('FinishScreen', {
+                quiz,
+                wrong_count: wrongAnswersCount,
+                exam_time,
+                random_questions,
+                random_choices
+            })
         } else {
             if (title) {
                 title.current?.fadeInRight()
@@ -114,6 +125,9 @@ export default function Exam({ navigation, route }) {
 
         }
     }
+    function is_custom_exam() {
+        return quiz.title.includes('مخصص') ? true : false
+    }
     update_index();
 
     return (
@@ -125,36 +139,64 @@ export default function Exam({ navigation, route }) {
         >
             <View style={styles.container}>
                 {visible ?
-                    <Animatable.View animation="fadeInDown" style={{
-                        backgroundColor: 'white',
-                        padding: 10,
-                        elevation: 3
-                    }}>
-
+                    <Animatable.View
+                        animation="fadeInDown"
+                        style={{
+                            backgroundColor: 'white',
+                            padding: 10,
+                            elevation: 5
+                        }}>
                         <Text style={styles.banner_text}>{quiz.get_question(index).explanation}</Text>
                     </Animatable.View> : null}
 
 
-                <View style={[styles.row, { justifyContent: 'space-between', marginTop: 10, marginHorizontal: 10 }]}>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        paddingTop: 10,
+                        paddingHorizontal: 10,
+                        paddingBottom: 15
+                    }}>
                     <View style={styles.row}>
-                        <MaterialCommunityIcons style={{ marginRight: 3 }} name='card-text' size={20} color='grey' />
-
+                        <MaterialCommunityIcons
+                            name='card-text'
+                            size={20}
+                            color='grey'
+                            style={{ marginRight: 3 }} />
                         <Text style={styles.header_text}>
-                            {index + 1}
-                        :
-                        {quiz.get_questions_number()}
+                            <Text style={{ fontWeight: 'bold' }}>{index + 1}</Text>
+                              /
+                             {quiz.get_questions_number()}
                         </Text>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.header_text}>{quiz.get_remaining_time(index)}</Text>
-                        <MaterialCommunityIcons style={{ marginLeft: 3 }} name='timer-sand' size={20} color='grey' />
+                        <MaterialCommunityIcons
+                            name='timer-sand'
+                            size={20}
+                            color='grey'
+                            style={{ marginLeft: 3 }} />
                     </View>
                 </View>
-                <Animatable.Text ref={title} animation="fadeInRight" duration={1500} style={{ paddingHorizontal: 5 }}>
+
+
+
+                <Animatable.Text
+                    ref={title}
+                    animation="fadeInRight"
+                    duration={1500}
+                    style={{ paddingHorizontal: 10 }}>
                     <Title style={styles.question}>{quiz.get_question(index).title}</Title>
                 </Animatable.Text>
 
-                <Animatable.View style={{ marginTop: 3 }} ref={choices_animation} animation="fadeIn" duration={1500} delay={250}>
+                <Animatable.View
+                    ref={choices_animation}
+                    animation="fadeIn"
+                    duration={1500}
+                    delay={250}
+                    style={{ paddingTop: 3 }}>
                     <FlatList
                         data={quiz.get_question(index).choices.filter(ch => ch != '-')}
                         extraData={quiz.get_question(index).choices.filter(ch => ch != '-')}
@@ -162,23 +204,27 @@ export default function Exam({ navigation, route }) {
                             return (
                                 <View
                                     key={item}
-                                    style={[
-                                        styles.surface,
-                                        {
-                                            backgroundColor: hasAnswered && quiz.get_question(index).is_right(item) ? colors.success : 'white',
-                                            marginVertical: 3,
-                                            marginHorizontal: 5,
-                                            padding: 5,
-                                        }]}>
-                                    <Pressable
-                                        onPress={() => check_answer(item)}
-                                        android_ripple={{ color: quiz.get_question(index).is_right(item) ? colors.success : colors.error, borderless: false }}>
-                                        <Surface>
+                                    style={{
+                                        marginVertical: 3,
+                                        marginHorizontal: 5,
+                                    }}>
+                                    <Surface style={{
+                                        borderColor: hasAnswered && quiz.get_question(index).is_right(item) ? colors.success : '#D7D8D2',
+                                        borderWidth: hasAnswered && quiz.get_question(index).is_right(item) ? 2 : 1,
+                                        elevation: 2,
+                                    }}>
+                                        <Pressable
+                                            onPress={() => check_answer(item)}
+                                            android_ripple={{ color: quiz.get_question(index).is_right(item) ? colors.success : colors.error, borderless: false }}
+                                            style={{
+                                                alignItems: 'center',
+                                                padding: 15
+                                            }}>
                                             <Subheading style={styles.choice} >
                                                 {item}
                                             </Subheading>
-                                        </Surface>
-                                    </Pressable>
+                                        </Pressable>
+                                    </Surface>
                                 </View>
                             )
                         }}
@@ -187,22 +233,34 @@ export default function Exam({ navigation, route }) {
 
             </View>
 
-            <View>
-                <View style={{ flexDirection: 'row', width: '55%', justifyContent: quiz.title.includes('مخصص') ? 'flex-end' : 'space-between' }}>
-                    {!quiz.title.includes('مخصص') ?
-                        <IconButton
-                            icon={inBookmark ? 'bookmark' : 'bookmark-off'}
-                            color={inBookmark ? 'gold' : 'grey'}
-                            size={30}
-                            onPress={() => add_to_bookmarks({
-                                question: quiz.get_question(index),
-                                explanation: quiz.get_question(index).explanation,
-                                subject: quiz.subject
-                            })}
-                            style={{ justifyContent: 'flex-start' }}
-                        /> : null}
-                    <Text style={styles.branding}>بلســـم</Text>
-                </View>
+            <View
+                style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    width: '100%'
+                }}>
+                {is_custom_exam() ?
+                    <IconButton
+                        icon={inBookmark ? 'bookmark' : 'bookmark-off'}
+                        size={34}
+                        color={inBookmark ? 'gold' : 'grey'}
+                        style={{
+                            alignSelf: 'flex-start',
+                            position: 'absolute',
+                            paddingLeft: 20
+                        }}
+                        onPress={() => add_to_bookmarks({
+                            question: quiz.get_question(index),
+                            explanation: quiz.get_question(index).explanation,
+                            subject: quiz.subject
+                        })} /> : null}
+
+                <Text style={{
+                    fontFamily: 'Cairo_600SemiBold',
+                    alignSelf: 'center',
+                    color: 'grey',
+                    fontSize: 11
+                }}>بلســـم</Text>
                 <Footer />
             </View>
         </ScrollView >
@@ -232,8 +290,6 @@ const styles = StyleSheet.create({
         textAlign: 'justify',
         fontFamily: 'Cairo_600SemiBold',
         fontSize: 17,
-        padding: 5,
-        marginLeft: 3,
         letterSpacing: 0,
         selectable: false
     },
@@ -252,13 +308,6 @@ const styles = StyleSheet.create({
     row: {
         alignItems: 'center',
         flexDirection: 'row'
-    },
-    branding: {
-        fontFamily: 'Cairo_600SemiBold',
-        alignSelf: 'center',
-        justifyContent: 'center',
-        color: 'grey',
-        fontSize: 12
     },
     header_text: {
         color: 'grey',
