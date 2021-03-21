@@ -53,7 +53,7 @@ export default function Exam({ navigation, route }) {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}>
-                            <Text style={{ fontFamily: 'Cairo_700Bold', fontSize: 18 }}>
+                            <Text style={{ fontFamily: 'Cairo-Bold', fontSize: 18 }}>
                                 {index == quiz.get_questions_number() - 1 ? 'عرض النتيجة' : 'السؤال التالي'}
                             </Text>
                         </Pressable>
@@ -256,7 +256,7 @@ export default function Exam({ navigation, route }) {
                         })} /> : null}
 
                 <Text style={{
-                    fontFamily: 'Cairo_600SemiBold',
+                    fontFamily: 'Cairo-SemiBold',
                     alignSelf: 'center',
                     color: 'grey',
                     fontSize: 11,
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
     question: {
         textAlign: 'justify',
         marginVertical: 2,
-        fontFamily: 'Cairo_700Bold',
+        fontFamily: 'Cairo-Bold',
         fontSize: 18,
         paddingHorizontal: 10,
         selectable: false,
@@ -283,13 +283,13 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     banner_text: {
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         textAlign: 'justify',
         selectable: false
     },
     choice: {
         textAlign: 'justify',
-        fontFamily: 'Cairo_600SemiBold',
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 17,
         letterSpacing: 0,
         selectable: false
