@@ -49,10 +49,10 @@ async function save_file(quiz) {
         let encrypted = CryptoJS.AES.encrypt(JSON.stringify(quiz), 'nabeeladnanalinizam_20900!@#()').toString();
         await FileSystem.writeFile(path, encrypted);
     } catch (error) {
-        update_error_msgs({ Code: 'error writing to file' + error })
+        update_error_msgs({ Code: 'error writing to file', error })
     }
 }
-async function save_blsm(data) {
+async function save_blsm() {
     try {
         let blsm = {
             mac,

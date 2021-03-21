@@ -4,7 +4,7 @@ import { Surface, Divider } from 'react-native-paper'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DateTime } from 'luxon'
 import * as Animatable from 'react-native-animatable';
-import { get_database, save_file } from './db'
+import { get_database, save_file, update_error_msgs } from './db'
 
 
 export default function FinishScreen({ navigation, route }) {
@@ -70,7 +70,11 @@ export default function FinishScreen({ navigation, route }) {
         quiz.index = 0;
         quiz.taken_number += 1;
         quiz.last_time = DateTime.now().toISODate();
-        save_file(quiz)
+        try {
+            await FileSystem.writeFile(quiz.path, JSON.stringify(quiz));
+        } catch (error) {
+            update_error_msgs({ Code: 'Error writing @finishScreen', error })
+        }
     }
     function update_data() {
         if (!quiz.title.includes('مخصص')) {

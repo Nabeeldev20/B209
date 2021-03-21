@@ -393,8 +393,10 @@ export default function CustomExam({ navigation }) {
                     },
                     get_remaining_time(index) {
                         let diff = this.questions.length - index;
-                        diff == 1 ? diff = 0.6 : diff = diff
-                        let time = ((diff * this.estimated_time_for_question) / 60).toFixed(2).toString().split('');
+                        if (diff == 1) {
+                            diff = 0.6
+                        }
+                        let time = ((diff * 45) / 60).toFixed(2).toString().split('');
                         if (time.length == 4) {
                             time.unshift('0')
                             time[2] = ':'
