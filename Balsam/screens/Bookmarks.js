@@ -4,7 +4,7 @@ import { Divider, Surface, Headline, IconButton } from 'react-native-paper'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Animatable from 'react-native-animatable';
 
-import { get_bookmarks, update_bookmarks } from './db'
+import { get_bookmarks, update_bookmarks, save_blsm } from './db'
 
 
 export default function Bookmarks({ navigation, route }) {
@@ -32,8 +32,8 @@ export default function Bookmarks({ navigation, route }) {
     }
     const remove_Bookmark = (item) => {
         setBookmarksData(bookmarksData.filter(bookmark => bookmark.question.title != item.question.title))
-        // db.js + asyncStorage
         update_bookmarks(bookmarksData.filter(bookmark => bookmark.question.title != item.question.title));
+        save_blsm()
     }
     const empty_state = () => {
         return (

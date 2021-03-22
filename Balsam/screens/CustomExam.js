@@ -449,14 +449,14 @@ export default function CustomExam({ navigation }) {
                 scrollEnabled={scrollEnabled}
                 onContentSizeChange={onContentSizeChange}>
                 <View style={styles.container}>
-                    <Text>{JSON.stringify(get_error_msgs(), null, 2)}</Text>
-                    <Text>bookmarks: {JSON.stringify(get_bookmarks(), null, 2)}</Text>
-                    <Text>act: {JSON.stringify(get_act(), null, 2)}</Text>
-                    <Text>cache: {JSON.stringify(get_cache_array(), null, 2)}</Text>
                     <SubjectsCheckboxes />
                     <QuizzesCheckBoxes />
                     <QuizOptions />
                     <GoExam />
+                    <Text>{JSON.stringify(get_error_msgs(), null, 2)}</Text>
+                    <Text>bookmarks: {JSON.stringify(get_bookmarks(), null, 2)}</Text>
+                    <Text>act: {JSON.stringify(get_act(), null, 2)}</Text>
+                    <Text>cache: {JSON.stringify(get_cache_array(), null, 2)}</Text>
                 </View>
             </ScrollView>
         )
@@ -469,7 +469,7 @@ export default function CustomExam({ navigation }) {
                 component={custom_exam}
                 options={{
                     title: 'امتحان مخصص',
-                    headerTitleStyle: { fontFamily: 'Cairo-Bold' },
+                    headerTitleStyle: { fontFamily: 'Cairo-Bold', fontSize: 14 },
                     headerLeft: () => (<MaterialCommunityIcons size={30} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
                 }} />
         </Stack.Navigator>

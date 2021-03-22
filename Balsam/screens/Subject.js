@@ -67,7 +67,14 @@ export default function Subject({ navigation, route }) {
 
     function empty_state_cycle() {
         return (
-            <Animatable.View animation="fadeIn" style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
+            <Animatable.View
+                animation="fadeIn"
+                style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%'
+                }}>
                 <MaterialCommunityIcons
                     name='file-hidden'
                     color='grey'
@@ -117,11 +124,14 @@ export default function Subject({ navigation, route }) {
             } else {
                 Analytics.trackEvent('Exam', { Subject: quiz.subject, FileName: quiz.title });
                 quiz.get_shuffled_questions(true, true)
-                navigation.push('Exam', {
-                    quiz,
-                    exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
-                    random_questions: true,
-                    random_choices: true
+                navigation.navigate('Home', {
+                    screen: 'Exam',
+                    params: {
+                        quiz,
+                        exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+                        random_questions: true,
+                        random_choices: true
+                    }
                 })
             }
         }
@@ -147,16 +157,27 @@ export default function Subject({ navigation, route }) {
     }
     function resume_exam({ quiz, continue_exam = false } = {}) {
         if (continue_exam) {
-            navigation.push('Exam', { quiz, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) })
+            navigation.push('Home', {
+                screen: 'Exam',
+                params: {
+                    quiz,
+                    exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+                    random_questions: true,
+                    random_choices: true
+                }
+            })
         } else {
             quiz.index = 0
             quiz.get_shuffled_questions(true, true);
-            navigation.push('Exam', {
-                quiz,
-                exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
-                random_questions: true,
-                random_choices: true
-            });
+            navigation.push('Home', {
+                screen: 'Exam',
+                params: {
+                    quiz,
+                    exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+                    random_questions: true,
+                    random_choices: true
+                }
+            })
             setUnfinishedDialog({ visible: false })
         }
     }
@@ -206,6 +227,20 @@ export default function Subject({ navigation, route }) {
                                 <Pressable
                                     onPress={() => go_exam(item)}
                                     onLongPress={async () => {
+                                        function calculate_last_time_score() {
+                                            if (item.average_time.length > 0) {
+                                                let last = item.average_time[item.average_time.length - 1];
+                                                let time = (last / 60).toFixed(2).toString().split('');
+                                                if (time.length == 4) {
+                                                    time.unshift('0')
+                                                    time[2] = ':'
+                                                    return time.join('')
+                                                }
+                                                time[2] = ':'
+                                                return time.join('')
+                                            }
+                                            return 0
+                                        }
                                         setDialogData({
                                             visible: true,
                                             title: item.title,
@@ -213,7 +248,7 @@ export default function Subject({ navigation, route }) {
                                             average_accuracy: item.get_average_accuracy(),
                                             average_time: item.get_average_time(),
                                             last_score: item.average_accuracy[item.average_accuracy.length - 1] ?? 0,
-                                            last_time_score: item.average_time[item.average_time.length - 1] ?? 0,
+                                            last_time_score: calculate_last_time_score() ?? '00:00',
                                             last_time: item.last_time
                                         })
                                         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -236,7 +271,7 @@ export default function Subject({ navigation, route }) {
                                             <MaterialCommunityIcons
                                                 name={get_icon(item).name}
                                                 color={get_icon(item).color}
-                                                size={21}
+                                                size={20}
                                                 style={{ marginLeft: 5 }} />
                                             <Text style={styles.subtitle}>{item.subject}</Text>
                                             {item.is_cycle() ? <Text style={[styles.cycle_university, { color: colors.error }]}>{item.cycle_university}</Text> : null}
@@ -255,7 +290,7 @@ export default function Subject({ navigation, route }) {
                                             <Text style={styles.numbers}>{item.get_questions_number()}</Text>
                                             <MaterialCommunityIcons
                                                 name="format-list-numbered"
-                                                size={18}
+                                                size={20}
                                                 color="grey"
                                                 style={{ marginLeft: 5 }} />
                                         </View>
@@ -267,7 +302,7 @@ export default function Subject({ navigation, route }) {
                                             <Text style={styles.numbers}>{item.get_estimated_time()}</Text>
                                             <MaterialCommunityIcons
                                                 name="progress-clock"
-                                                size={18}
+                                                size={20}
                                                 color="grey"
                                                 style={{ marginLeft: 5 }} />
                                         </View>
@@ -283,9 +318,9 @@ export default function Subject({ navigation, route }) {
                     <Dialog
                         visible={unfinishedDialog.visible}
                         onDismiss={() => setUnfinishedDialog({ visible: false })}>
-                        <Dialog.Title style={[styles.dialog_title, { padding: 3 }]}>لم تنه الامتحان آخر مرة!</Dialog.Title>
+                        <Dialog.Title style={styles.dialog_title}>لم تنه الامتحان آخر مرة!</Dialog.Title>
                         <Divider />
-                        <Dialog.Content style={{ padding: 3 }}>
+                        <Dialog.Content>
                             <Text style={styles.dialog_text}>توقفت عند السؤال {unfinishedDialog.index} من أصل {unfinishedDialog.questions_number}</Text>
                         </Dialog.Content>
                         <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
@@ -371,7 +406,7 @@ export default function Subject({ navigation, route }) {
                             <IconButton
                                 icon='file-remove'
                                 color='#E53935'
-                                size={20}
+                                size={24}
                                 onPress={() => remove_file(dialogData.title, dialogData.path)} />
                             <Button
                                 onPress={() => setDialogData({ visible: false })}
@@ -433,12 +468,12 @@ const styles = StyleSheet.create({
         fontSize: 15,
         lineHeight: 20,
         color: 'grey',
-        marginLeft: 15,
+        paddingLeft: 5,
         selectable: false
     },
     numbers: {
         fontFamily: 'Cairo-SemiBold',
-        fontSize: 17,
+        fontSize: 15,
         color: 'grey',
         lineHeight: 23,
         selectable: false
@@ -446,14 +481,14 @@ const styles = StyleSheet.create({
     cycle_university: {
         color: 'red',
         fontSize: 15,
-        marginLeft: 5,
+        paddingLeft: 5,
         selectable: false
     },
     dialog_text: {
         fontFamily: 'Cairo-SemiBold',
         fontSize: 15,
         lineHeight: 20,
-        marginLeft: 5,
+        paddingLeft: 5,
         color: '#313131',
         selectable: false
     }

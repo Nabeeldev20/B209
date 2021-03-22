@@ -101,7 +101,7 @@ export default function FinishScreen({ navigation, route }) {
                         <Text style={[styles.message, { color: get_text_score(get_ratio_score()).color }]}>{get_text_score(get_ratio_score()).text}</Text>
                         <Animatable.Text
                             style={[styles.numbers, { color: get_text_score(get_ratio_score()).color }]}
-                            animation="tada"
+                            animation={get_text_score(get_ratio_score()).text == 'عادي' ? 'shake' : 'tada'}
                             iterationCount={3}>
                             {quiz.get_questions_number() - wrong_count}/{quiz.get_questions_number()}
                         </Animatable.Text>
@@ -115,28 +115,28 @@ export default function FinishScreen({ navigation, route }) {
                     }}>
                         <View style={{ alignItems: 'center' }}>
                             <MaterialCommunityIcons
-                                name='chart-bell-curve-cumulative'
-                                size={18}
+                                name='chart-areaspline-variant'
+                                size={22}
                                 color='grey'
-                                style={{ paddingBottom: 2 }} />
+                                style={{ paddingBottom: 3 }} />
                             <Text style={styles.exam_result}>الدقة</Text>
                             <Text style={styles.exam_result}>%{get_ratio_score()}</Text>
                         </View>
                         <View style={{ alignItems: 'center' }}>
                             <MaterialCommunityIcons
                                 name='timer-sand'
-                                size={18}
+                                size={22}
                                 color='grey'
-                                style={{ paddingBottom: 2 }} />
+                                style={{ paddingBottom: 3 }} />
                             <Text style={styles.exam_result}>الوقت</Text>
                             <Text style={styles.exam_result}>{get_time()} د</Text>
                         </View>
                         <View style={{ alignItems: 'center' }}>
                             <MaterialCommunityIcons
                                 name='playlist-remove'
-                                size={18}
+                                size={22}
                                 color='grey'
-                                style={{ paddingBottom: 2 }} />
+                                style={{ paddingBottom: 3 }} />
                             <Text style={styles.exam_result}>الخطأ</Text>
                             <Text style={styles.exam_result}>{wrong_count}</Text>
                         </View>
@@ -154,7 +154,7 @@ export default function FinishScreen({ navigation, route }) {
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <MaterialCommunityIcons
                                     name='target-variant'
-                                    size={18}
+                                    size={20}
                                     color='grey'
                                     style={{ marginRight: 10 }} />
                                 <Text style={styles.exam_result}>متوسط التحصيل في مقرر {quiz.subject}</Text>
@@ -172,19 +172,19 @@ export default function FinishScreen({ navigation, route }) {
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <MaterialCommunityIcons
                                     name='history'
-                                    size={18}
+                                    size={20}
                                     color='grey'
                                     style={{ marginRight: 10 }} />
                                 <Text style={styles.exam_result}>متوسط الوقت لمقرر {quiz.subject}</Text>
                             </View>
-                            <Text style={styles.exam_result}>%{quiz.get_average_time()}</Text>
+                            <Text style={styles.exam_result}>{quiz.get_average_time()}</Text>
                         </View>
                     </Surface> : null}
                 <View
                     style={{
                         marginHorizontal: 50,
                         marginVertical: 20,
-                        padding: 15,
+                        padding: 10,
                     }}>
                     <Surface
                         style={{
@@ -334,7 +334,8 @@ const styles = StyleSheet.create({
     },
     exam_result: {
         fontFamily: 'Cairo-SemiBold',
-        fontSize: 16,
-        lineHeight: 20
+        fontSize: 14,
+        lineHeight: 20,
+        color: 'grey'
     },
 })

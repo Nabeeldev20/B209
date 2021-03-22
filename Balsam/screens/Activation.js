@@ -10,9 +10,7 @@ import { DateTime } from 'luxon'
 import { get_act, update_act, get_cache_array, update_cache_array, save_blsm, get_mac, update_error_msgs, update_mac } from './db'
 import * as Network from 'expo-network';
 
-// TODO write to b.blsm
-// TODO ask user to turn on their wifi if mac == null
-// TODO show message 
+
 export default function Activation({ navigation, route }) {
     const h = new Hashids("nabeel adnan ali nizam", 12, "abcdefghijklmnopqrstuvwxyz123456789");
     const { subject_name, code } = route.params;
@@ -80,6 +78,7 @@ export default function Activation({ navigation, route }) {
     function copy() {
         Clipboard.setString(`
         Telegram: @Balsam_dev || ${DateTime.now().toISODate()}
+        --
         ${storeCode}
         --
         ${get_act_code()} - ${code}
@@ -95,11 +94,16 @@ export default function Activation({ navigation, route }) {
     }
     async function save() {
         function update_data() {
+            ToastAndroid.showWithGravity(
+                'تم التفعيل بنجاح',
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM
+            )
             update_act([...get_act(), code]);
             save_blsm();
+            Analytics.trackEvent('Activation', { Subject: subject_name, QuizCode: code, StoreCode: storeCode });
             navigation.navigate('Home')
         }
-        Analytics.trackEvent('Activation', { Subject: subject_name, QuizCode: code, StoreCode: storeCode });
         try {
             let mac_address = null
             mac_address = await Network.getMacAddressAsync();
@@ -260,7 +264,7 @@ const styles = StyleSheet.create({
     },
     text: {
         fontFamily: 'Cairo-SemiBold',
-        fontSize: 15,
+        fontSize: 14,
         textAlign: 'left'
     },
     welcome: {
