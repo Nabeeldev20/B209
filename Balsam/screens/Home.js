@@ -14,11 +14,17 @@ import Exam from './Exam'
 import FinishScreen from './FinishScreen'
 import Activation from './Activation'
 import { get_database, update_database, erase_database, update_error_msgs, get_act } from './db'
-let data = get_database()
+let data = []
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();
     const { colors } = useTheme();
-
+    React.useEffect(() => {
+        data = get_database();
+        if (data.length == 0) {
+            // calling the function again
+            data = get_database()
+        }
+    }, [get_database()])
 
     function EmptyHome() {
         return (
