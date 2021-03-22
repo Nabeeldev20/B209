@@ -97,18 +97,18 @@ export default function Exam({ navigation, route }) {
             setVisible(false);
         }
     }
-    function add_to_bookmarks(question_index) {
-        let question = quiz.get_question(question_index);
+    function add_to_bookmarks() {
+        let question = quiz.get_question(index);
         question.subject = quiz.subject;
-        let bookmarks = [...new Set(get_bookmarks())]
-        function add_bookmark(){
+        let bookmarks = get_bookmarks();
+        function add_bookmark() {
             bookmarks.push(question)
             update_bookmarks(bookmarks)
         }
-        function remove_bookmark(){
+        function remove_bookmark() {
             update_bookmarks(bookmarks.filter(item => item.title != question.title))
         }
-        function save_to_bookmarks(){
+        function save_to_bookmarks() {
             try {
                 save_blsm()
             } catch (error) {
@@ -166,7 +166,7 @@ export default function Exam({ navigation, route }) {
             let output = [];
             let data = get_bookmarks().filter(item => item.subject == quiz.subject);
             for (let i = 0; i < data.length; i++) {
-                output.push(data[i].question.title)
+                output.push(data[i].title)
             }
             return output
         }
@@ -287,7 +287,7 @@ export default function Exam({ navigation, route }) {
                     icon={check_is_bookmark() ? 'bookmark' : 'bookmark-off'}
                     size={34}
                     color={check_is_bookmark() ? 'gold' : 'grey'}
-                    onPress={() => add_to_bookmarks(index)} />
+                    onPress={() => add_to_bookmarks()} />
 
                 <Text style={{
                     fontFamily: 'Cairo-SemiBold',

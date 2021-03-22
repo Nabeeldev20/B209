@@ -154,7 +154,7 @@ export default function Activation({ navigation, route }) {
             onContentSizeChange={onContentSizeChange}>
             <View style={styles.container}>
                 <Text style={styles.welcome}> ثلاث خطوات بسيطة لتفعيل البنك</Text>
-                <Text style={styles.text}>لكي يتم التفعيل بصورة صحيحة يجب تشغيل الـ wifi</Text>
+                <Text style={[styles.text, { color: 'grey' }]}>لكي يتم التفعيل بصورة صحيحة يجب تشغيل الـ wifi</Text>
                 <Animatable.View ref={n1}>
                     <Surface style={styles.surface}>
                         <View style={styles.row}>
@@ -195,13 +195,15 @@ export default function Activation({ navigation, route }) {
 
                             <Text style={styles.text}>
                                 انسخ كود بنك
-                        <Text style={{ fontFamily: 'Cairo-Bold' }}> {subject_name} </Text>
-                         من فضلك
-                        {'\n'} <Text style={{ fontFamily: 'Cairo-Bold' }}> ثمَّ</Text> أرسل رسالة عن طريق
-                        <View style={[styles.row, { paddingHorizontal: 5 }]}>
+                            <Text style={{ fontWeight: 'bold' }}> {subject_name} </Text>
+                             من فضلك
+                            {'\n'} <Text style={{ fontWeight: 'bold' }}>ثمَّ</Text> أرسل رسالة عن طريق
+
+                                <View style={[styles.row, { paddingHorizontal: 5 }]}>
                                     <Text style={styles.link} onPress={() => Linking.openURL('https://t.me/Balsam_dev')}>@Balsam_dev</Text>
                                     <MaterialCommunityIcons name='telegram' size={16} />
                                 </View>
+                                {'\n'}
                           على التلغرام لنرسل لك مفتاح التفعيل
                     </Text>
 

@@ -17,7 +17,7 @@ export default function Bookmarks({ navigation, route }) {
     const [bookmarksData, setBookmarksData] = React.useState(get_bookmarks().filter(bookmark => bookmark.subject == subject_name))
 
     const QuestionExplanation = (item) => {
-        if (item.has_explanation()) {
+        if (item.explanation.length > 3) {
             return (
                 <View>
                     <Divider />
@@ -31,7 +31,7 @@ export default function Bookmarks({ navigation, route }) {
         return null
     }
     const remove_Bookmark = (item) => {
-        function save_to_bookmarks(){
+        function save_to_bookmarks() {
             try {
                 save_blsm()
             } catch (error) {
@@ -74,7 +74,7 @@ export default function Bookmarks({ navigation, route }) {
                             {item.choices.filter(choice => choice != '-').map(choice => {
                                 return (
                                     <Text
-                                        style={[styles.text, { color: item.is_right(choice) ? 'green' : 'grey' }]}
+                                        style={[styles.text, { color: choice == item.right_answer ? 'green' : 'grey' }]}
                                         key={choice}
                                     >{choice}</Text>
                                 )
