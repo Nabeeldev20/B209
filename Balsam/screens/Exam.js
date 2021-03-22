@@ -132,6 +132,7 @@ export default function Exam({ navigation, route }) {
 
         }
     }
+
     function check_is_bookmark() {
         function get_questions_in_bookmarks() {
             let output = [];
@@ -141,14 +142,10 @@ export default function Exam({ navigation, route }) {
             }
             return output
         }
-        if (get_questions_in_bookmarks().includes(quiz.get_question(index).title)) {
-            set_is_bookmark(true);
-        } else {
-            set_is_bookmark(false)
-        }
+        if (get_questions_in_bookmarks().includes(quiz.get_question(index).title)) return true;
+        return false
     }
     update_index();
-    check_is_bookmark();
     return (
         <ScrollView
             style={{ flex: 1 }}
@@ -259,9 +256,9 @@ export default function Exam({ navigation, route }) {
                     width: '100%'
                 }}>
                 <IconButton
-                    icon={is_bookmark ? 'bookmark' : 'bookmark-off'}
+                    icon={check_is_bookmark() ? 'bookmark' : 'bookmark-off'}
                     size={34}
-                    color={is_bookmark ? 'gold' : 'grey'}
+                    color={check_is_bookmark() ? 'gold' : 'grey'}
                     onPress={() => add_to_bookmarks({
                         question: quiz.get_question(index),
                         explanation: quiz.get_question(index).explanation,

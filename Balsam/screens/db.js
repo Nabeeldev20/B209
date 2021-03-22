@@ -17,7 +17,7 @@ function get_database() {
     return database
 }
 function update_database(update) {
-    database.unshift(update)
+    database = database([...database, update])
 }
 function erase_database() {
     database = []

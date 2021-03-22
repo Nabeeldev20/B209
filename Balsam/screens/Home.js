@@ -120,113 +120,116 @@ export default function Home({ navigation }) {
         }
         return (
             <View style={styles.container}>
-                <FlatList
-                    data={database}
-                    extraData={database}
-                    keyExtractor={item => item.title}
-                    ListEmptyComponent={EmptyHome}
-                    renderItem={({ item, index }) => (
-                        <Animatable.View
-                            animation="fadeInRight"
-                            delay={index * 350}
-                            key={item.title}
-                            style={{
-                                marginVertical: 3,
-                            }}>
-                            <Surface style={{
-                                backgroundColor: '#fff',
-                                elevation: 2,
-                                borderWidth: 1,
-                                borderColor: '#D7D8D2',
-                            }}>
-                                <Pressable
-                                    onPress={() => go_exam(item)}
-                                    onLongPress={async () => {
-                                        function calculate_last_time_score() {
-                                            if (item.average_time.length > 0) {
-                                                let last = item.average_time[item.average_time.length - 1];
-                                                let time = (last / 60).toFixed(2).toString().split('');
-                                                if (time.length == 4) {
-                                                    time.unshift('0')
+                <Text> database length {JSON.stringify(get_database().length)}</Text>
+                {get_database().length > 0 ?
+                    <FlatList
+                        data={database}
+                        extraData={database}
+                        keyExtractor={item => item.title}
+                        renderItem={({ item, index }) => (
+                            <Animatable.View
+                                animation="fadeInRight"
+                                delay={index * 350}
+                                key={item.title}
+                                style={{
+                                    marginVertical: 3,
+                                }}>
+                                <Surface style={{
+                                    backgroundColor: '#fff',
+                                    elevation: 2,
+                                    borderWidth: 1,
+                                    borderColor: '#D7D8D2',
+                                }}>
+                                    <Pressable
+                                        onPress={() => go_exam(item)}
+                                        onLongPress={async () => {
+                                            function calculate_last_time_score() {
+                                                if (item.average_time.length > 0) {
+                                                    let last = item.average_time[item.average_time.length - 1];
+                                                    let time = (last / 60).toFixed(2).toString().split('');
+                                                    if (time.length == 4) {
+                                                        time.unshift('0')
+                                                        time[2] = ':'
+                                                        return time.join('')
+                                                    }
                                                     time[2] = ':'
                                                     return time.join('')
                                                 }
-                                                time[2] = ':'
-                                                return time.join('')
+                                                return 0
                                             }
-                                            return 0
-                                        }
-                                        setDialogData({
-                                            visible: true,
-                                            title: item.title,
-                                            path: item.path,
-                                            average_accuracy: item.get_average_accuracy(),
-                                            average_time: item.get_average_time(),
-                                            last_score: item.average_accuracy[item.average_accuracy.length - 1] ?? 0,
-                                            last_time_score: calculate_last_time_score() ?? '00:00',
-                                            last_time: item.last_time
-                                        })
-                                        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                                    }}
-                                    android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
-                                    style={{
-                                        padding: 12,
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center'
-                                    }}>
+                                            setDialogData({
+                                                visible: true,
+                                                title: item.title,
+                                                path: item.path,
+                                                average_accuracy: item.get_average_accuracy(),
+                                                average_time: item.get_average_time(),
+                                                last_score: item.average_accuracy[item.average_accuracy.length - 1] ?? 0,
+                                                last_time_score: calculate_last_time_score() ?? '00:00',
+                                                last_time: item.last_time
+                                            })
+                                            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                                        }}
+                                        android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
+                                        style={{
+                                            padding: 12,
+                                            flexDirection: 'row',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center'
+                                        }}>
 
-                                    <View>
-                                        <Text style={styles.title}>{item.title}</Text>
-                                        <View
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center'
-                                            }}>
-                                            <MaterialCommunityIcons
-                                                name={get_icon(item).name}
-                                                color={get_icon(item).color}
-                                                size={20}
-                                                style={{ marginLeft: 5 }} />
-                                            <Text style={styles.subtitle}>{item.subject}</Text>
-                                            {item.is_cycle() ? <Text style={[styles.cycle_university, { color: colors.error }]}>{item.cycle_university}</Text> : null}
+                                        <View>
+                                            <Text style={styles.title}>{item.title}</Text>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-start'
+                                                }}>
+                                                <MaterialCommunityIcons
+                                                    name={get_icon(item).name}
+                                                    color={get_icon(item).color}
+                                                    size={16}
+                                                    style={{ marginLeft: 5 }} />
+                                                <Text style={styles.subtitle}>{item.subject}</Text>
+                                                {item.is_cycle() ? <Text style={[styles.cycle_university, { color: colors.error }]}>{item.cycle_university}</Text> : null}
+                                            </View>
                                         </View>
-                                    </View>
 
 
-                                    <View>
-                                        <View
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                justifyContent: 'flex-end'
-                                            }}>
-                                            <Text style={styles.numbers}>{item.get_questions_number()}</Text>
-                                            <MaterialCommunityIcons
-                                                name="format-list-numbered"
-                                                size={20}
-                                                color="grey"
-                                                style={{ marginLeft: 5 }} />
+                                        <View>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-end'
+                                                }}>
+                                                <Text style={styles.numbers}>{item.get_questions_number()}</Text>
+                                                <MaterialCommunityIcons
+                                                    name="format-list-numbered"
+                                                    size={20}
+                                                    color="grey"
+                                                    style={{ marginLeft: 5 }} />
+                                            </View>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-end'
+                                                }}>
+                                                <Text style={styles.numbers}>{item.get_estimated_time()}</Text>
+                                                <MaterialCommunityIcons
+                                                    name="progress-clock"
+                                                    size={20}
+                                                    color="grey"
+                                                    style={{ marginLeft: 5 }} />
+                                            </View>
                                         </View>
-                                        <View
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center'
-                                            }}>
-                                            <Text style={styles.numbers}>{item.get_estimated_time()}</Text>
-                                            <MaterialCommunityIcons
-                                                name="progress-clock"
-                                                size={20}
-                                                color="grey"
-                                                style={{ marginLeft: 5 }} />
-                                        </View>
-                                    </View>
 
-                                </Pressable>
-                            </Surface>
-                        </Animatable.View>
-                    )}
-                />
+                                    </Pressable>
+                                </Surface>
+                            </Animatable.View>
+                        )}
+                    /> : <EmptyHome />}
                 <Portal>
 
                     <Dialog
@@ -236,7 +239,7 @@ export default function Home({ navigation }) {
                         <Dialog.Content>
                             <Text style={styles.dialog_text}>توقفت عند السؤال {unfinishedDialog.index} من أصل {unfinishedDialog.questions_number}</Text>
                         </Dialog.Content>
-                        <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
+                        <Dialog.Actions style={[styles.row, { justifyContent: 'space-between', paddingHorizontal: 3 }]}>
                             <Button
                                 labelStyle={styles.dialog_button}
                                 onPress={() => resume_exam({ quiz: unfinishedDialog.quiz })}
@@ -254,7 +257,7 @@ export default function Home({ navigation }) {
                         onDismiss={() => setDialogData({ visible: false })}>
                         <Dialog.Title style={styles.title}>{dialogData.title}</Dialog.Title>
                         <Dialog.Content >
-                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                            <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 5 }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='target-variant'
@@ -266,7 +269,7 @@ export default function Home({ navigation }) {
                                 <Text style={styles.dialog_text}>{dialogData.average_accuracy}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                            <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 5 }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='history'
@@ -278,7 +281,7 @@ export default function Home({ navigation }) {
                                 <Text style={styles.dialog_text}>{dialogData.average_time}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                            <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 5 }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='calendar-today'
@@ -290,7 +293,7 @@ export default function Home({ navigation }) {
                                 <Text style={styles.dialog_text}>{calculate_last_time(dialogData.last_time)}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                            <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 5 }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='file-check'
@@ -302,7 +305,7 @@ export default function Home({ navigation }) {
                                 <Text style={styles.dialog_text}>% {dialogData.last_score}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                            <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 5 }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='clock-check'
@@ -313,10 +316,14 @@ export default function Home({ navigation }) {
                                 </View>
                                 <Text style={styles.dialog_text}>{dialogData.last_time_score}</Text>
                             </View>
-                            <Divider />
                         </Dialog.Content>
 
-                        <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
+                        <Dialog.Actions
+                            style={[
+                                styles.row, {
+                                    justifyContent: 'space-between',
+                                    paddingHorizontal: 3
+                                }]}>
                             <IconButton
                                 icon='file-remove'
                                 size={24}
@@ -401,10 +408,10 @@ const styles = StyleSheet.create({
     },
     subtitle: {
         fontFamily: 'Cairo-SemiBold',
-        fontSize: 15,
+        fontSize: 14,
         lineHeight: 20,
         color: 'grey',
-        marginLeft: 5
+        paddingLeft: 10
     },
     numbers: {
         fontFamily: 'Cairo-SemiBold',
@@ -419,7 +426,6 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 5
     },
     dialog_text: {
         fontFamily: 'Cairo-SemiBold',
