@@ -67,7 +67,7 @@ export default function CustomExam({ navigation }) {
                     <Subheading style={{
                         fontFamily: 'Cairo-Bold',
                         color: '#343434',
-                        padding: 10
+                        padding: 5
                     }}>المقررات</Subheading>
                     <FlatList
                         data={get_subjects()}
