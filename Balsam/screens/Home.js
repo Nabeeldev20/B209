@@ -14,7 +14,7 @@ import Exam from './Exam'
 import FinishScreen from './FinishScreen'
 import Activation from './Activation'
 import { get_database, update_database, erase_database, update_error_msgs, get_act } from './db'
-
+let data = get_database()
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();
     const { colors } = useTheme();
@@ -42,7 +42,6 @@ export default function Home({ navigation }) {
     }
 
     function Home_component({ navigation }) {
-        let data = get_database()
         const [dialogData, setDialogData] = React.useState({ visible: false })
         const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 })
         const [database, setDatabase] = React.useState(data)
@@ -136,7 +135,6 @@ export default function Home({ navigation }) {
         }
         return (
             <View style={styles.container}>
-                <Text> database length {JSON.stringify(get_database().length)}</Text>
                 {get_database().length > 0 ?
                     <FlatList
                         data={database}

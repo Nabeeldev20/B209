@@ -26,7 +26,7 @@ function get_bookmarks() {
     return bookmarks
 }
 function update_bookmarks(update) {
-    bookmarks.push(...update);
+    bookmarks = update
 }
 function erase_bookmarks() {
     bookmarks = []

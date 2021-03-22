@@ -147,7 +147,12 @@ export default function Subject({ navigation, route }) {
                 return false
             }
             if (has_code(quiz.code) == false) {
-                navigation.push('Activation', { subject_name: quiz.subject, code: quiz.code })
+                navigation.navigate('Home' , {
+                    screen: 'Activation',
+                    params: {
+                        subject_name: quiz.subject, code: quiz.code
+                    }
+                })
             } else {
                 go()
             }

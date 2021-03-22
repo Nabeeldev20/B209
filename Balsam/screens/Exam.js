@@ -97,31 +97,36 @@ export default function Exam({ navigation, route }) {
             setVisible(false);
         }
     }
-    function add_to_bookmarks(bookmark_q) {
+    function add_to_bookmarks(question_index) {
+        let question = quiz.get_question(question_index);
+        question.subject = quiz.subject;
+        let bookmarks = [...new Set(get_bookmarks())]
+        function add_bookmark(){
+            bookmarks.push(question)
+            update_bookmarks(bookmarks)
+        }
+        function remove_bookmark(){
+            update_bookmarks(bookmarks.filter(item => item.title != question.title))
+        }
+        function save_to_bookmarks(){
+            try {
+                save_blsm()
+            } catch (error) {
+                ToastAndroid.showWithGravity(
+                    'Error#009',
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM
+                )
+            }
+        }
         if (is_bookmark) {
-            update_bookmarks(get_bookmarks().filter(bookmark => bookmark.question.title != bookmark_q.question.title))
             set_is_bookmark(false);
-            try {
-                save_blsm()
-            } catch (error) {
-                ToastAndroid.showWithGravity(
-                    'Error#009',
-                    ToastAndroid.LONG,
-                    ToastAndroid.BOTTOM
-                )
-            }
+            remove_bookmark();
+            save_to_bookmarks();
         } else {
-            update_bookmarks([...get_bookmarks(), bookmark_q]);
+            add_bookmark();
             set_is_bookmark(true);
-            try {
-                save_blsm()
-            } catch (error) {
-                ToastAndroid.showWithGravity(
-                    'Error#009',
-                    ToastAndroid.LONG,
-                    ToastAndroid.BOTTOM
-                )
-            }
+            save_to_bookmarks();
         }
     }
     function show_banner() {
@@ -282,11 +287,7 @@ export default function Exam({ navigation, route }) {
                     icon={check_is_bookmark() ? 'bookmark' : 'bookmark-off'}
                     size={34}
                     color={check_is_bookmark() ? 'gold' : 'grey'}
-                    onPress={() => add_to_bookmarks({
-                        question: quiz.get_question(index),
-                        explanation: quiz.get_question(index).explanation,
-                        subject: quiz.subject
-                    })} />
+                    onPress={() => add_to_bookmarks(index)} />
 
                 <Text style={{
                     fontFamily: 'Cairo-SemiBold',
