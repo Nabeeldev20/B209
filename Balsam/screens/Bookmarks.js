@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { View, Text, StyleSheet, FlatList, Button } from 'react-native'
+import { View, Text, StyleSheet, FlatList, ToastAndroid } from 'react-native'
 import { Divider, Surface, Headline, IconButton } from 'react-native-paper'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Animatable from 'react-native-animatable';
@@ -33,7 +33,15 @@ export default function Bookmarks({ navigation, route }) {
     const remove_Bookmark = (item) => {
         setBookmarksData(bookmarksData.filter(bookmark => bookmark.question.title != item.question.title))
         update_bookmarks(bookmarksData.filter(bookmark => bookmark.question.title != item.question.title));
-        save_blsm()
+        try {
+            save_blsm()
+        } catch (error) {
+            ToastAndroid.showWithGravity(
+                'Error#009',
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM
+            )
+        }
     }
     const empty_state = () => {
         return (
@@ -101,7 +109,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         selectable: false,
         padding: 3,
-        textAlign: 'flex-start'
     },
     text: {
         fontFamily: 'Cairo-SemiBold',

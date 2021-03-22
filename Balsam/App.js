@@ -16,7 +16,7 @@ import CustomExam from './screens/CustomExam'
 import CustomDrawer from './screens/CustomDrawer'
 import * as Network from 'expo-network';
 
-import { get_database, update_database, update_error_msgs, update_bookmarks, update_act, update_cache_array } from './screens/db'
+import { update_database, update_bookmarks, update_act, update_cache_array } from './screens/db'
 
 
 const { Storage } = NativeModules;
@@ -43,7 +43,6 @@ export default function App() {
   async function ask_for_permission() {
     try {
       const has_premissons = await PermissionsAndroid.requestMultiple([PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE, PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE]);
-      update_error_msgs({ Code: 'asking for permission', has_premissons })
       if (has_premissons['android.permission.READ_EXTERNAL_STORAGE'] == 'granted') {
         setShouldAskForPermissions(false)
       } else {
@@ -55,7 +54,6 @@ export default function App() {
         ToastAndroid.LONG,
         ToastAndroid.BOTTOM
       )
-      update_error_msgs({ Code: 'asking for premission', error })
     }
   }
 
@@ -199,16 +197,13 @@ export default function App() {
               set_last_time(file_output);
               add_methods(file_output);
               update_database(file_output);
-              update_error_msgs({ Code: 'File_output', file_output })
-              update_error_msgs({ Code: 'database length', databaseLength: get_database().length })
             }
           } catch (error) {
-            oastAndroid.showWithGravity(
+            ToastAndroid.showWithGravity(
               'Error#003',
               ToastAndroid.LONG,
               ToastAndroid.BOTTOM
             )
-            update_error_msgs({ Code: 'FileSystem.readFile', error })
           }
         }
       } catch (error) {
@@ -217,7 +212,6 @@ export default function App() {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM
         )
-        update_error_msgs({ Code: 'Storage.get_files_paths', error })
       }
     }
     async function check_permission() {
@@ -230,7 +224,11 @@ export default function App() {
           setShouldAskForPermissions(true)
         }
       } catch (error) {
-        update_error_msgs({ Code: 'check permission code', error })
+        ToastAndroid.showWithGravity(
+          'Error#004',
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM
+        )
       }
     }
     async function read_blsm() {
@@ -245,7 +243,11 @@ export default function App() {
             update_act(json_file.act_array);
             update_cache_array(json_file.cache_array)
           } catch (error) {
-            update_error_msgs({ Code: 'error reading b.blsm file', error })
+            ToastAndroid.showWithGravity(
+              'Error#005',
+              ToastAndroid.LONG,
+              ToastAndroid.BOTTOM
+            )
           }
         } else {
           try {
@@ -253,7 +255,11 @@ export default function App() {
             try {
               mac = await Network.getMacAddressAsync();
             } catch (error) {
-              update_error_msgs({ Code: 'Error on fetching mac address', error })
+              ToastAndroid.showWithGravity(
+                'Error#006',
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM
+              )
             }
             let data = {
               mac,
@@ -265,42 +271,19 @@ export default function App() {
             let encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), 'nabeeladnanalinizam_20900!@#()').toString();
             await FileSystem.writeFile(path, encrypted)
           } catch (error) {
-            update_error_msgs({ Code: 'error writing b.blsm file first time', error: error.code })
+            ToastAndroid.showWithGravity(
+              'Error#007',
+              ToastAndroid.LONG,
+              ToastAndroid.BOTTOM
+            )
           }
         }
       } catch (error) {
-        update_error_msgs({ Code: 'Error in read_blsm', error })
-      }
-    }
-    async function write_no_crypto() {
-      try {
-        let is_file = await FileSystem.exists('/storage/emulated/0/Download' + '/balsam.txt');
-        if (is_file == false) {
-          try {
-            await FileSystem.writeFile('/storage/emulated/0/Download' + '/balsam.txt', 'text without crypto')
-          } catch (error) {
-            update_error_msgs({ Code: 'Writing file @write_no_crypto', error })
-          }
-        }
-      } catch (error) {
-        update_error_msgs({ Code: 'Writing file @write_no_crypto || checking if exsists', error })
-
-      }
-    }
-    async function write_with_crypto() {
-      try {
-        let is_file = await FileSystem.exists('/storage/emulated/0/Download' + '/balsamCrypto.txt');
-        let encrypted = CryptoJS.AES.encrypt(JSON.stringify({ name: 'nabeel', age: 20 }), 'nabeeladnanalinizam_20900!@#()').toString();
-        if (is_file == false) {
-          try {
-            await FileSystem.writeFile('/storage/emulated/0/Download' + '/balsamCrypto.txt', encrypted)
-          } catch (error) {
-            update_error_msgs({ Code: 'Writing file @write_with_crypto', error })
-          }
-        }
-      } catch (error) {
-        update_error_msgs({ Code: 'Writing file @write_with_crypto || checking if exsists', error })
-
+        ToastAndroid.showWithGravity(
+          'Error#008',
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM
+        )
       }
     }
     check_permission();
