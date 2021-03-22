@@ -147,7 +147,7 @@ export default function Subject({ navigation, route }) {
                 return false
             }
             if (has_code(quiz.code) == false) {
-                navigation.navigate('Home' , {
+                navigation.navigate('Home', {
                     screen: 'Activation',
                     params: {
                         subject_name: quiz.subject, code: quiz.code
@@ -162,7 +162,7 @@ export default function Subject({ navigation, route }) {
     }
     function resume_exam({ quiz, continue_exam = false } = {}) {
         if (continue_exam) {
-            navigation.push('Home', {
+            navigation.navigate('Home', {
                 screen: 'Exam',
                 params: {
                     quiz,
@@ -174,7 +174,7 @@ export default function Subject({ navigation, route }) {
         } else {
             quiz.index = 0
             quiz.get_shuffled_questions(true, true);
-            navigation.push('Home', {
+            navigation.navigate('Home', {
                 screen: 'Exam',
                 params: {
                     quiz,
@@ -500,5 +500,13 @@ const styles = StyleSheet.create({
         paddingLeft: 5,
         color: '#313131',
         selectable: false
+    },
+    dialog_title: {
+        fontFamily: 'Cairo-Bold',
+        fontSize: 18,
+    },
+    dialog_button: {
+        letterSpacing: 0,
+        fontFamily: 'Cairo-Bold'
     }
 })

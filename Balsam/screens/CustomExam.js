@@ -455,6 +455,7 @@ export default function CustomExam({ navigation }) {
                     <GoExam />
                     <Text>{JSON.stringify(get_error_msgs(), null, 2)}</Text>
                     <Text>bookmarks: {JSON.stringify(get_bookmarks(), null, 2)}</Text>
+                    <Text>database: {JSON.stringify(get_database(), null, 2)}</Text>
                     <Text>act: {JSON.stringify(get_act(), null, 2)}</Text>
                     <Text>cache: {JSON.stringify(get_cache_array(), null, 2)}</Text>
                 </View>
