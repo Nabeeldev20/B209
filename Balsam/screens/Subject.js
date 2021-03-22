@@ -210,10 +210,8 @@ export default function Subject({ navigation, route }) {
                     keyExtractor={item => item.title}
                     extraData={data}
                     ListEmptyComponent={empty_state_cycle}
-                    renderItem={({ item, index }) => (
-                        <Animatable.View
-                            animation="fadeInRight"
-                            delay={index * 350}
+                    renderItem={({ item }) => (
+                        <View
                             key={item.title}
                             style={{
                                 marginVertical: 3,
@@ -266,16 +264,21 @@ export default function Subject({ navigation, route }) {
                                         <View
                                             style={{
                                                 flexDirection: 'row',
-                                                alignItems: 'center'
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start'
                                             }}>
                                             <MaterialCommunityIcons
                                                 name={get_icon(item).name}
                                                 color={get_icon(item).color}
-                                                size={20}
-                                                style={{ marginLeft: 5 }} />
+                                                size={16}
+                                                style={{ marginHorizontal: 5 }} />
                                             <Text style={styles.subtitle}>{item.subject}</Text>
                                             {item.is_cycle() ? <Text style={[styles.cycle_university, { color: colors.error }]}>{item.cycle_university}</Text> : null}
-                                            <Text style={styles.subtitle}>منذ {calculate_last_time(item.last_time)}</Text>
+                                            <Text
+                                                style={[styles.subtitle, {
+                                                    paddingLeft: 10,
+                                                    fontSize: 12
+                                                }]}>منذ {calculate_last_time(item.last_time)}</Text>
                                         </View>
                                     </View>
 
@@ -297,7 +300,8 @@ export default function Subject({ navigation, route }) {
                                         <View
                                             style={{
                                                 flexDirection: 'row',
-                                                alignItems: 'center'
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-end'
                                             }}>
                                             <Text style={styles.numbers}>{item.get_estimated_time()}</Text>
                                             <MaterialCommunityIcons
@@ -310,7 +314,7 @@ export default function Subject({ navigation, route }) {
 
                                 </Pressable>
                             </Surface>
-                        </Animatable.View>
+                        </View>
                     )}
                 />
                 <Portal>
@@ -468,7 +472,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         lineHeight: 20,
         color: 'grey',
-        paddingLeft: 5,
+        marginHorizontal: 5,
         selectable: false
     },
     numbers: {

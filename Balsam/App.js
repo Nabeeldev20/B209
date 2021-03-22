@@ -324,7 +324,7 @@ export default function App() {
           <Animatable.View animation='fadeIn' delay={700} style={{ paddingTop: 10 }}>
             <MaterialCommunityIcons name='lightbulb' size={20} color="grey" style={{ alignSelf: 'flex-start' }} />
             <Text style={styles.text}> ملفات اختبارات بلسم بلاحقة
-          <Text style={{ fontWeight: 'bold', fontFamily: 'Cairo_700Bold', marginHorizontal: 10 }}>
+          <Text style={{ fontWeight: 'bold', fontFamily: 'Cairo_700Bold', marginHorizontal: 12 }}>
                 quiz.
           </Text>{'\n'}
     يمكنك تحميل الملفات من قناتنا على التلغرام
