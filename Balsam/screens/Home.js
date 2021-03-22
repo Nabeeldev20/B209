@@ -189,7 +189,7 @@ export default function Home({ navigation }) {
                                                     name={get_icon(item).name}
                                                     color={get_icon(item).color}
                                                     size={16}
-                                                    style={{ marginLeft: 5 }} />
+                                                    style={{ marginHorizontal: 5 }} />
                                                 <Text style={styles.subtitle}>{item.subject}</Text>
                                                 {item.is_cycle() ? <Text style={[styles.cycle_university, { color: colors.error }]}>{item.cycle_university}</Text> : null}
                                             </View>
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         lineHeight: 20,
         color: 'grey',
-        paddingLeft: 10
+        marginHorizontal: 3
     },
     numbers: {
         fontFamily: 'Cairo-SemiBold',

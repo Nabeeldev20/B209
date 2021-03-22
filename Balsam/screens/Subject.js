@@ -271,7 +271,7 @@ export default function Subject({ navigation, route }) {
                                                 name={get_icon(item).name}
                                                 color={get_icon(item).color}
                                                 size={16}
-                                                style={{ padding: 5 }} />
+                                                style={{ marginHorizontal: 5 }} />
                                             <Text style={styles.subtitle}>{item.subject}</Text>
                                             {item.is_cycle() ? <Text style={[styles.cycle_university, { color: colors.error }]}>{item.cycle_university}</Text> : null}
                                             <Text
@@ -472,7 +472,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         lineHeight: 20,
         color: 'grey',
-        paddingLeft: 10,
+        marginHorizontal: 5,
         selectable: false
     },
     numbers: {
