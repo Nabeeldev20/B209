@@ -30,7 +30,7 @@ export default function Bookmarks({ navigation, route }) {
         }
         return null
     }
-    const remove_Bookmark = async (item) => {
+    const remove_Bookmark = (item) => {
         setBookmarksData(bookmarksData.filter(bookmark => bookmark.question.title != item.question.title))
         update_bookmarks(bookmarksData.filter(bookmark => bookmark.question.title != item.question.title));
         save_blsm()

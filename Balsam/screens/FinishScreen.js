@@ -115,7 +115,7 @@ export default function FinishScreen({ navigation, route }) {
                     }}>
                         <View style={{ alignItems: 'center' }}>
                             <MaterialCommunityIcons
-                                name='areachart'
+                                name='chart-areaspline-variant'
                                 size={22}
                                 color='grey'
                                 style={{ paddingBottom: 3 }} />
