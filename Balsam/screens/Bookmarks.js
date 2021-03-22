@@ -17,13 +17,13 @@ export default function Bookmarks({ navigation, route }) {
     const [bookmarksData, setBookmarksData] = React.useState(get_bookmarks().filter(bookmark => bookmark.subject == subject_name))
 
     const QuestionExplanation = (item) => {
-        if (item.question.has_explanation()) {
+        if (item.has_explanation()) {
             return (
                 <View>
                     <Divider />
                     <View style={styles.row}>
                         <MaterialCommunityIcons style={{ marginRight: 4 }} name='comment-question' color='grey' size={20} />
-                        <Text style={styles.text}>{item.question.explanation}</Text>
+                        <Text style={styles.text}>{item.explanation}</Text>
                     </View>
                 </View>
             )
@@ -31,17 +31,20 @@ export default function Bookmarks({ navigation, route }) {
         return null
     }
     const remove_Bookmark = (item) => {
-        setBookmarksData(bookmarksData.filter(bookmark => bookmark.question.title != item.question.title))
-        update_bookmarks(bookmarksData.filter(bookmark => bookmark.question.title != item.question.title));
-        try {
-            save_blsm()
-        } catch (error) {
-            ToastAndroid.showWithGravity(
-                'Error#009',
-                ToastAndroid.LONG,
-                ToastAndroid.BOTTOM
-            )
+        function save_to_bookmarks(){
+            try {
+                save_blsm()
+            } catch (error) {
+                ToastAndroid.showWithGravity(
+                    'Error#009',
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM
+                )
+            }
         }
+        setBookmarksData(bookmarksData.filter(bookmark => bookmark.title != item.title))
+        update_bookmarks(bookmarksData.filter(bookmark => bookmark.title != item.title));
+        save_to_bookmarks()
     }
     const empty_state = () => {
         return (
@@ -58,20 +61,20 @@ export default function Bookmarks({ navigation, route }) {
                 data={bookmarksData}
                 extraData={bookmarksData}
                 ListEmptyComponent={empty_state}
-                keyExtractor={(item) => item.question.title}
+                keyExtractor={(item) => item.title}
                 renderItem={({ item, index }) => (
-                    <Animatable.View animation="fadeInRight" delay={index * 350} duration={1500}>
+                    <Animatable.View animation="fadeInRight" delay={index * 250} duration={1500}>
                         <Surface style={styles.surface}>
                             <View style={styles.row} >
                                 <MaterialCommunityIcons style={{ marginRight: 4 }} name='comment-question' color='grey' size={20} />
-                                <Headline style={styles.headline}>{item.question.title}
+                                <Headline style={styles.headline}>{item.title}
                                     <Text style={styles.text}>({item.subject})</Text></Headline>
                             </View>
                             <Divider />
-                            {item.question.choices.filter(choice => choice != '-').map(choice => {
+                            {item.choices.filter(choice => choice != '-').map(choice => {
                                 return (
                                     <Text
-                                        style={[styles.text, { color: item.question.is_right(choice) ? 'green' : 'grey' }]}
+                                        style={[styles.text, { color: item.is_right(choice) ? 'green' : 'grey' }]}
                                         key={choice}
                                     >{choice}</Text>
                                 )
