@@ -5,7 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
-import { get_bookmarks, update_bookmarks, save_file } from './db'
+import { get_bookmarks, update_bookmarks, save_file, save_blsm } from './db'
 
 export default function Exam({ navigation, route }) {
     let { quiz, exam_time, random_questions, random_choices } = route.params;
@@ -27,7 +27,7 @@ export default function Exam({ navigation, route }) {
     const [visible, setVisible] = React.useState(false);
     const [hasAnswered, setHasAnswered] = React.useState(false);
     const [wrongAnswersCount, setWrongAnswersCount] = React.useState(0)
-    const [inBookmark, setInBookmark] = React.useState(get_bookmarks().filter(bookmark => bookmark.subject == quiz.subject).length >= 1);
+    const [is_bookmark, set_is_bookmark] = React.useState(false);
 
     const title = React.useRef(null);
     const choices_animation = React.useRef(null);
@@ -98,13 +98,15 @@ export default function Exam({ navigation, route }) {
             setVisible(false);
         }
     }
-    const add_to_bookmarks = (bookmark_q) => {
-        if (inBookmark) {
+    async function add_to_bookmarks(bookmark_q) {
+        if (is_bookmark) {
             update_bookmarks(get_bookmarks().filter(bookmark => bookmark.question.title != bookmark_q.question.title))
-            setInBookmark(false)
+            set_is_bookmark(false);
+            save_blsm();
         } else {
             update_bookmarks([...get_bookmarks(), bookmark_q]);
-            setInBookmark(true)
+            setInBookmark(true);
+            save_blsm();
         }
     }
     function show_banner() {
@@ -114,11 +116,11 @@ export default function Exam({ navigation, route }) {
         if (!quiz.title.includes('مخصص')) {
             React.useEffect(() => {
                 navigation.addListener('beforeRemove', (e) => {
-                    if (index !== quiz.get_questions_number() - 1) {
+                    if (index !== quiz.get_questions_number() - 1 && index != 0) {
                         e.preventDefault();
                         ToastAndroid.showWithGravity(
                             "جاري حفظ التقدم",
-                            ToastAndroid.SHORT,
+                            ToastAndroid.LONG,
                             ToastAndroid.BOTTOM
                         );
                         quiz.index = index;
@@ -130,11 +132,23 @@ export default function Exam({ navigation, route }) {
 
         }
     }
-    function is_custom_exam() {
-        return quiz.title.includes('مخصص') ? true : false
+    function check_is_bookmark() {
+        function get_questions_in_bookmarks() {
+            let output = [];
+            let data = get_bookmarks().filter(item => item.subject == quiz.subject);
+            for (let i = 0; i < data.length; i++) {
+                output.push(data[i].question.title)
+            }
+            return output
+        }
+        if (get_questions_in_bookmarks().includes(quiz.get_question(index).title)) {
+            set_is_bookmark(true);
+        } else {
+            set_is_bookmark(false)
+        }
     }
     update_index();
-
+    check_is_bookmark();
     return (
         <ScrollView
             style={{ flex: 1 }}
@@ -162,7 +176,7 @@ export default function Exam({ navigation, route }) {
                         justifyContent: 'space-between',
                         paddingTop: 10,
                         paddingHorizontal: 10,
-                        paddingBottom: 15
+                        paddingBottom: 10
                     }}>
                     <View style={styles.row}>
                         <MaterialCommunityIcons
@@ -244,16 +258,15 @@ export default function Exam({ navigation, route }) {
                     bottom: 0,
                     width: '100%'
                 }}>
-                {is_custom_exam() ?
-                    <IconButton
-                        icon={inBookmark ? 'bookmark' : 'bookmark-off'}
-                        size={34}
-                        color={inBookmark ? 'gold' : 'grey'}
-                        onPress={() => add_to_bookmarks({
-                            question: quiz.get_question(index),
-                            explanation: quiz.get_question(index).explanation,
-                            subject: quiz.subject
-                        })} /> : null}
+                <IconButton
+                    icon={is_bookmark ? 'bookmark' : 'bookmark-off'}
+                    size={34}
+                    color={is_bookmark ? 'gold' : 'grey'}
+                    onPress={() => add_to_bookmarks({
+                        question: quiz.get_question(index),
+                        explanation: quiz.get_question(index).explanation,
+                        subject: quiz.subject
+                    })} />
 
                 <Text style={{
                     fontFamily: 'Cairo-SemiBold',
@@ -290,7 +303,7 @@ const styles = StyleSheet.create({
     choice: {
         textAlign: 'justify',
         fontFamily: 'Cairo-SemiBold',
-        fontSize: 17,
+        fontSize: 16,
         letterSpacing: 0,
         selectable: false
     },

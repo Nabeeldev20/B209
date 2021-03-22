@@ -120,106 +120,120 @@ export default function Home({ navigation }) {
         }
         return (
             <View style={styles.container}>
-                {database.length > 0 ?
-                    <FlatList
-                        data={database}
-                        extraData={database}
-                        keyExtractor={item => item.title}
-                        renderItem={({ item, index }) => (
-                            <Animatable.View
-                                animation="fadeInRight"
-                                delay={index * 350}
-                                key={item.title}
-                                style={{
-                                    marginVertical: 3,
-                                }}>
-                                <Surface style={{
-                                    backgroundColor: '#fff',
-                                    elevation: 2,
-                                    borderWidth: 1,
-                                    borderColor: '#D7D8D2',
-                                }}>
-                                    <Pressable
-                                        onPress={() => go_exam(item)}
-                                        onLongPress={async () => {
-                                            setDialogData({
-                                                visible: true,
-                                                title: item.title,
-                                                path: item.path,
-                                                average_accuracy: item.get_average_accuracy(),
-                                                average_time: item.get_average_time(),
-                                                last_score: item.average_accuracy[item.average_accuracy.length - 1] ?? 0,
-                                                last_time_score: item.average_time[item.average_time.length - 1] ?? 0,
-                                                last_time: item.last_time
-                                            })
-                                            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                                        }}
-                                        android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
-                                        style={{
-                                            padding: 12,
-                                            flexDirection: 'row',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center'
-                                        }}>
+                <FlatList
+                    data={database}
+                    extraData={database}
+                    keyExtractor={item => item.title}
+                    ListEmptyComponent={EmptyHome}
+                    renderItem={({ item, index }) => (
+                        <Animatable.View
+                            animation="fadeInRight"
+                            delay={index * 350}
+                            key={item.title}
+                            style={{
+                                marginVertical: 3,
+                            }}>
+                            <Surface style={{
+                                backgroundColor: '#fff',
+                                elevation: 2,
+                                borderWidth: 1,
+                                borderColor: '#D7D8D2',
+                            }}>
+                                <Pressable
+                                    onPress={() => go_exam(item)}
+                                    onLongPress={async () => {
+                                        function calculate_last_time_score() {
+                                            if (item.average_time.length > 0) {
+                                                let last = item.average_time[item.average_time.length - 1];
+                                                let time = (last / 60).toFixed(2).toString().split('');
+                                                if (time.length == 4) {
+                                                    time.unshift('0')
+                                                    time[2] = ':'
+                                                    return time.join('')
+                                                }
+                                                time[2] = ':'
+                                                return time.join('')
+                                            }
+                                            return 0
+                                        }
+                                        setDialogData({
+                                            visible: true,
+                                            title: item.title,
+                                            path: item.path,
+                                            average_accuracy: item.get_average_accuracy(),
+                                            average_time: item.get_average_time(),
+                                            last_score: item.average_accuracy[item.average_accuracy.length - 1] ?? 0,
+                                            last_time_score: calculate_last_time_score() ?? '00:00',
+                                            last_time: item.last_time
+                                        })
+                                        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                                    }}
+                                    android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
+                                    style={{
+                                        padding: 12,
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center'
+                                    }}>
 
-                                        <View>
-                                            <Text style={styles.title}>{item.title}</Text>
-                                            <View
-                                                style={{
-                                                    flexDirection: 'row',
-                                                    alignItems: 'center'
-                                                }}>
-                                                <MaterialCommunityIcons
-                                                    name={get_icon(item).name}
-                                                    color={get_icon(item).color}
-                                                    size={18}
-                                                    style={{ marginLeft: 5 }} />
-                                                <Text style={styles.subtitle}>{item.subject}</Text>
-                                                {item.is_cycle() ? <Text style={[styles.cycle_university, { color: colors.error }]}>{item.cycle_university}</Text> : null}
-                                            </View>
+                                    <View>
+                                        <Text style={styles.title}>{item.title}</Text>
+                                        <View
+                                            style={{
+                                                flexDirection: 'row',
+                                                alignItems: 'center'
+                                            }}>
+                                            <MaterialCommunityIcons
+                                                name={get_icon(item).name}
+                                                color={get_icon(item).color}
+                                                size={20}
+                                                style={{ marginLeft: 5 }} />
+                                            <Text style={styles.subtitle}>{item.subject}</Text>
+                                            {item.is_cycle() ? <Text style={[styles.cycle_university, { color: colors.error }]}>{item.cycle_university}</Text> : null}
                                         </View>
+                                    </View>
 
 
-                                        <View>
-                                            <View
-                                                style={{
-                                                    flexDirection: 'row',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'flex-end'
-                                                }}>
-                                                <Text style={styles.numbers}>{item.get_questions_number()}</Text>
-                                                <MaterialCommunityIcons
-                                                    name="format-list-numbered"
-                                                    size={18}
-                                                    color="grey"
-                                                    style={{ marginLeft: 5 }} />
-                                            </View>
-                                            <View
-                                                style={{
-                                                    flexDirection: 'row',
-                                                    alignItems: 'center'
-                                                }}>
-                                                <Text style={styles.numbers}>{item.get_estimated_time()}</Text>
-                                                <MaterialCommunityIcons
-                                                    name="progress-clock"
-                                                    size={18}
-                                                    color="grey"
-                                                    style={{ marginLeft: 5 }} />
-                                            </View>
+                                    <View>
+                                        <View
+                                            style={{
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-end'
+                                            }}>
+                                            <Text style={styles.numbers}>{item.get_questions_number()}</Text>
+                                            <MaterialCommunityIcons
+                                                name="format-list-numbered"
+                                                size={20}
+                                                color="grey"
+                                                style={{ marginLeft: 5 }} />
                                         </View>
+                                        <View
+                                            style={{
+                                                flexDirection: 'row',
+                                                alignItems: 'center'
+                                            }}>
+                                            <Text style={styles.numbers}>{item.get_estimated_time()}</Text>
+                                            <MaterialCommunityIcons
+                                                name="progress-clock"
+                                                size={20}
+                                                color="grey"
+                                                style={{ marginLeft: 5 }} />
+                                        </View>
+                                    </View>
 
-                                    </Pressable>
-                                </Surface>
-                            </Animatable.View>
-                        )}
-                    /> : <EmptyHome />}
+                                </Pressable>
+                            </Surface>
+                        </Animatable.View>
+                    )}
+                />
                 <Portal>
 
                     <Dialog
                         visible={unfinishedDialog.visible}
                         onDismiss={() => setUnfinishedDialog({ visible: false })}>
                         <Dialog.Title style={styles.dialog_title}>لم تنه الامتحان آخر مرة!</Dialog.Title>
-                        <Dialog.Content style={{ padding: 3 }}>
+                        <Dialog.Content>
                             <Text style={styles.dialog_text}>توقفت عند السؤال {unfinishedDialog.index} من أصل {unfinishedDialog.questions_number}</Text>
                         </Dialog.Content>
                         <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
@@ -297,7 +311,7 @@ export default function Home({ navigation }) {
                                         style={{ marginRight: 3 }} />
                                     <Text style={styles.dialog_text}>آخر توقيت</Text>
                                 </View>
-                                <Text style={styles.dialog_text}>{dialogData.last_time_score} د</Text>
+                                <Text style={styles.dialog_text}>{dialogData.last_time_score}</Text>
                             </View>
                             <Divider />
                         </Dialog.Content>
@@ -390,11 +404,11 @@ const styles = StyleSheet.create({
         fontSize: 15,
         lineHeight: 20,
         color: 'grey',
-        marginLeft: 15
+        marginLeft: 5
     },
     numbers: {
         fontFamily: 'Cairo-SemiBold',
-        fontSize: 17,
+        fontSize: 15,
         color: 'grey',
         lineHeight: 23
     },
@@ -405,7 +419,7 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 5
+        paddingVertical: 5
     },
     dialog_text: {
         fontFamily: 'Cairo-SemiBold',
