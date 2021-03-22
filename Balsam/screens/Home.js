@@ -98,11 +98,27 @@ export default function Home({ navigation }) {
         }
         function resume_exam({ quiz, continue_exam = false } = {}) {
             if (continue_exam) {
-                navigation.push('Exam', { quiz, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) })
+                navigation.push('Home', {
+                    screen: 'Exam',
+                    params: {
+                        quiz,
+                        exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+                        random_questions: true,
+                        random_choices: true
+                    }
+                })
             } else {
                 quiz.index = 0
                 quiz.get_shuffled_questions(true, true);
-                navigation.push('Exam', { quiz, exam_time: DateTime.fromISO(DateTime.now().toISOTime()) });
+                navigation.push('Home', {
+                    screen: 'Exam',
+                    params: {
+                        quiz,
+                        exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+                        random_questions: true,
+                        random_choices: true
+                    }
+                })
                 setUnfinishedDialog({ visible: false })
             }
         }
@@ -254,7 +270,8 @@ export default function Home({ navigation }) {
 
                     <Dialog
                         visible={dialogData.visible}
-                        onDismiss={() => setDialogData({ visible: false })}>
+                        onDismiss={() => setDialogData({ visible: false })}
+                        style={{ padding: 3 }}>
                         <Dialog.Title style={styles.title}>{dialogData.title}</Dialog.Title>
                         <Dialog.Content >
                             <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 5 }]}>
@@ -322,7 +339,6 @@ export default function Home({ navigation }) {
                             style={[
                                 styles.row, {
                                     justifyContent: 'space-between',
-                                    paddingHorizontal: 3
                                 }]}>
                             <IconButton
                                 icon='file-remove'
@@ -341,7 +357,6 @@ export default function Home({ navigation }) {
     }
     return (
         <Stack.Navigator
-            initialRouteName='Home'
             screenOptions={{ headerStyle: { height: 50 } }}>
             <Stack.Screen
                 name="Home"

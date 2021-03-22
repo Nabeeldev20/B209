@@ -8,7 +8,7 @@ import { FileSystem } from 'react-native-file-access';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
 
-import { get_database, update_database, get_bookmarks, erase_database } from './db'
+import { get_database, update_database, get_bookmarks, erase_database, get_act } from './db'
 export default function Subject({ navigation, route }) {
     const { subject_name } = route.params;
 

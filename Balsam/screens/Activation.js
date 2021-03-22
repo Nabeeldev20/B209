@@ -71,7 +71,15 @@ export default function Activation({ navigation, route }) {
                 HashCode: generate_code()
             }
             update_cache_array([...get_cache_array(), new_code]);
-            save_blsm()
+            try {
+                save_blsm()
+            } catch (error) {
+                ToastAndroid.showWithGravity(
+                    'Error#009',
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM
+                )
+            }
             return new_code.HashCode
         }
     }
@@ -100,7 +108,15 @@ export default function Activation({ navigation, route }) {
                 ToastAndroid.BOTTOM
             )
             update_act([...get_act(), code]);
-            save_blsm();
+            try {
+                save_blsm()
+            } catch (error) {
+                ToastAndroid.showWithGravity(
+                    'Error#009',
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM
+                )
+            }
             Analytics.trackEvent('Activation', { Subject: subject_name, QuizCode: code, StoreCode: storeCode });
             navigation.navigate('Home')
         }
@@ -143,7 +159,10 @@ export default function Activation({ navigation, route }) {
                     <Surface style={styles.surface}>
                         <View style={styles.row}>
                             <View style={styles.badge}>
-                                <Badge style={styles.badge_color} size={24} color='white'>1</Badge>
+                                <Badge
+                                    style={styles.badge_color}
+                                    size={24}
+                                    color='white'>1</Badge>
                             </View>
                             <Text style={styles.text}>أدخل كود المكتبة من فضلك:</Text>
                         </View>
@@ -154,7 +173,10 @@ export default function Activation({ navigation, route }) {
                             onChangeText={text => setStoreCode(text)}
                             left={<TextInput.Icon name={() => <MaterialCommunityIcons name='store' size={20} />} />}
                         />
-                        <HelperText style={{ fontFamily: 'Cairo-Regular' }} type="error" visible={hasErrors()}>كود المكتبة مكوّن من 12 خانة</HelperText>
+                        <HelperText
+                            style={{ fontFamily: 'Cairo-Regular' }}
+                            type="error"
+                            visible={hasErrors()}>كود المكتبة مكوّن من 12 خانة</HelperText>
                     </Surface>
 
                 </Animatable.View>
@@ -165,7 +187,10 @@ export default function Activation({ navigation, route }) {
                     <Surface style={styles.surface}>
                         <View style={styles.row}>
                             <View style={styles.badge}>
-                                <Badge style={styles.badge_color} size={24} color='white'>2</Badge>
+                                <Badge
+                                    style={styles.badge_color}
+                                    size={24}
+                                    color='white'>2</Badge>
                             </View>
 
                             <Text style={styles.text}>
@@ -202,7 +227,10 @@ export default function Activation({ navigation, route }) {
                     <Surface style={styles.surface}>
                         <View style={styles.row}>
                             <View style={styles.badge}>
-                                <Badge style={styles.badge_color} size={24} color='white'>3</Badge>
+                                <Badge
+                                    style={styles.badge_color}
+                                    size={24}
+                                    color='white'>3</Badge>
                             </View>
                             <Text style={styles.text}>أدخل مفتاح التفعيل من فضلك: </Text>
                         </View>
@@ -224,7 +252,7 @@ export default function Activation({ navigation, route }) {
                                 contentStyle={{ flexDirection: 'row-reverse' }}
                                 onPress={() => save()}>
                                 تفعيل البنك
-                </Button>
+                            </Button>
                         </Animatable.View>
                     </Surface>
                 </Animatable.View >

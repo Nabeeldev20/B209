@@ -21,7 +21,6 @@ export default function Exam({ navigation, route }) {
     const onContentSizeChange = (contentHeight) => {
         setScreenHeight(contentHeight);
     };
-
     const { colors } = useTheme();
     const [index, setIndex] = React.useState(quiz.index);
     const [visible, setVisible] = React.useState(false);
@@ -98,15 +97,31 @@ export default function Exam({ navigation, route }) {
             setVisible(false);
         }
     }
-    async function add_to_bookmarks(bookmark_q) {
+    function add_to_bookmarks(bookmark_q) {
         if (is_bookmark) {
             update_bookmarks(get_bookmarks().filter(bookmark => bookmark.question.title != bookmark_q.question.title))
             set_is_bookmark(false);
-            save_blsm();
+            try {
+                save_blsm()
+            } catch (error) {
+                ToastAndroid.showWithGravity(
+                    'Error#009',
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM
+                )
+            }
         } else {
             update_bookmarks([...get_bookmarks(), bookmark_q]);
-            setInBookmark(true);
-            save_blsm();
+            set_is_bookmark(true);
+            try {
+                save_blsm()
+            } catch (error) {
+                ToastAndroid.showWithGravity(
+                    'Error#009',
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM
+                )
+            }
         }
     }
     function show_banner() {
@@ -119,12 +134,20 @@ export default function Exam({ navigation, route }) {
                     if (index !== quiz.get_questions_number() - 1 && index != 0) {
                         e.preventDefault();
                         ToastAndroid.showWithGravity(
-                            "جاري حفظ التقدم",
+                            "جاري الحفظ",
                             ToastAndroid.LONG,
                             ToastAndroid.BOTTOM
                         );
                         quiz.index = index;
-                        save_file(quiz);
+                        try {
+                            save_file(quiz);
+                        } catch (error) {
+                            ToastAndroid.showWithGravity(
+                                'Error#010',
+                                ToastAndroid.LONG,
+                                ToastAndroid.BOTTOM
+                            )
+                        }
                         navigation.dispatch(e.data.action)
                     }
                 })
