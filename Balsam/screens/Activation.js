@@ -195,9 +195,9 @@ export default function Activation({ navigation, route }) {
 
                             <Text style={styles.text}>
                                 انسخ كود بنك
-                            <Text style={{ fontWeight: 'bold' }}> {subject_name} </Text>
+                            <Text style={{ fontStyle: 'italic' }}> {subject_name} </Text>
                              من فضلك
-                            {'\n'} <Text style={{ fontWeight: 'bold' }}>ثمَّ</Text> أرسل رسالة عن طريق
+                            {'\n'} <Text style={{ fontStyle: 'italic' }}>ثمَّ</Text> أرسل رسالة عن طريق
 
                                 <View style={[styles.row, { paddingHorizontal: 5 }]}>
                                     <Text style={styles.link} onPress={() => Linking.openURL('https://t.me/Balsam_dev')}>@Balsam_dev</Text>

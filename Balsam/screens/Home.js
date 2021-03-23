@@ -14,17 +14,10 @@ import Exam from './Exam'
 import FinishScreen from './FinishScreen'
 import Activation from './Activation'
 import { get_database, update_database, erase_database, update_error_msgs, get_act } from './db'
-let data = []
+
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();
     const { colors } = useTheme();
-    React.useEffect(() => {
-        data = get_database();
-        if (data.length == 0) {
-            // calling the function again
-            data = get_database()
-        }
-    }, [get_database()])
 
     function EmptyHome() {
         return (
@@ -50,9 +43,7 @@ export default function Home({ navigation }) {
     function Home_component({ navigation }) {
         const [dialogData, setDialogData] = React.useState({ visible: false })
         const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 })
-        const [database, setDatabase] = React.useState(data)
         async function remove_file(title, path) {
-            setDatabase(database.filter(quiz => quiz.title != title));
             setDialogData({ visible: false })
             // in db.js
             erase_database()
@@ -83,10 +74,7 @@ export default function Home({ navigation }) {
             }
             if (quiz.is_paid()) {
                 function has_code(quiz_code) {
-                    let codes = [];
-                    get_act().forEach(item => {
-                        codes.push(item.code)
-                    })
+                    let codes = get_act()
                     if (codes.includes(quiz_code)) {
                         return true
                     }
@@ -103,26 +91,20 @@ export default function Home({ navigation }) {
         }
         function resume_exam({ quiz, continue_exam = false } = {}) {
             if (continue_exam) {
-                navigation.push('Home', {
-                    screen: 'Exam',
-                    params: {
-                        quiz,
-                        exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
-                        random_questions: true,
-                        random_choices: true
-                    }
+                navigation.push('Exam', {
+                    quiz,
+                    exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+                    random_questions: true,
+                    random_choices: true
                 })
             } else {
                 quiz.index = 0
                 quiz.get_shuffled_questions(true, true);
-                navigation.push('Home', {
-                    screen: 'Exam',
-                    params: {
-                        quiz,
-                        exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
-                        random_questions: true,
-                        random_choices: true
-                    }
+                navigation.push('Exam', {
+                    quiz,
+                    exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+                    random_questions: true,
+                    random_choices: true
                 })
                 setUnfinishedDialog({ visible: false })
             }
