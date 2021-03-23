@@ -42,8 +42,10 @@ export default function Bookmarks({ navigation, route }) {
                 )
             }
         }
-        setBookmarksData(bookmarksData.filter(bookmark => bookmark.title != item.title))
-        update_bookmarks(bookmarksData.filter(bookmark => bookmark.title != item.title));
+        let updated_bookmarks = [...new Set(bookmarksData.filter(bookmark => bookmark.title != item.title))]
+
+        setBookmarksData(updated_bookmarks)
+        update_bookmarks(updated_bookmarks);
         save_to_bookmarks()
     }
     const empty_state = () => {

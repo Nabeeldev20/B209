@@ -137,10 +137,7 @@ export default function Subject({ navigation, route }) {
         }
         if (quiz.is_paid()) {
             function has_code(quiz_code) {
-                let codes = [];
-                get_act().forEach(item => {
-                    codes.push(item.code)
-                })
+                let codes = get_act()
                 if (codes.includes(quiz_code)) {
                     return true
                 }
@@ -185,6 +182,7 @@ export default function Subject({ navigation, route }) {
             })
             setUnfinishedDialog({ visible: false })
         }
+        setUnfinishedDialog({ visible: false })
     }
     function calculate_last_time(lastTime = DateTime.now().toISODate()) {
         let end = DateTime.fromISO(DateTime.now().toISODate());

@@ -26,7 +26,6 @@ export default function Exam({ navigation, route }) {
     const [visible, setVisible] = React.useState(false);
     const [hasAnswered, setHasAnswered] = React.useState(false);
     const [wrongAnswersCount, setWrongAnswersCount] = React.useState(0)
-    const [is_bookmark, set_is_bookmark] = React.useState(false);
 
     const title = React.useRef(null);
     const choices_animation = React.useRef(null);
@@ -103,10 +102,12 @@ export default function Exam({ navigation, route }) {
         let bookmarks = get_bookmarks();
         function add_bookmark() {
             bookmarks.push(question)
-            update_bookmarks(bookmarks)
+            let updated_bookmarks = [...new Set(bookmarks)]
+            update_bookmarks(updated_bookmarks)
         }
         function remove_bookmark() {
-            update_bookmarks(bookmarks.filter(item => item.title != question.title))
+            let updated_bookmarks = [... new Set(bookmarks.filter(item => item.title != question.title))]
+            update_bookmarks(updated_bookmarks)
         }
         function save_to_bookmarks() {
             try {
@@ -119,14 +120,16 @@ export default function Exam({ navigation, route }) {
                 )
             }
         }
-        if (is_bookmark) {
-            set_is_bookmark(false);
+        if (check_is_bookmark()) {
+            add_bookmark();
+            save_to_bookmarks();
+            //? another call to update UI?
+            check_is_bookmark();
+        } else {
             remove_bookmark();
             save_to_bookmarks();
-        } else {
-            add_bookmark();
-            set_is_bookmark(true);
-            save_to_bookmarks();
+            //? update UI?
+            check_is_bookmark()
         }
     }
     function show_banner() {

@@ -336,16 +336,9 @@ export default function CustomExam({ navigation }) {
             )
         }
         function get_quizzes() {
-            function get_codes() {
-                let output = [];
-                get_act().forEach(item => {
-                    output.push(item.code)
-                })
-                return output
-            }
             function is_valid(quiz) {
                 if (quiz.is_paid()) {
-                    if (get_codes().includes(quiz.code)) {
+                    if (get_act().includes(quiz.code)) {
                         return true
                     }
                     return false
