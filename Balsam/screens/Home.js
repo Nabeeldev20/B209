@@ -47,7 +47,7 @@ export default function Home({ navigation }) {
             setDialogData({ visible: false })
             // in db.js
             erase_database()
-            update_database(...database.filter(quiz => quiz.title != title));
+            update_database(...get_database().filter(quiz => quiz.title != title));
             await FileSystem.unlink(path)
         }
 
@@ -125,8 +125,8 @@ export default function Home({ navigation }) {
             <View style={styles.container}>
                 {get_database().length > 0 ?
                     <FlatList
-                        data={database}
-                        extraData={database}
+                        data={get_database()}
+                        extraData={get_database()}
                         keyExtractor={item => item.title}
                         renderItem={({ item, index }) => (
                             <Animatable.View
