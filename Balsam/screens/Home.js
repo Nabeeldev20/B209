@@ -42,11 +42,13 @@ export default function Home({ navigation }) {
 
     function Home_component({ navigation }) {
         const [dialogData, setDialogData] = React.useState({ visible: false })
-        const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 })
+        const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 });
+        const [data, set_data] = React.useState(get_database())
         async function remove_file(title, path) {
             setDialogData({ visible: false })
             // in db.js
             erase_database()
+            set_data(...get_database().filter(quiz => quiz.title != title))
             update_database(...get_database().filter(quiz => quiz.title != title));
             await FileSystem.unlink(path)
         }
@@ -125,8 +127,8 @@ export default function Home({ navigation }) {
             <View style={styles.container}>
                 {get_database().length > 0 ?
                     <FlatList
-                        data={get_database()}
-                        extraData={get_database()}
+                        data={data}
+                        extraData={data}
                         keyExtractor={item => item.title}
                         renderItem={({ item, index }) => (
                             <Animatable.View
@@ -260,7 +262,7 @@ export default function Home({ navigation }) {
                         style={{ padding: 3 }}>
                         <Dialog.Title style={styles.title}>{dialogData.title}</Dialog.Title>
                         <Dialog.Content >
-                            <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 5 }]}>
+                            <View style={[styles.row, { justifyContent: 'space-between', padding: 5 }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='target-variant'
@@ -272,7 +274,7 @@ export default function Home({ navigation }) {
                                 <Text style={styles.dialog_text}>{dialogData.average_accuracy}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 5 }]}>
+                            <View style={[styles.row, { justifyContent: 'space-between', padding: 5 }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='history'
@@ -284,7 +286,7 @@ export default function Home({ navigation }) {
                                 <Text style={styles.dialog_text}>{dialogData.average_time}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 5 }]}>
+                            <View style={[styles.row, { justifyContent: 'space-between', padding: 5 }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='calendar-today'
@@ -296,7 +298,7 @@ export default function Home({ navigation }) {
                                 <Text style={styles.dialog_text}>{calculate_last_time(dialogData.last_time)}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 5 }]}>
+                            <View style={[styles.row, { justifyContent: 'space-between', padding: 5 }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='file-check'
@@ -308,7 +310,7 @@ export default function Home({ navigation }) {
                                 <Text style={styles.dialog_text}>% {dialogData.last_score}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 5 }]}>
+                            <View style={[styles.row, { justifyContent: 'space-between', padding: 5 }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='clock-check'
@@ -325,6 +327,7 @@ export default function Home({ navigation }) {
                             style={[
                                 styles.row, {
                                     justifyContent: 'space-between',
+                                    padding: 5
                                 }]}>
                             <IconButton
                                 icon='file-remove'

@@ -105,10 +105,6 @@ export default function Exam({ navigation, route }) {
             let updated_bookmarks = [...new Set(bookmarks)]
             update_bookmarks(updated_bookmarks)
         }
-        function remove_bookmark() {
-            let updated_bookmarks = [... new Set(bookmarks.filter(item => item.title != question.title))]
-            update_bookmarks(updated_bookmarks)
-        }
         function save_to_bookmarks() {
             try {
                 save_blsm()
@@ -120,17 +116,8 @@ export default function Exam({ navigation, route }) {
                 )
             }
         }
-        if (check_is_bookmark()) {
-            add_bookmark();
-            save_to_bookmarks();
-            //? another call to update UI?
-            check_is_bookmark();
-        } else {
-            remove_bookmark();
-            save_to_bookmarks();
-            //? update UI?
-            check_is_bookmark()
-        }
+        add_bookmark();
+        save_to_bookmarks();
     }
     function show_banner() {
         setVisible(true)
@@ -286,11 +273,12 @@ export default function Exam({ navigation, route }) {
                     bottom: 0,
                     width: '100%'
                 }}>
-                <IconButton
-                    icon={check_is_bookmark() ? 'bookmark' : 'bookmark-off'}
-                    size={34}
-                    color={check_is_bookmark() ? 'gold' : 'grey'}
-                    onPress={() => add_to_bookmarks()} />
+                {check_is_bookmark() ?
+                    <IconButton
+                        icon='bookmark-plus'
+                        size={34}
+                        color='#40C4FF'
+                        onPress={() => add_to_bookmarks()} /> : null}
 
                 <Text style={{
                     fontFamily: 'Cairo-SemiBold',

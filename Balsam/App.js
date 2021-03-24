@@ -332,7 +332,6 @@ export default function App() {
         }}>
         <NavigationContainer>
           <Drawer.Navigator
-            initialRouteName="Home"
             drawerContent={(props) => <CustomDrawer {...props} />}
             drawerType='slide'
             drawerContentOptions={{
@@ -340,7 +339,7 @@ export default function App() {
               itemStyle: { marginVertical: 3, padding: 0 },
             }}
           >
-            <Drawer.Screen name="Home" component={Home} options={{ title: 'الرئيسة' }} />
+            <Drawer.Screen name="Home" component={Home} />
             <Drawer.Screen name="SubjectStack" component={SubjectStack} />
             <Drawer.Screen name="CustomExam" component={CustomExam} />
           </Drawer.Navigator>
