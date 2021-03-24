@@ -26,7 +26,7 @@ export default function Exam({ navigation, route }) {
     const [visible, setVisible] = React.useState(false);
     const [hasAnswered, setHasAnswered] = React.useState(false);
     const [wrongAnswersCount, setWrongAnswersCount] = React.useState(0)
-
+    const [is_bookmark, set_is_bookmark] = React.useState(false);
     const title = React.useRef(null);
     const choices_animation = React.useRef(null);
     const footer_animation = React.useRef(null);
@@ -118,6 +118,8 @@ export default function Exam({ navigation, route }) {
         }
         add_bookmark();
         save_to_bookmarks();
+        //? change state to update UI
+        set_is_bookmark(!is_bookmark)
     }
     function show_banner() {
         setVisible(true)
