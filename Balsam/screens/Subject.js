@@ -326,7 +326,6 @@ export default function Subject({ navigation, route }) {
                         visible={unfinishedDialog.visible}
                         onDismiss={() => setUnfinishedDialog({ visible: false })}>
                         <Dialog.Title style={styles.dialog_title}>لم تنه الامتحان آخر مرة!</Dialog.Title>
-                        <Divider />
                         <Dialog.Content>
                             <Text style={styles.dialog_text}>توقفت عند السؤال {unfinishedDialog.index} من أصل {unfinishedDialog.questions_number}</Text>
                         </Dialog.Content>

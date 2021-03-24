@@ -162,7 +162,7 @@ export default function Exam({ navigation, route }) {
             }
             return output
         }
-        if (get_questions_in_bookmarks().includes(quiz.get_question(index).title)) return true;
+        if (get_questions_in_bookmarks().includes(quiz.get_question(index).title) == false) return true;
         return false
     }
     update_index();
