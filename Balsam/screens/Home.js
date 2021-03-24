@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native'
+import { View, Text, StyleSheet, FlatList, Pressable, ToastAndroid } from 'react-native'
 import { Surface, Dialog, Portal, Divider, IconButton, Button, useTheme } from 'react-native-paper'
 import { createStackNavigator } from '@react-navigation/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -14,12 +14,15 @@ import Exam from './Exam'
 import FinishScreen from './FinishScreen'
 import Activation from './Activation'
 import { get_database, update_database, erase_database, update_error_msgs, get_act } from './db'
-
+let all_data = get_database()
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();
     const { colors } = useTheme();
 
     function EmptyHome() {
+        if (all_data.length == 0) {
+            all_data = get_database()
+        }
         return (
             <Animatable.View animation="fadeIn" style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
                 <MaterialCommunityIcons
@@ -43,16 +46,26 @@ export default function Home({ navigation }) {
     function Home_component({ navigation }) {
         const [dialogData, setDialogData] = React.useState({ visible: false })
         const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 });
-        const [data, set_data] = React.useState(get_database())
+        const [database, set_database] = React.useState(all_data)
+
         async function remove_file(title, path) {
             setDialogData({ visible: false })
             // in db.js
-            erase_database()
-            set_data(...get_database().filter(quiz => quiz.title != title))
+            set_database(database.filter(quiz => quiz.title != title))
             update_database(...get_database().filter(quiz => quiz.title != title));
-            await FileSystem.unlink(path)
+            try {
+                await FileSystem.unlink(path)
+            } catch (error) {
+                ToastAndroid.showWithGravity(
+                    'Error#011',
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM
+                )
+            }
         }
-
+        React.useEffect(() => {
+            all_data = get_database()
+        }, [])
 
         function go_exam(quiz) {
             function go() {
@@ -127,8 +140,8 @@ export default function Home({ navigation }) {
             <View style={styles.container}>
                 {get_database().length > 0 ?
                     <FlatList
-                        data={data}
-                        extraData={data}
+                        data={database}
+                        extraData={database}
                         keyExtractor={item => item.title}
                         renderItem={({ item, index }) => (
                             <Animatable.View
@@ -261,7 +274,7 @@ export default function Home({ navigation }) {
                         onDismiss={() => setDialogData({ visible: false })}
                         style={{ padding: 3 }}>
                         <Dialog.Title style={styles.title}>{dialogData.title}</Dialog.Title>
-                        <Dialog.Content >
+                        <Dialog.Content style={{ padding: 3 }}>
                             <View style={[styles.row, { justifyContent: 'space-between', padding: 5 }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
@@ -346,6 +359,7 @@ export default function Home({ navigation }) {
     }
     return (
         <Stack.Navigator
+            initialRouteName='Home'
             screenOptions={{ headerStyle: { height: 50 } }}>
             <Stack.Screen
                 name="Home"
