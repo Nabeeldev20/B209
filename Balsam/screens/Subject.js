@@ -7,10 +7,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { FileSystem } from 'react-native-file-access';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
+import { useIsFocused } from '@react-navigation/native';
 
 import { get_database, update_database, get_bookmarks, erase_database, get_act } from './db'
 export default function Subject({ navigation, route }) {
     const { subject_name } = route.params;
+    const isFocused = useIsFocused();
 
     React.useEffect(() => {
         navigation.setOptions({ title: subject_name });
@@ -20,8 +22,12 @@ export default function Subject({ navigation, route }) {
     const [data, setData] = React.useState(get_database().filter(quiz => quiz.subject == subject_name))
     const [dialogData, setDialogData] = React.useState({ visible: false })
     const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 })
+    const [update_UI, set_update_UI] = React.useState(false)
     const { colors } = useTheme();
-
+    if (isFocused == false) {
+        //? update UI again
+        set_update_UI(!update_UI)
+    }
     function Header() {
         return (
             <View

@@ -6,7 +6,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
 import { get_database, get_error_msgs, get_bookmarks, get_act, get_cache_array } from './db'
-
+import { useIsFocused } from '@react-navigation/native';
 
 export default function CustomExam({ navigation }) {
     const Stack = createStackNavigator();
@@ -25,7 +25,13 @@ export default function CustomExam({ navigation }) {
     const [selected_all, set_selected_all] = React.useState(false);
     const [random_questions, set_random_questions] = React.useState(true);
     const [random_choices, set_random_choices] = React.useState(true);
-    const [selected_cycles, set_selected_cycles] = React.useState(false)
+    const [selected_cycles, set_selected_cycles] = React.useState(false);
+    const [update_UI, set_update_UI] = React.useState(false);
+    const isFocused = useIsFocused();
+    if (isFocused == false) {
+        //? update UI again
+        set_update_UI(!update_UI)
+    }
     function custom_exam({ navigation }) {
         function SubjectsCheckboxes() {
             function get_subjects() {

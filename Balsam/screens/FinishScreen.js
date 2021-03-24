@@ -101,7 +101,7 @@ export default function FinishScreen({ navigation, route }) {
                         <Text style={[styles.message, { color: get_text_score(get_ratio_score()).color }]}>{get_text_score(get_ratio_score()).text}</Text>
                         <Animatable.Text
                             style={[styles.numbers, { color: get_text_score(get_ratio_score()).color }]}
-                            animation={get_text_score(get_ratio_score()).text == 'عادي' ? 'shake' : 'tada'}
+                            animation={get_text_score(get_ratio_score()).text == 'عادي.' ? 'shake' : 'tada'}
                             iterationCount={3}>
                             {quiz.get_questions_number() - wrong_count}/{quiz.get_questions_number()}
                         </Animatable.Text>

@@ -30,7 +30,7 @@ export default function Exam({ navigation, route }) {
     const title = React.useRef(null);
     const choices_animation = React.useRef(null);
     const footer_animation = React.useRef(null);
-
+    const bookmark_button = React.useRef(null);
     const Footer = () => {
         if (hasAnswered) {
             return (
@@ -91,6 +91,12 @@ export default function Exam({ navigation, route }) {
             if (choices_animation) {
                 choices_animation.current?.fadeIn()
             }
+            if (bookmark_button) {
+                try {
+                    bookmark_button.current?.fadeIn();
+                } catch (error) {
+                }
+            }
             setIndex(index + 1);
             setHasAnswered(false);
             setVisible(false);
@@ -116,6 +122,14 @@ export default function Exam({ navigation, route }) {
                 )
             }
         }
+        if (bookmark_button) {
+            bookmark_button.current?.fadeOut();
+        }
+        ToastAndroid.showWithGravity(
+            'تمت الإضافة للمحفوظات',
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM
+        )
         add_bookmark();
         save_to_bookmarks();
         //? change state to update UI
@@ -171,8 +185,8 @@ export default function Exam({ navigation, route }) {
             style={{ flex: 1 }}
             contentContainerStyle={styles.scrollview}
             scrollEnabled={scrollEnabled}
-            onContentSizeChange={onContentSizeChange}
-        >
+            onContentSizeChange={onContentSizeChange}>
+
             <View style={styles.container}>
                 {visible ?
                     <Animatable.View
@@ -276,11 +290,14 @@ export default function Exam({ navigation, route }) {
                     width: '100%'
                 }}>
                 {check_is_bookmark() ?
-                    <IconButton
-                        icon='bookmark-plus'
-                        size={34}
-                        color='#40C4FF'
-                        onPress={() => add_to_bookmarks()} /> : null}
+                    <Animatable.View
+                        ref={bookmark_button}>
+                        <IconButton
+                            icon='bookmark'
+                            size={34}
+                            color='grey'
+                            onPress={() => add_to_bookmarks()} />
+                    </Animatable.View> : null}
 
                 <Text style={{
                     fontFamily: 'Cairo-SemiBold',
