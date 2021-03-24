@@ -345,7 +345,7 @@ export default function Subject({ navigation, route }) {
 
                     <Dialog visible={dialogData.visible} onDismiss={() => setDialogData({ visible: false })}>
                         <Dialog.Title style={[styles.title, { padding: 10 }]}>{dialogData.title}</Dialog.Title>
-                        <Divider />
+
                         <Dialog.Content style={{ padding: 3 }}>
                             <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
@@ -406,7 +406,6 @@ export default function Subject({ navigation, route }) {
                                 </View>
                                 <Text style={styles.dialog_text}>{dialogData.last_time_score} د</Text>
                             </View>
-                            <Divider />
                         </Dialog.Content>
 
                         <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
