@@ -8,7 +8,6 @@ import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
-import { useIsFocused } from '@react-navigation/native';
 
 
 import Exam from './Exam'
@@ -16,7 +15,8 @@ import FinishScreen from './FinishScreen'
 import Activation from './Activation'
 import { get_database, update_database, erase_database, update_error_msgs, get_act } from './db'
 let all_data = get_database()
-export default function Home({ navigation }) {
+export default function Home({ navigation, route }) {
+    const { test } = route.params;
     const Stack = createStackNavigator();
     const { colors } = useTheme();
 
@@ -47,8 +47,8 @@ export default function Home({ navigation }) {
     function Home_component({ navigation }) {
         const [dialogData, setDialogData] = React.useState({ visible: false })
         const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 });
-        const [database, set_database] = React.useState(all_data)
-        const [update_UI, set_update_UI] = React.useState(false)
+        const [database, set_database] = React.useState(all_data);
+
         async function remove_file(title, path) {
             setDialogData({ visible: false })
             // in db.js
@@ -64,16 +64,6 @@ export default function Home({ navigation }) {
                 )
             }
         }
-        const isFocused = useIsFocused();
-        if (isFocused == false) {
-            //? update UI again
-            set_update_UI(!update_UI)
-        }
-        React.useEffect(() => {
-            all_data = get_database();
-            // update UI
-            set_update_UI(!update_UI);
-        }, [])
 
         function go_exam(quiz) {
             function go() {
@@ -146,6 +136,7 @@ export default function Home({ navigation }) {
         }
         return (
             <View style={styles.container}>
+                <Text>{JSON.stringify(test)}</Text>
                 {get_database().length > 0 ?
                     <FlatList
                         data={database}
