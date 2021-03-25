@@ -68,9 +68,13 @@ export default function Bookmarks({ navigation, route }) {
                     <Animatable.View animation="fadeInRight" delay={index * 250} duration={1500}>
                         <Surface style={styles.surface}>
                             <View style={styles.row} >
-                                <MaterialCommunityIcons style={{ marginRight: 4 }} name='comment-question' color='grey' size={20} />
+                                <MaterialCommunityIcons
+                                    name='card-bulleted'
+                                    size={20}
+                                    color='grey'
+                                    style={{ marginRight: 4 }} />
                                 <Headline style={styles.headline}>{item.title}
-                                    <Text style={styles.text}>({item.subject})</Text></Headline>
+                                    <Text style={styles.text}>  ({item.subject})  </Text></Headline>
                             </View>
                             <Divider />
                             {item.choices.filter(choice => choice != '-').map(choice => {

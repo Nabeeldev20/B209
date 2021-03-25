@@ -8,6 +8,7 @@ import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
+import { useIsFocused } from '@react-navigation/native';
 
 
 import Exam from './Exam'
@@ -47,7 +48,7 @@ export default function Home({ navigation }) {
         const [dialogData, setDialogData] = React.useState({ visible: false })
         const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 });
         const [database, set_database] = React.useState(all_data)
-
+        const [update_UI, set_update_UI] = React.useState(false)
         async function remove_file(title, path) {
             setDialogData({ visible: false })
             // in db.js
@@ -63,8 +64,15 @@ export default function Home({ navigation }) {
                 )
             }
         }
+        const isFocused = useIsFocused();
+        if (isFocused == false) {
+            //? update UI again
+            set_update_UI(!update_UI)
+        }
         React.useEffect(() => {
-            all_data = get_database()
+            all_data = get_database();
+            // update UI
+            set_update_UI(!update_UI);
         }, [])
 
         function go_exam(quiz) {
@@ -275,7 +283,7 @@ export default function Home({ navigation }) {
                         style={{ padding: 3 }}>
                         <Dialog.Title style={styles.title}>{dialogData.title}</Dialog.Title>
                         <Dialog.Content style={{ padding: 3 }}>
-                            <View style={[styles.row, { justifyContent: 'space-between', padding: 5 }]}>
+                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='target-variant'
@@ -287,7 +295,7 @@ export default function Home({ navigation }) {
                                 <Text style={styles.dialog_text}>{dialogData.average_accuracy}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between', padding: 5 }]}>
+                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='history'
@@ -299,7 +307,7 @@ export default function Home({ navigation }) {
                                 <Text style={styles.dialog_text}>{dialogData.average_time}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between', padding: 5 }]}>
+                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='calendar-today'
@@ -311,7 +319,7 @@ export default function Home({ navigation }) {
                                 <Text style={styles.dialog_text}>{calculate_last_time(dialogData.last_time)}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between', padding: 5 }]}>
+                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='file-check'
@@ -323,7 +331,7 @@ export default function Home({ navigation }) {
                                 <Text style={styles.dialog_text}>% {dialogData.last_score}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between', padding: 5 }]}>
+                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='clock-check'
@@ -340,7 +348,6 @@ export default function Home({ navigation }) {
                             style={[
                                 styles.row, {
                                     justifyContent: 'space-between',
-                                    padding: 5
                                 }]}>
                             <IconButton
                                 icon='file-remove'
@@ -444,6 +451,7 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         alignItems: 'center',
+        padding: 5
     },
     dialog_text: {
         fontFamily: 'Cairo-SemiBold',
