@@ -16,7 +16,7 @@ import CustomExam from './screens/CustomExam'
 import CustomDrawer from './screens/CustomDrawer'
 import * as Network from 'expo-network';
 
-import { update_database, update_bookmarks, update_act, update_cache_array } from './screens/db'
+import { update_database, get_database, update_bookmarks, update_act, update_cache_array } from './screens/db'
 
 
 const { Storage } = NativeModules;
@@ -340,7 +340,10 @@ export default function App() {
               itemStyle: { marginVertical: 3, padding: 0 },
             }}
           >
-            <Drawer.Screen name="Home" component={Home} />
+            <Drawer.Screen
+              name="Home"
+              component={Home}
+              initialParams={{ test: get_database() }} />
             <Drawer.Screen name="SubjectStack" component={SubjectStack} />
             <Drawer.Screen name="CustomExam" component={CustomExam} />
           </Drawer.Navigator>
