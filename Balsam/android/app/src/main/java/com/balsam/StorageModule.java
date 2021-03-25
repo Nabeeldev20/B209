@@ -1,4 +1,4 @@
-package com.balsam;
+package com.balsamquiz;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

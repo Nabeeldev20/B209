@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
-import { get_database, get_error_msgs, get_bookmarks, get_act, get_cache_array } from './db'
+import { get_database, get_act } from './db'
 
 export default function CustomExam({ navigation }) {
     const Stack = createStackNavigator();
@@ -375,6 +375,7 @@ export default function CustomExam({ navigation }) {
             if (selected_quizzes.length > 0) {
                 let quiz = {
                     title: `امتحان مخصص في ${selected_subject}`,
+                    subject: selected_subject,
                     questions: get_questions(),
                     index: 0,
                     get_question(index) {
@@ -445,11 +446,6 @@ export default function CustomExam({ navigation }) {
                     <QuizzesCheckBoxes />
                     <QuizOptions />
                     <GoExam />
-                    <Text>{JSON.stringify(get_error_msgs(), null, 2)}</Text>
-                    <Text>bookmarks: {JSON.stringify(get_bookmarks(), null, 2)}</Text>
-                    <Text>database: {JSON.stringify(get_database(), null, 2)}</Text>
-                    <Text>act: {JSON.stringify(get_act(), null, 2)}</Text>
-                    <Text>cache: {JSON.stringify(get_cache_array(), null, 2)}</Text>
                 </View>
             </ScrollView>
         )

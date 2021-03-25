@@ -15,8 +15,7 @@ import FinishScreen from './FinishScreen'
 import Activation from './Activation'
 import { get_database, update_database, erase_database, update_error_msgs, get_act } from './db'
 let all_data = get_database()
-export default function Home({ navigation, route }) {
-    const { test } = route.params;
+export default function Home({ navigation }) {
     const Stack = createStackNavigator();
     const { colors } = useTheme();
 
@@ -136,16 +135,13 @@ export default function Home({ navigation, route }) {
         }
         return (
             <View style={styles.container}>
-                <Text>{JSON.stringify(test)}</Text>
                 {get_database().length > 0 ?
                     <FlatList
                         data={database}
                         extraData={database}
                         keyExtractor={item => item.title}
                         renderItem={({ item, index }) => (
-                            <Animatable.View
-                                animation="fadeInRight"
-                                delay={index * 350}
+                            <View
                                 key={item.title}
                                 style={{
                                     marginVertical: 3,
@@ -243,7 +239,7 @@ export default function Home({ navigation, route }) {
 
                                     </Pressable>
                                 </Surface>
-                            </Animatable.View>
+                            </View>
                         )}
                     /> : <EmptyHome />}
                 <Portal>
