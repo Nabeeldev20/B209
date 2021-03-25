@@ -25,8 +25,8 @@ export default function Exam({ navigation, route }) {
     const [index, setIndex] = React.useState(quiz.index);
     const [visible, setVisible] = React.useState(false);
     const [hasAnswered, setHasAnswered] = React.useState(false);
-    const [wrongAnswersCount, setWrongAnswersCount] = React.useState(0)
-    const [is_bookmark, set_is_bookmark] = React.useState(false);
+    const [wrongAnswersCount, setWrongAnswersCount] = React.useState(0);
+
     const title = React.useRef(null);
     const choices_animation = React.useRef(null);
     const footer_animation = React.useRef(null);
@@ -123,7 +123,7 @@ export default function Exam({ navigation, route }) {
             }
         }
         if (bookmark_button) {
-            bookmark_button.current?.fadeOut();
+            bookmark_button.current?.fadeOut(1500);
         }
         ToastAndroid.showWithGravity(
             'تمت الإضافة للمحفوظات',
@@ -132,8 +132,7 @@ export default function Exam({ navigation, route }) {
         )
         add_bookmark();
         save_to_bookmarks();
-        //? change state to update UI
-        set_is_bookmark(!is_bookmark)
+        Analytics.trackEvent('Bookmark', { Subject: quiz.subject });
     }
     function show_banner() {
         setVisible(true)
