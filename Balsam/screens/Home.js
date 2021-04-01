@@ -49,7 +49,7 @@ export default function Home({ navigation }) {
         const [database, set_database] = React.useState(all_data);
         const [loading, set_loading] = React.useState(true);
         React.useEffect(() => {
-            database = get_database();
+            set_database(get_database())
             set_loading(false);
         }, [])
         async function remove_file(title, path) {
