@@ -323,37 +323,33 @@ export default function App() {
         </View>
       )
     }
-  } else {
-    return (
-      <PaperProvider
-        theme={theme}
-        settings={{
-          icon: props => <MaterialCommunityIcons {...props} />,
-        }}>
-        <NavigationContainer>
-          <Drawer.Navigator
-            initialRouteName='Home'
-            drawerContent={(props) => <CustomDrawer {...props} />}
-            drawerType='slide'
-            drawerContentOptions={{
-              activeTintColor: '#e91e63',
-              itemStyle: { marginVertical: 3, padding: 0 },
-            }}
-          >
-            <Drawer.Screen
-              name="Home"
-              component={Home} />
-            <Drawer.Screen name="SubjectStack" component={SubjectStack} />
-            <Drawer.Screen name="CustomExam" component={CustomExam} />
-          </Drawer.Navigator>
-        </NavigationContainer>
-      </PaperProvider>
-    );
   }
 
-
-
-
+  return (
+    <PaperProvider
+      theme={theme}
+      settings={{
+        icon: props => <MaterialCommunityIcons {...props} />,
+      }}>
+      <NavigationContainer>
+        <Drawer.Navigator
+          initialRouteName='Home'
+          drawerContent={(props) => <CustomDrawer {...props} />}
+          drawerType='slide'
+          drawerContentOptions={{
+            activeTintColor: '#e91e63',
+            itemStyle: { marginVertical: 3, padding: 0 },
+          }}
+        >
+          <Drawer.Screen
+            name="Home"
+            component={Home} />
+          <Drawer.Screen name="SubjectStack" component={SubjectStack} />
+          <Drawer.Screen name="CustomExam" component={CustomExam} />
+        </Drawer.Navigator>
+      </NavigationContainer>
+    </PaperProvider>
+  );
 }
 
 const styles = StyleSheet.create({

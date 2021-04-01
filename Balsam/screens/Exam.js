@@ -5,6 +5,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
+import Analytics from 'appcenter-analytics';
+
 import { get_bookmarks, update_bookmarks, save_file, save_blsm } from './db'
 
 export default function Exam({ navigation, route }) {
@@ -37,7 +39,7 @@ export default function Exam({ navigation, route }) {
                 <Animatable.View
                     ref={footer_animation}
                     animation="fadeInUp"
-                    duration={1500}>
+                    duration={1200}>
                     <View style={{
                         backgroundColor: '#fff',
                         borderWidth: 2,

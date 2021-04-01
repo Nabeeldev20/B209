@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { View, Text, StyleSheet, FlatList, ScrollView, Dimensions, Pressable, Switch } from 'react-native'
-import { Checkbox, Divider, Subheading, Surface, useTheme } from 'react-native-paper'
+import { View, Text, StyleSheet, FlatList, ScrollView, Dimensions, Pressable } from 'react-native'
+import { Checkbox, Divider, Subheading, Surface, Switch, useTheme } from 'react-native-paper'
 import { createStackNavigator } from '@react-navigation/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DateTime } from 'luxon'
@@ -165,8 +165,7 @@ export default function CustomExam({ navigation }) {
                             <Switch
                                 value={selected_all}
                                 onValueChange={() => handle_selected_all()}
-                                trackColor={{ false: '#767577', true: '#75d99e' }}
-                                thumbColor={selected_all ? '#00C853' : '#f4f3f4'}
+                                color='#00C853'
                                 disabled={selected_subject == ''} />
                         </View>
                     </View>
@@ -201,17 +200,18 @@ export default function CustomExam({ navigation }) {
             )
         }
         function QuizOptions() {
-            function handle_selected_cycles() {
-                function get_cycles() {
-                    let { all, cycles } = get_quizzes();
-                    let output = []
-                    for (let i = 0; i < all.length; i++) {
-                        if (cycles.includes(all[i])) {
-                            output.push(all[i])
-                        }
+            function get_cycles() {
+                let { all, cycles } = get_quizzes();
+                let output = []
+                for (let i = 0; i < all.length; i++) {
+                    if (cycles.includes(all[i])) {
+                        output.push(all[i])
                     }
-                    return output
                 }
+                return output
+            }
+            function handle_selected_cycles() {
+
                 if (selected_cycles) {
                     set_selected_cycles(false);
                     set_selected_quizzes([])
@@ -246,9 +246,8 @@ export default function CustomExam({ navigation }) {
                         <Switch
                             value={random_questions}
                             onValueChange={() => set_random_questions(!random_questions)}
-                            trackColor={{ false: '#767577', true: '#75d99e' }}
-                            thumbColor={random_questions ? '#00C853' : '#f4f3f4'}
-                            disabled={selected_quizzes.length == 0} />
+                            color='#00C853'
+                            disabled={selected_subject == ''} />
                     </View>
                     <Divider />
                     <View style={[styles.row, { padding: 5 }]}>
@@ -263,9 +262,8 @@ export default function CustomExam({ navigation }) {
                         <Switch
                             value={random_choices}
                             onValueChange={() => set_random_choices(!random_choices)}
-                            trackColor={{ false: '#767577', true: '#75d99e' }}
-                            thumbColor={random_choices ? '#00C853' : '#f4f3f4'}
-                            disabled={selected_quizzes.length == 0} />
+                            color='#00C853'
+                            disabled={selected_subject == ''} />
 
                     </View>
                     <Divider />
@@ -281,9 +279,8 @@ export default function CustomExam({ navigation }) {
                         <Switch
                             value={selected_cycles}
                             onValueChange={() => handle_selected_cycles()}
-                            trackColor={{ false: '#767577', true: '#ec9b99' }}
-                            thumbColor={selected_cycles ? '#E53935' : '#f4f3f4'}
-                            disabled={selected_quizzes.length == 0} />
+                            color='#E53935'
+                            disabled={get_cycles().length == 0} />
                     </View>
                     <Divider />
                     <View style={[styles.row, { padding: 5 }]}>
@@ -293,7 +290,7 @@ export default function CustomExam({ navigation }) {
                                 size={20}
                                 color='grey'
                                 style={{ marginRight: 3 }} />
-                            <Text style={styles.text}>عدد الأسئلة</Text>
+                            <Text style={[styles.text, { marginRight: 3 }]}>عدد الأسئلة</Text>
                         </View>
                         <Text style={styles.text} >{get_questions().length}</Text>
                     </View>
