@@ -1,6 +1,6 @@
-package com.balsamquiz;
+package com.balsam;
 
-import com.balsamquiz.generated.BasePackageList;
+import com.balsam.generated.BasePackageList;
 
 import android.app.Application;
 import android.content.Context;

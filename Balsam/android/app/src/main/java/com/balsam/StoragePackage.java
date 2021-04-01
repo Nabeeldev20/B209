@@ -1,4 +1,4 @@
-package com.balsamquiz;
+package com.balsam;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
