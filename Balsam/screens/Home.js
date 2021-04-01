@@ -47,7 +47,11 @@ export default function Home({ navigation }) {
         const [dialogData, setDialogData] = React.useState({ visible: false })
         const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 });
         const [database, set_database] = React.useState(all_data);
-
+        const [loading, set_loading] = React.useState(true);
+        React.useEffect(() => {
+            database = get_database();
+            set_loading(false);
+        }, [])
         async function remove_file(title, path) {
             setDialogData({ visible: false })
             // in db.js
@@ -132,6 +136,14 @@ export default function Home({ navigation }) {
                 return { name: 'checkbox-blank-circle', color: 'grey' }
             }
             return { name: 'checkbox-blank-circle-outline', color: 'grey' }
+        }
+        if (loading) {
+            return (
+                <Animatable.View animation='flash' iterationCount='infinite' duration={3500} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
+                    <MaterialCommunityIcons name='folder-sync' size={35} color='grey' />
+                    <Text style={[styles.headline, { color: 'grey' }]} >جاري التحميل</Text>
+                </Animatable.View>
+            )
         }
         return (
             <View style={styles.container}>
