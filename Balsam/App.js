@@ -16,7 +16,7 @@ import CustomExam from './screens/CustomExam'
 import CustomDrawer from './screens/CustomDrawer'
 import * as Network from 'expo-network';
 
-import { update_database, update_bookmarks, update_act, update_cache_array } from './screens/db'
+import { update_database, update_bookmarks, update_act, update_cache_array, update_error_msgs } from './screens/db'
 
 
 const { Storage } = NativeModules;
@@ -226,6 +226,12 @@ export default function App() {
       } catch (error) {
         ToastAndroid.showWithGravity(
           'Error#004',
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM
+        )
+        update_error_msgs({ Code: 'ERROR checking permissons', error });
+        ToastAndroid.showWithGravity(
+          JSON.stringify(error),
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM
         )
