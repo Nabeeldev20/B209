@@ -19,8 +19,8 @@ function get_database() {
 function update_database(update) {
     database = [...database, update]
 }
-function erase_database() {
-    database = []
+function set_database(update) {
+    database = update
 }
 function get_bookmarks() {
     return bookmarks
@@ -74,11 +74,11 @@ function update_error_msgs(data) {
 }
 export {
     get_database,
+    set_database,
     update_database,
     get_mac,
     update_mac,
     get_bookmarks,
-    erase_database,
     update_bookmarks,
     erase_bookmarks,
     get_act,

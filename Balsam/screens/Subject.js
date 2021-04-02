@@ -8,7 +8,7 @@ import { FileSystem } from 'react-native-file-access';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
 
-import { get_database, update_database, get_bookmarks, erase_database, get_act } from './db'
+import { get_database, set_database, get_bookmarks, get_act } from './db'
 export default function Subject({ navigation, route }) {
     const { subject_name } = route.params;
 
@@ -22,6 +22,10 @@ export default function Subject({ navigation, route }) {
     const [dialogData, setDialogData] = React.useState({ visible: false })
     const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 })
     const { colors } = useTheme();
+
+    React.useEffect(() => {
+        setData(get_database().filter(quiz => quiz.subject == subject_name));
+    }, [get_database(), get_bookmarks()]);
 
     function Header() {
         return (
@@ -99,9 +103,7 @@ export default function Subject({ navigation, route }) {
     async function remove_file(title, path) {
         setData(data.filter(quiz => quiz.title != title));
         setDialogData({ visible: false })
-        //db.js
-        erase_database()
-        update_database(...data.filter(quiz => quiz.title != title));
+        set_database(get_database().filter(quiz => quiz.title != title));
         try {
             await FileSystem.unlink(path)
         } catch (error) {
