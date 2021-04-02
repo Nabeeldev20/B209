@@ -8,11 +8,11 @@ import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
-import { useIsFocused } from '@react-navigation/native';
 
 import Exam from './Exam'
 import FinishScreen from './FinishScreen'
 import Activation from './Activation'
+
 import { get_database, set_database, update_error_msgs, get_act } from './db'
 
 export default function Home({ navigation }) {
@@ -47,12 +47,9 @@ export default function Home({ navigation }) {
         const [dialogData, setDialogData] = React.useState({ visible: false })
         const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 });
         const [data, set_data] = React.useState(get_database());
-        const isFocused = useIsFocused();
-        /*React.useEffect(() => {
-            if (isFocused) {
-                set_data(get_database())
-            }
-        }, [get_database()])*/
+        React.useEffect(() => {
+            set_data(get_database())
+        }, [get_database()])
         async function remove_file(title, path) {
             setDialogData({ visible: false })
             // in db.js
