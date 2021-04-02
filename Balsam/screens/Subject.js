@@ -116,7 +116,7 @@ export default function Subject({ navigation, route }) {
     }
     if (data.length > 0) {
         if (data[0].subject != subject_name) {
-            setData(database.filter(quiz => quiz.subject == subject_name))
+            setData(data.filter(quiz => quiz.subject == subject_name))
         }
     }
     function go_exam(quiz) {
