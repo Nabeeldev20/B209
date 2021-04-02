@@ -8,13 +8,13 @@ import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
-
+import { useIsFocused } from '@react-navigation/native';
 
 import Exam from './Exam'
 import FinishScreen from './FinishScreen'
 import Activation from './Activation'
-import { get_database, update_database, erase_database, update_error_msgs, get_act } from './db'
-let all_data = get_database()
+import { get_database, set_database, update_error_msgs, get_act } from './db'
+
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();
     const { colors } = useTheme();
@@ -46,17 +46,18 @@ export default function Home({ navigation }) {
     function Home_component({ navigation }) {
         const [dialogData, setDialogData] = React.useState({ visible: false })
         const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 });
-        const [database, set_database] = React.useState(all_data);
-        const [loading, set_loading] = React.useState(true);
+        const [data, set_data] = React.useState(get_database());
+        const isFocused = useIsFocused();
         React.useEffect(() => {
-            set_database(get_database())
-            set_loading(false);
-        }, [])
+            if (isFocused) {
+                set_data(get_database())
+            }
+        }, [get_database()])
         async function remove_file(title, path) {
             setDialogData({ visible: false })
             // in db.js
-            set_database(database.filter(quiz => quiz.title != title))
-            update_database(...get_database().filter(quiz => quiz.title != title));
+            set_data(data.filter(quiz => quiz.title != title))
+            set_database(get_database().filter(quiz => quiz.title != title));
             try {
                 await FileSystem.unlink(path)
             } catch (error) {
@@ -137,20 +138,12 @@ export default function Home({ navigation }) {
             }
             return { name: 'checkbox-blank-circle-outline', color: 'grey' }
         }
-        if (loading) {
-            return (
-                <Animatable.View animation='flash' iterationCount='infinite' duration={3500} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
-                    <MaterialCommunityIcons name='folder-sync' size={35} color='grey' />
-                    <Text style={[styles.headline, { color: 'grey' }]} >جاري التحميل</Text>
-                </Animatable.View>
-            )
-        }
         return (
             <View style={styles.container}>
                 {get_database().length > 0 ?
                     <FlatList
-                        data={database}
-                        extraData={database}
+                        data={data}
+                        extraData={data}
                         keyExtractor={item => item.title}
                         renderItem={({ item, index }) => (
                             <View
@@ -254,6 +247,7 @@ export default function Home({ navigation }) {
                             </View>
                         )}
                     /> : <EmptyHome />}
+
                 <Portal>
 
                     <Dialog

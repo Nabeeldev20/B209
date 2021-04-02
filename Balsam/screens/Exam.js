@@ -125,7 +125,7 @@ export default function Exam({ navigation, route }) {
             }
         }
         if (bookmark_button) {
-            bookmark_button.current?.fadeOut(1500);
+            bookmark_button.current?.bounceOut(1200);
         }
         ToastAndroid.showWithGravity(
             'تمت الإضافة للمحفوظات',
