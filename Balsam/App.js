@@ -231,7 +231,7 @@ export default function App() {
         )
         update_error_msgs({ Code: 'ERROR checking permissons', error });
         ToastAndroid.showWithGravity(
-          error,
+          JSON.stringify(error),
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM
         )
