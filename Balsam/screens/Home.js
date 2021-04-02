@@ -48,11 +48,11 @@ export default function Home({ navigation }) {
         const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 });
         const [data, set_data] = React.useState(get_database());
         const isFocused = useIsFocused();
-        React.useEffect(() => {
+        /*React.useEffect(() => {
             if (isFocused) {
                 set_data(get_database())
             }
-        }, [get_database()])
+        }, [get_database()])*/
         async function remove_file(title, path) {
             setDialogData({ visible: false })
             // in db.js
