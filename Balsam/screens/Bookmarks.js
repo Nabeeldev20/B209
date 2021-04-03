@@ -1,103 +1,203 @@
 import * as React from 'react'
-import { View, Text, StyleSheet, FlatList, ToastAndroid } from 'react-native'
-import { Divider, Surface, Headline, IconButton } from 'react-native-paper'
+import { View, Text, StyleSheet, FlatList, ToastAndroid, ScrollView, Dimensions } from 'react-native'
+import { Divider, Surface, Headline, Subheading, Button, IconButton } from 'react-native-paper'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { createStackNavigator } from '@react-navigation/stack';
 import * as Animatable from 'react-native-animatable';
 
 import { get_bookmarks, update_bookmarks, save_blsm } from './db'
 
 
-export default function Bookmarks({ navigation, route }) {
-    let { subject_name } = route.params;
-
-    React.useEffect(() => {
-        navigation.setOptions({ title: 'محفوظات' + ' ' + subject_name })
-    }, [subject_name])
-
-    const [bookmarksData, setBookmarksData] = React.useState(get_bookmarks().filter(bookmark => bookmark.subject == subject_name))
-
-    const QuestionExplanation = (item) => {
-        if (item.explanation.length > 3) {
+export default function Bookmarks({ navigation }) {
+    const Stack = createStackNavigator();
+    const [screenHeight, setScreenHeight] = React.useState(Dimensions.get('window'));
+    const { height } = Dimensions.get('window');
+    const scrollEnabled = () => {
+        return screenHeight > height ? true : false
+    }
+    const onContentSizeChange = (contentHeight) => {
+        setScreenHeight(contentHeight);
+    }
+    const [bookmarks, set_bookmarks] = React.useState(get_bookmarks());
+    const [selected_subject, set_selected_subject] = React.useState('');
+    function bookmarks_component() {
+        function SubjectsButtons() {
+            function get_subjects() {
+                let output = [];
+                for (let i = 0; i < bookmarks.length; i++) {
+                    output.push(bookmarks[i].subject);
+                }
+                return [... new Set(output)]
+            }
             return (
-                <View>
-                    <Divider />
-                    <View style={styles.row}>
-                        <MaterialCommunityIcons style={{ marginRight: 4 }} name='comment-question' color='grey' size={20} />
-                        <Text style={styles.text}>{item.explanation}</Text>
-                    </View>
-                </View>
+                <Surface style={{
+                    margin: 4,
+                    elevation: 1,
+                    padding: 3,
+                    borderWidth: 1,
+                    borderColor: '#d7d8d2'
+                }}>
+                    <Subheading style={{
+                        fontFamily: 'Cairo-Bold',
+                        color: '#343434',
+                        padding: 5
+                    }}>المقررات</Subheading>
+                    <FlatList
+                        data={get_subjects()}
+                        extraData={get_subjects()}
+                        contentContainerStyle={{ flexDirection: "row", flexWrap: "wrap" }}
+                        renderItem={({ item }) => {
+                            return (
+                                <Button
+                                    labelStyle={{
+                                        letterSpacing: 0,
+                                        fontFamily: 'Cairo-SemiBold',
+                                        fontSize: 14
+                                    }}
+                                    compact
+                                    style={{ margin: 3 }}
+                                    mode={selected_subject == item ? 'contained' : 'outlined'}
+                                    onPress={() => set_selected_subject(item)}>{item}</Button>
+                            )
+                        }}
+                    />
+                </Surface>
             )
         }
-        return null
-    }
-    const remove_Bookmark = (item) => {
-        function save_to_bookmarks() {
-            try {
-                save_blsm()
-            } catch (error) {
-                ToastAndroid.showWithGravity(
-                    'Error#009',
-                    ToastAndroid.LONG,
-                    ToastAndroid.BOTTOM
-                )
+        function BookmarksList() {
+            function get_selected_bookmarks() {
+                if (selected_subject == '') {
+                    return bookmarks
+                }
+                return bookmarks.filter(b => b.subject == selected_subject)
             }
-        }
-        let updated_bookmarks = [...new Set(bookmarksData.filter(bookmark => bookmark.title != item.title))]
+            return (
+                <FlatList
+                    data={get_selected_bookmarks()}
+                    renderItem={({ item }) => {
+                        return (
+                            <Surface style={{
+                                margin: 4,
+                                elevation: 1,
+                                padding: 3,
+                                borderWidth: 1,
+                                borderColor: '#d7d8d2'
+                            }}>
+                                <View style={{
+                                    alignItems: 'center',
+                                    flexDirection: 'row',
+                                    paddingHorizontal: 4
+                                }}>
+                                    <MaterialCommunityIcons
+                                        name='card-bulleted'
+                                        size={20}
+                                        color='grey'
+                                        style={{ marginRight: 4 }} />
+                                    <Headline style={styles.headline}>
+                                        {item.title}
+                                        {selected_subject == '' ? <Text style={styles.text}>  ({item.subject})  </Text> : null}
+                                    </Headline>
+                                </View>
+                                <Divider />
+                                {item.choices.filter(choice => choice != '-').map(choice => {
+                                    return (
+                                        <Text
+                                            style={[
+                                                styles.text,
+                                                {
+                                                    color: choice == item.right_answer ? 'green' : 'grey',
+                                                    fontWeight: choice == item.right_answer ? 'bold' : null
+                                                }
+                                            ]}
+                                            key={choice}
+                                        >{choice}</Text>
+                                    )
 
-        setBookmarksData(updated_bookmarks)
-        update_bookmarks(updated_bookmarks);
-        save_to_bookmarks()
-    }
-    const empty_state = () => {
+                                })}
+                                {
+                                    item.explanation.length > 2 ?
+                                        <View style={{
+                                            alignItems: 'center',
+                                            flexDirection: 'row',
+                                            paddingHorizontal: 4
+                                        }}>
+                                            <MaterialCommunityIcons
+                                                name='comment-question'
+                                                size={16}
+                                                color='grey'
+                                                style={{ marginRight: 4 }} />
+                                            <Text style={styles.text}>{item.explanation}</Text>
+                                        </View> : null
+                                }
+                                <IconButton
+                                    icon='bookmark-remove'
+                                    size={24}
+                                    color='grey'
+                                    onPress={() => remove_bookmark(item)}
+                                    style={{ alignSelf: 'flex-end' }}
+                                />
+                            </Surface>
+                        )
+                    }} />
+
+            )
+        }
+        function NoBookmarks() {
+            return (
+                <Animatable.View animation="fadeIn" style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
+                    <MaterialCommunityIcons
+                        name='file-download'
+                        color='grey'
+                        size={50} style={{ marginLeft: 5 }} />
+                    <Text style={{ fontFamily: 'Cairo-Bold', color: 'grey' }}>محفوظات؟ جرّب إضافتها أثناء حل الاختبار</Text>
+                </Animatable.View>
+            )
+        }
+        function remove_bookmark(removed_bookmark) {
+            function save_to_bookmarks() {
+                try {
+                    save_blsm()
+                } catch (error) {
+                    ToastAndroid.showWithGravity(
+                        'Error#009',
+                        ToastAndroid.LONG,
+                        ToastAndroid.BOTTOM
+                    )
+                }
+            }
+            let updated_bookmarks = [...new Set(bookmarks.filter(item => item.title != removed_bookmark.title))]
+
+            set_bookmarks(updated_bookmarks);
+            update_bookmarks(updated_bookmarks);
+            save_to_bookmarks();
+        }
         return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: '25%' }}>
-                <MaterialCommunityIcons name='bookmark-plus' size={40} color='grey' />
-                <Text style={styles.text}>جرّب إضافة سؤال للمحفوظات أثناء الحل</Text>
-            </View>
+            <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{ flexGrow: 1 }}
+                scrollEnabled={scrollEnabled}
+                onContentSizeChange={onContentSizeChange}>
+                <View style={styles.container}>
+                    {bookmarks.length > 0 ?
+                        <View>
+                            <SubjectsButtons />
+                            <BookmarksList />
+                        </View> : <NoBookmarks />}
+                </View>
+            </ScrollView>
         )
     }
-
     return (
-        <View style={styles.container}>
-            <FlatList
-                data={bookmarksData}
-                extraData={bookmarksData}
-                ListEmptyComponent={empty_state}
-                keyExtractor={(item) => item.title}
-                renderItem={({ item, index }) => (
-                    <Animatable.View animation="fadeInRight" delay={index * 250} duration={1500}>
-                        <Surface style={styles.surface}>
-                            <View style={styles.row} >
-                                <MaterialCommunityIcons
-                                    name='card-bulleted'
-                                    size={20}
-                                    color='grey'
-                                    style={{ marginRight: 4 }} />
-                                <Headline style={styles.headline}>{item.title}
-                                    <Text style={styles.text}>  ({item.subject})  </Text></Headline>
-                            </View>
-                            <Divider />
-                            {item.choices.filter(choice => choice != '-').map(choice => {
-                                return (
-                                    <Text
-                                        style={[styles.text, { color: choice == item.right_answer ? 'green' : 'grey' }]}
-                                        key={choice}
-                                    >{choice}</Text>
-                                )
-                            })}
-                            {QuestionExplanation(item)}
-                            <IconButton
-                                icon='bookmark-remove'
-                                size={24}
-                                color='grey'
-                                onPress={() => remove_Bookmark(item)}
-                                style={{ alignSelf: 'flex-end' }}
-                            />
-                        </Surface>
-                    </Animatable.View>
-                )}
-            />
-        </View>
+        <Stack.Navigator screenOptions={{ headerStyle: { height: 50 } }}>
+            <Stack.Screen
+                name='Bookmarks'
+                component={bookmarks_component}
+                options={{
+                    title: 'المحفوظات',
+                    headerTitleStyle: { fontFamily: 'Cairo-Bold' },
+                    headerLeft: () => (<MaterialCommunityIcons size={30} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
+                }} />
+        </Stack.Navigator>
     )
 }
 const styles = StyleSheet.create({
@@ -118,6 +218,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         selectable: false,
         padding: 3,
+        textAlign: 'justify'
     },
     text: {
         fontFamily: 'Cairo-SemiBold',
