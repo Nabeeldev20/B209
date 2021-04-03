@@ -26,6 +26,8 @@ export default function CustomExam({ navigation }) {
     const [random_choices, set_random_choices] = React.useState(true);
     const [selected_cycles, set_selected_cycles] = React.useState(false);
     function custom_exam({ navigation }) {
+        update_error_msgs({ Place: 'Custom Exam ', expected: 4 })
+
         function SubjectsCheckboxes() {
             function get_subjects() {
                 let output = [];

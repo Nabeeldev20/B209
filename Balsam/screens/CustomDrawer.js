@@ -4,10 +4,12 @@ import { Divider } from 'react-native-paper';
 import { DrawerItem } from '@react-navigation/drawer';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { get_database } from './db'
+import { get_database, update_error_msgs } from './db'
 
 
 export default function CustomDrawer({ navigation }) {
+    update_error_msgs({ Place: 'Custom Drawer', expected: 2 })
+
     let data = get_database()
     const get_subjects = () => {
         let output = [];
@@ -32,7 +34,13 @@ export default function CustomDrawer({ navigation }) {
                 style={{ marginVertical: 1 }}
             />
 
-
+            <DrawerItem
+                label='المحفوظات'
+                icon={() => <MaterialCommunityIcons size={20} name='bookmark-multiple' />}
+                labelStyle={styles.drawer_text}
+                onPress={() => navigation.navigate('Bookmarks')}
+                style={{ marginVertical: 1 }}
+            />
             {get_subjects().length > 0 ?
                 <View>
                     <Divider />
@@ -47,7 +55,7 @@ export default function CustomDrawer({ navigation }) {
                                     label={subject}
                                     key={subject}
                                     labelStyle={styles.drawer_text}
-                                    onPress={() => navigation.navigate('SubjectStack', { screen: 'Subject', params: { subject_name: subject } })}
+                                    onPress={() => navigation.navigate('Subject', { subject_name: subject })}
                                 />
                             )
                         })}

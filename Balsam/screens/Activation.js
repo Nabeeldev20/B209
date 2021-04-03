@@ -89,10 +89,15 @@ export default function Activation({ navigation, route }) {
         --
         ${storeCode}
         --
-        ${get_act_code()} - ${code}
+        ${get_act_code()}
         --
         شكراً لك 
     `);
+        ToastAndroid.showWithGravity(
+            'تم النسخ للحافظة',
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM
+        )
     }
     function is_input_valid_animation() {
         let d = h.decode(get_act_code())

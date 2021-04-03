@@ -11,9 +11,10 @@ import { Dirs, FileSystem } from 'react-native-file-access';
 import * as Animatable from 'react-native-animatable';
 
 import Home from './screens/Home'
-import SubjectStack from './screens/SubjectStack'
 import CustomExam from './screens/CustomExam'
 import CustomDrawer from './screens/CustomDrawer'
+import Subject from './screens/Subject'
+import Bookmarks from './screens/Bookmarks'
 import * as Network from 'expo-network';
 
 import { update_database, update_bookmarks, update_act, update_cache_array, update_error_msgs } from './screens/db'
@@ -230,11 +231,6 @@ export default function App() {
           ToastAndroid.BOTTOM
         )
         update_error_msgs({ Code: 'ERROR checking permissons', error });
-        ToastAndroid.showWithGravity(
-          JSON.stringify(error),
-          ToastAndroid.LONG,
-          ToastAndroid.BOTTOM
-        )
       }
     }
     async function read_blsm() {
@@ -313,11 +309,11 @@ export default function App() {
           <Animatable.View animation='fadeIn' delay={700} style={{ paddingTop: 10 }}>
             <MaterialCommunityIcons name='lightbulb' size={20} color="grey" style={{ alignSelf: 'flex-start' }} />
             <Text style={styles.text}> ملفات اختبارات بلسم بلاحقة
-          <Text style={{ fontWeight: 'bold', fontFamily: 'Cairo_700Bold', marginHorizontal: 12 }}>
+          <Text style={{ fontWeight: 'bold', fontFamily: 'Cairo_700Bold', marginHorizontal: 14 }}>
                 quiz.
           </Text>{'\n'}
     يمكنك تحميل الملفات من قناتنا على التلغرام
-    <MaterialCommunityIcons style={{ paddingHorizontal: 3 }} name='telegram' size={16} color='grey' /> <Text style={{ paddingLeft: 5 }}>@Balsam_app</Text>    {'\n'}
+    <MaterialCommunityIcons style={{ paddingHorizontal: 4 }} name='telegram' size={16} color='grey' /> <Text style={{ paddingLeft: 5 }}>@Balsam_app</Text>    {'\n'}
     تتم قراءة الملفات تلقائياً من مجلد التنزيلات
           <MaterialCommunityIcons style={{ paddingHorizontal: 5 }} name='folder-download' size={16} color='grey' /> {'\n'}
 
@@ -350,8 +346,10 @@ export default function App() {
           <Drawer.Screen
             name="Home"
             component={Home} />
-          <Drawer.Screen name="SubjectStack" component={SubjectStack} />
           <Drawer.Screen name="CustomExam" component={CustomExam} />
+          <Drawer.Screen name="Bookmarks" component={Bookmarks} />
+          <Drawer.Screen name="Subject" component={Subject} />
+
         </Drawer.Navigator>
       </NavigationContainer>
     </PaperProvider>

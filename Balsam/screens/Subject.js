@@ -7,12 +7,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { FileSystem } from 'react-native-file-access';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
+import { createStackNavigator } from '@react-navigation/stack';
 
-import { get_database, set_database, get_bookmarks, get_act } from './db'
+import { get_database, set_database, get_bookmarks, get_act, update_error_msgs } from './db'
 export default function Subject({ navigation, route }) {
+    const Stack = createStackNavigator();
     const { subject_name } = route.params;
-
-
     React.useEffect(() => {
         navigation.setOptions({ title: subject_name });
     }, [subject_name])
@@ -25,112 +25,121 @@ export default function Subject({ navigation, route }) {
 
     React.useEffect(() => {
         setData(get_database().filter(quiz => quiz.subject == subject_name));
-    }, [get_database(), get_bookmarks()]);
+    }, [get_database()]);
 
-    function Header() {
-        return (
-            <View
-                style={[
-                    styles.row,
-                    {
-                        justifyContent: get_bookmarks().filter(bookmark => bookmark.subject == subject_name).length >= 1 ? 'space-between' : 'flex-end',
-                        alignItems: 'baseline'
-                    }]}>
-                {get_bookmarks().filter(bookmark => bookmark.subject == subject_name).length >= 1 ?
-                    <Pressable
-                        onPress={() => navigation.navigate('Bookmarks', { subject_name })}
-                        android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
-                        style={[styles.row, { marginVertical: 3 }]}>
 
+    function subject_component() {
+        update_error_msgs({ Place: 'Subject', expected: 3 })
+
+        function Header() {
+            function has_cycles() {
+                let output = [];
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].is_cycle()) {
+                        output.push(data[i].title)
+                    }
+                }
+                if (output.length > 0) return true;
+                return false;
+            }
+            if (has_cycles()) {
+                return (
+                    <View style={styles.row}>
                         <MaterialCommunityIcons
-                            name='bookmark-multiple'
-                            size={20}
+                            name='check-decagram'
                             color='grey'
-                            style={{ marginRight: 3 }} />
-                        <Text style={styles.Header_text}>المحفوظات
-                                   ( {get_bookmarks().length})
-                        </Text>
-
-                    </Pressable> : null}
-
-                <View style={styles.row}>
-                    <MaterialCommunityIcons
-                        name='check-decagram'
-                        color='grey'
-                        size={16}
-                        style={{ marginRight: 6 }} />
-                    <Text style={[styles.Header_text, { marginRight: 5 }]}>الدورات فقط</Text>
-                    <Switch
-                        value={onlyCycles}
-                        onValueChange={handle_switch}
-                        trackColor={{ false: '#767577', true: '#ec9b99' }}
-                        thumbColor={onlyCycles ? '#E53935' : '#f4f3f4'} />
-                </View>
-            </View>
-        )
-    }
-
-    function empty_state_cycle() {
-        return (
-            <Animatable.View
-                animation="fadeIn"
-                style={{
-                    flex: 1,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%'
-                }}>
-                <MaterialCommunityIcons
-                    name='file-hidden'
-                    color='grey'
-                    size={50} style={{ marginLeft: 5 }} />
-                <Text style={{ fontFamily: 'Cairo-Bold', color: 'grey' }}>الدنيا دوارة بس لا يوجد دورات هنا</Text>
-            </Animatable.View>
-        )
-    }
-
-    function handle_switch() {
-        if (!onlyCycles) {
-            setData(data.filter(quiz => quiz.cycle_university.length > 3))
-            setOnlyCycles(true)
-        } else {
-            setOnlyCycles(false)
-            setData(get_database().filter(quiz => quiz.subject == subject_name))
+                            size={16}
+                            style={{ marginRight: 6 }} />
+                        <Text style={[styles.Header_text, { marginRight: 5 }]}>الدورات فقط</Text>
+                        <Switch
+                            value={onlyCycles}
+                            onValueChange={handle_switch}
+                            trackColor={{ false: '#767577', true: '#ec9b99' }}
+                            thumbColor={onlyCycles ? '#E53935' : '#f4f3f4'} />
+                    </View>
+                )
+            }
+            return null
         }
-    }
-
-
-    async function remove_file(title, path) {
-        setData(data.filter(quiz => quiz.title != title));
-        setDialogData({ visible: false })
-        set_database(get_database().filter(quiz => quiz.title != title));
-        try {
-            await FileSystem.unlink(path)
-        } catch (error) {
-            ToastAndroid.showWithGravity(
-                'Error#011',
-                ToastAndroid.LONG,
-                ToastAndroid.BOTTOM
-            )
-        }
-    }
-    if (data.length > 0) {
-        if (data[0].subject != subject_name) {
-            setData(data.filter(quiz => quiz.subject == subject_name))
-        }
-    }
-    function go_exam(quiz) {
-        function go() {
-            if (quiz.index > 0) {
-                setUnfinishedDialog({
-                    visible: true,
-                    index: quiz.index + 1,
-                    questions_number: quiz.get_questions_number(),
-                    quiz
-                })
+        function handle_switch() {
+            if (!onlyCycles) {
+                setData(data.filter(quiz => quiz.cycle_university.length > 3))
+                setOnlyCycles(true)
             } else {
-                Analytics.trackEvent('Exam', { Subject: quiz.subject, FileName: quiz.title });
-                quiz.get_shuffled_questions(true, true)
+                setOnlyCycles(false)
+                setData(get_database().filter(quiz => quiz.subject == subject_name))
+            }
+        }
+        async function remove_file(title, path) {
+
+            setData(data.filter(quiz => quiz.title != title));
+            setDialogData({ visible: false })
+            set_database(get_database().filter(quiz => quiz.title != title));
+            try {
+                await FileSystem.unlink(path)
+            } catch (error) {
+                ToastAndroid.showWithGravity(
+                    'Error#011',
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM
+                )
+            }
+            if (data.length == 0) {
+                navigation.jumpTo('Home')
+            }
+        }
+        if (data.length > 0) {
+            if (data[0].subject != subject_name) {
+                setData(get_database().filter(quiz => quiz.subject == subject_name))
+            }
+        }
+        function go_exam(quiz) {
+            function go() {
+                if (quiz.index > 0) {
+                    setUnfinishedDialog({
+                        visible: true,
+                        index: quiz.index + 1,
+                        questions_number: quiz.get_questions_number(),
+                        quiz
+                    })
+                } else {
+                    Analytics.trackEvent('Exam', { Subject: quiz.subject, FileName: quiz.title });
+                    quiz.get_shuffled_questions(true, true)
+                    navigation.navigate('Home', {
+                        screen: 'Exam',
+                        params: {
+                            quiz,
+                            exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+                            random_questions: true,
+                            random_choices: true
+                        }
+                    })
+                }
+            }
+            if (quiz.is_paid()) {
+                function has_code(quiz_code) {
+                    let codes = get_act()
+                    if (codes.includes(quiz_code)) {
+                        return true
+                    }
+                    return false
+                }
+                if (has_code(quiz.code) == false) {
+                    navigation.navigate('Home', {
+                        screen: 'Activation',
+                        params: {
+                            subject_name: quiz.subject, code: quiz.code
+                        }
+                    })
+                } else {
+                    go()
+                }
+            } else {
+                go()
+            }
+        }
+        function resume_exam({ quiz, continue_exam = false } = {}) {
+            if (continue_exam) {
                 navigation.navigate('Home', {
                     screen: 'Exam',
                     params: {
@@ -140,306 +149,282 @@ export default function Subject({ navigation, route }) {
                         random_choices: true
                     }
                 })
-            }
-        }
-        if (quiz.is_paid()) {
-            function has_code(quiz_code) {
-                let codes = get_act()
-                if (codes.includes(quiz_code)) {
-                    return true
-                }
-                return false
-            }
-            if (has_code(quiz.code) == false) {
+            } else {
+                quiz.index = 0
+                quiz.get_shuffled_questions(true, true);
                 navigation.navigate('Home', {
-                    screen: 'Activation',
+                    screen: 'Exam',
                     params: {
-                        subject_name: quiz.subject, code: quiz.code
+                        quiz,
+                        exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
+                        random_questions: true,
+                        random_choices: true
                     }
                 })
-            } else {
-                go()
+                setUnfinishedDialog({ visible: false })
             }
-        } else {
-            go()
-        }
-    }
-    function resume_exam({ quiz, continue_exam = false } = {}) {
-        if (continue_exam) {
-            navigation.navigate('Home', {
-                screen: 'Exam',
-                params: {
-                    quiz,
-                    exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
-                    random_questions: true,
-                    random_choices: true
-                }
-            })
-        } else {
-            quiz.index = 0
-            quiz.get_shuffled_questions(true, true);
-            navigation.navigate('Home', {
-                screen: 'Exam',
-                params: {
-                    quiz,
-                    exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
-                    random_questions: true,
-                    random_choices: true
-                }
-            })
             setUnfinishedDialog({ visible: false })
         }
-        setUnfinishedDialog({ visible: false })
-    }
-    function calculate_last_time(lastTime = DateTime.now().toISODate()) {
-        let end = DateTime.fromISO(DateTime.now().toISODate());
-        let start = DateTime.fromISO(lastTime);
-        let math = end.diff(start, 'days').toObject().days;
-        if (math == 0) {
-            return 'اليوم'
+        function calculate_last_time(lastTime = DateTime.now().toISODate()) {
+            let end = DateTime.fromISO(DateTime.now().toISODate());
+            let start = DateTime.fromISO(lastTime);
+            let math = end.diff(start, 'days').toObject().days;
+            if (math == 0) {
+                return 'اليوم'
+            }
+            return `${math} يوم`
         }
-        return `${math} يوم`
-    }
-    function get_icon(quiz) {
-        if (quiz.is_cycle()) {
-            return { name: 'check-decagram', color: '#E53935' }
+        function get_icon(quiz) {
+            if (quiz.is_cycle()) {
+                return { name: 'check-decagram', color: '#E53935' }
+            }
+            else if (quiz.index > 0) {
+                return { name: 'asterisk', color: 'grey' }
+            }
+            else if (quiz.taken_number > 0) {
+                return { name: 'checkbox-blank-circle', color: 'grey' }
+            }
+            return { name: 'checkbox-blank-circle-outline', color: 'grey' }
         }
-        else if (quiz.index > 0) {
-            return { name: 'asterisk', color: 'grey' }
-        }
-        else if (quiz.taken_number > 0) {
-            return { name: 'checkbox-blank-circle', color: 'grey' }
-        }
-        return { name: 'checkbox-blank-circle-outline', color: 'grey' }
-    }
-    function Files() {
-        return (
-            <View>
-                <FlatList
-                    data={data}
-                    keyExtractor={item => item.title}
-                    extraData={data}
-                    ListEmptyComponent={empty_state_cycle}
-                    renderItem={({ item }) => (
-                        <View
-                            key={item.title}
-                            style={{
-                                marginVertical: 3,
-                            }}>
-                            <Surface style={{
-                                backgroundColor: '#fff',
-                                elevation: 2,
-                                borderWidth: 1,
-                                borderColor: '#D7D8D2',
-                            }}>
-                                <Pressable
-                                    onPress={() => go_exam(item)}
-                                    onLongPress={async () => {
-                                        function calculate_last_time_score() {
-                                            if (item.average_time.length > 0) {
-                                                let last = item.average_time[item.average_time.length - 1];
-                                                let time = (last / 60).toFixed(2).toString().split('');
-                                                if (time.length == 4) {
-                                                    time.unshift('0')
+        function Files() {
+            return (
+                <View>
+                    <FlatList
+                        data={data}
+                        keyExtractor={item => item.title}
+                        extraData={data}
+                        ListEmptyComponent={empty_state_cycle}
+                        renderItem={({ item }) => (
+                            <View
+                                key={item.title}
+                                style={{
+                                    marginVertical: 3,
+                                }}>
+                                <Surface style={{
+                                    backgroundColor: '#fff',
+                                    elevation: 2,
+                                    borderWidth: 1,
+                                    borderColor: '#D7D8D2',
+                                }}>
+                                    <Pressable
+                                        onPress={() => go_exam(item)}
+                                        onLongPress={async () => {
+                                            function calculate_last_time_score() {
+                                                if (item.average_time.length > 0) {
+                                                    let last = item.average_time[item.average_time.length - 1];
+                                                    let time = (last / 60).toFixed(2).toString().split('');
+                                                    if (time.length == 4) {
+                                                        time.unshift('0')
+                                                        time[2] = ':'
+                                                        return time.join('')
+                                                    }
                                                     time[2] = ':'
                                                     return time.join('')
                                                 }
-                                                time[2] = ':'
-                                                return time.join('')
+                                                return 0
                                             }
-                                            return 0
-                                        }
-                                        setDialogData({
-                                            visible: true,
-                                            title: item.title,
-                                            path: item.path,
-                                            average_accuracy: item.get_average_accuracy(),
-                                            average_time: item.get_average_time(),
-                                            last_score: item.average_accuracy[item.average_accuracy.length - 1] ?? 0,
-                                            last_time_score: calculate_last_time_score() ?? '00:00',
-                                            last_time: item.last_time
-                                        })
-                                        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                                            setDialogData({
+                                                visible: true,
+                                                title: item.title,
+                                                path: item.path,
+                                                average_accuracy: item.get_average_accuracy(),
+                                                average_time: item.get_average_time(),
+                                                last_score: item.average_accuracy[item.average_accuracy.length - 1] ?? 0,
+                                                last_time_score: calculate_last_time_score() ?? '00:00',
+                                                last_time: item.last_time
+                                            })
+                                            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                                        }}
+                                        android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
+                                        style={{
+                                            padding: 12,
+                                            flexDirection: 'row',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center'
+                                        }}>
+
+                                        <View>
+                                            <Text style={styles.title}>{item.title}</Text>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-start'
+                                                }}>
+                                                <MaterialCommunityIcons
+                                                    name={get_icon(item).name}
+                                                    color={get_icon(item).color}
+                                                    size={16}
+                                                    style={{ marginHorizontal: 5 }} />
+                                                <Text style={styles.subtitle}>{item.subject}</Text>
+                                                {item.is_cycle() ? <Text style={[styles.cycle_university, { color: colors.error }]}>{item.cycle_university}</Text> : null}
+                                                <Text
+                                                    style={[styles.subtitle, {
+                                                        paddingLeft: 10,
+                                                        fontSize: 12
+                                                    }]}>منذ {calculate_last_time(item.last_time)}</Text>
+                                            </View>
+                                        </View>
+
+
+                                        <View>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-end'
+                                                }}>
+                                                <Text style={styles.numbers}>{item.get_questions_number()}</Text>
+                                                <MaterialCommunityIcons
+                                                    name="format-list-numbered"
+                                                    size={20}
+                                                    color="grey"
+                                                    style={{ marginLeft: 5 }} />
+                                            </View>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-end'
+                                                }}>
+                                                <Text style={styles.numbers}>{item.get_estimated_time()}</Text>
+                                                <MaterialCommunityIcons
+                                                    name="progress-clock"
+                                                    size={20}
+                                                    color="grey"
+                                                    style={{ marginLeft: 5 }} />
+                                            </View>
+                                        </View>
+
+                                    </Pressable>
+                                </Surface>
+                            </View>
+                        )}
+                    />
+                    <Portal>
+
+                        <Dialog
+                            visible={unfinishedDialog.visible}
+                            onDismiss={() => setUnfinishedDialog({ visible: false })}>
+                            <Dialog.Title style={styles.dialog_title}>لم تنه الامتحان آخر مرة!</Dialog.Title>
+                            <Dialog.Content>
+                                <Text style={styles.dialog_text}>توقفت عند السؤال {unfinishedDialog.index} من أصل {unfinishedDialog.questions_number}</Text>
+                            </Dialog.Content>
+                            <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
+                                <Button
+                                    labelStyle={styles.dialog_button}
+                                    onPress={() => resume_exam({ quiz: unfinishedDialog.quiz })}
+                                >البدء من جديد</Button>
+                                <Button
+                                    color={colors.success}
+                                    labelStyle={styles.dialog_button}
+                                    onPress={() => resume_exam({ quiz: unfinishedDialog.quiz, continue_exam: true })}
+                                >تكملة الامتحان</Button>
+                            </Dialog.Actions>
+                        </Dialog>
+
+                        <Dialog visible={dialogData.visible} onDismiss={() => setDialogData({ visible: false })}>
+                            <Dialog.Title style={[styles.title, { padding: 10 }]}>{dialogData.title}</Dialog.Title>
+
+                            <Dialog.Content style={{ padding: 3 }}>
+                                <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                                    <View style={styles.row}>
+                                        <MaterialCommunityIcons
+                                            name='target-variant'
+                                            size={20}
+                                            color='grey'
+                                            style={{ marginRight: 3 }} />
+                                        <Text style={styles.dialog_text}>متوسط التحصيل في المقرر</Text>
+                                    </View>
+                                    <Text style={styles.dialog_text}>{dialogData.average_accuracy}</Text>
+                                </View>
+                                <Divider />
+                                <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                                    <View style={styles.row}>
+                                        <MaterialCommunityIcons
+                                            name='history'
+                                            size={20}
+                                            color='grey'
+                                            style={{ marginRight: 3 }} />
+                                        <Text style={styles.dialog_text}>متوسط الوقت في المقرر</Text>
+                                    </View>
+                                    <Text style={styles.dialog_text}>{dialogData.average_time}</Text>
+                                </View>
+                                <Divider />
+                                <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                                    <View style={styles.row}>
+                                        <MaterialCommunityIcons
+                                            name='calendar-today'
+                                            size={20}
+                                            color='grey'
+                                            style={{ marginRight: 3 }} />
+                                        <Text style={styles.dialog_text}>آخر مرة </Text>
+                                    </View>
+                                    <Text style={styles.dialog_text}>{calculate_last_time(dialogData.last_time)}</Text>
+                                </View>
+                                <Divider />
+                                <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                                    <View style={styles.row}>
+                                        <MaterialCommunityIcons
+                                            name='file-check'
+                                            size={20}
+                                            color='grey'
+                                            style={{ marginRight: 3 }} />
+                                        <Text style={styles.dialog_text}>آخر نتيجة</Text>
+                                    </View>
+                                    <Text style={styles.dialog_text}>% {dialogData.last_score}</Text>
+                                </View>
+                                <Divider />
+                                <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                                    <View style={styles.row}>
+                                        <MaterialCommunityIcons
+                                            name='clock-check'
+                                            size={20}
+                                            color='grey'
+                                            style={{ marginRight: 3 }} />
+                                        <Text style={styles.dialog_text}>آخر توقيت</Text>
+                                    </View>
+                                    <Text style={styles.dialog_text}>{dialogData.last_time_score} د</Text>
+                                </View>
+                            </Dialog.Content>
+
+                            <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
+                                <IconButton
+                                    icon='file-remove'
+                                    color='#E53935'
+                                    size={24}
+                                    onPress={() => remove_file(dialogData.title, dialogData.path)} />
+                                <Button
+                                    onPress={() => setDialogData({ visible: false })}
+                                    labelStyle={{
+                                        letterSpacing: 0,
+                                        fontFamily: 'Cairo-Bold'
                                     }}
-                                    android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
-                                    style={{
-                                        padding: 12,
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center'
-                                    }}>
+                                >حسناً</Button>
+                            </Dialog.Actions>
+                        </Dialog>
+                    </Portal>
+                </View>
+            )
+        }
 
-                                    <View>
-                                        <Text style={styles.title}>{item.title}</Text>
-                                        <View
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                justifyContent: 'flex-start'
-                                            }}>
-                                            <MaterialCommunityIcons
-                                                name={get_icon(item).name}
-                                                color={get_icon(item).color}
-                                                size={16}
-                                                style={{ marginHorizontal: 5 }} />
-                                            <Text style={styles.subtitle}>{item.subject}</Text>
-                                            {item.is_cycle() ? <Text style={[styles.cycle_university, { color: colors.error }]}>{item.cycle_university}</Text> : null}
-                                            <Text
-                                                style={[styles.subtitle, {
-                                                    paddingLeft: 10,
-                                                    fontSize: 12
-                                                }]}>منذ {calculate_last_time(item.last_time)}</Text>
-                                        </View>
-                                    </View>
-
-
-                                    <View>
-                                        <View
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                justifyContent: 'flex-end'
-                                            }}>
-                                            <Text style={styles.numbers}>{item.get_questions_number()}</Text>
-                                            <MaterialCommunityIcons
-                                                name="format-list-numbered"
-                                                size={20}
-                                                color="grey"
-                                                style={{ marginLeft: 5 }} />
-                                        </View>
-                                        <View
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                justifyContent: 'flex-end'
-                                            }}>
-                                            <Text style={styles.numbers}>{item.get_estimated_time()}</Text>
-                                            <MaterialCommunityIcons
-                                                name="progress-clock"
-                                                size={20}
-                                                color="grey"
-                                                style={{ marginLeft: 5 }} />
-                                        </View>
-                                    </View>
-
-                                </Pressable>
-                            </Surface>
-                        </View>
-                    )}
-                />
-                <Portal>
-
-                    <Dialog
-                        visible={unfinishedDialog.visible}
-                        onDismiss={() => setUnfinishedDialog({ visible: false })}>
-                        <Dialog.Title style={styles.dialog_title}>لم تنه الامتحان آخر مرة!</Dialog.Title>
-                        <Dialog.Content>
-                            <Text style={styles.dialog_text}>توقفت عند السؤال {unfinishedDialog.index} من أصل {unfinishedDialog.questions_number}</Text>
-                        </Dialog.Content>
-                        <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
-                            <Button
-                                labelStyle={styles.dialog_button}
-                                onPress={() => resume_exam({ quiz: unfinishedDialog.quiz })}
-                            >البدء من جديد</Button>
-                            <Button
-                                color={colors.success}
-                                labelStyle={styles.dialog_button}
-                                onPress={() => resume_exam({ quiz: unfinishedDialog.quiz, continue_exam: true })}
-                            >تكملة الامتحان</Button>
-                        </Dialog.Actions>
-                    </Dialog>
-
-                    <Dialog visible={dialogData.visible} onDismiss={() => setDialogData({ visible: false })}>
-                        <Dialog.Title style={[styles.title, { padding: 10 }]}>{dialogData.title}</Dialog.Title>
-
-                        <Dialog.Content style={{ padding: 3 }}>
-                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
-                                <View style={styles.row}>
-                                    <MaterialCommunityIcons
-                                        name='target-variant'
-                                        size={20}
-                                        color='grey'
-                                        style={{ marginRight: 3 }} />
-                                    <Text style={styles.dialog_text}>متوسط التحصيل في المقرر</Text>
-                                </View>
-                                <Text style={styles.dialog_text}>{dialogData.average_accuracy}</Text>
-                            </View>
-                            <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
-                                <View style={styles.row}>
-                                    <MaterialCommunityIcons
-                                        name='history'
-                                        size={20}
-                                        color='grey'
-                                        style={{ marginRight: 3 }} />
-                                    <Text style={styles.dialog_text}>متوسط الوقت في المقرر</Text>
-                                </View>
-                                <Text style={styles.dialog_text}>{dialogData.average_time}</Text>
-                            </View>
-                            <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
-                                <View style={styles.row}>
-                                    <MaterialCommunityIcons
-                                        name='calendar-today'
-                                        size={20}
-                                        color='grey'
-                                        style={{ marginRight: 3 }} />
-                                    <Text style={styles.dialog_text}>آخر مرة </Text>
-                                </View>
-                                <Text style={styles.dialog_text}>{calculate_last_time(dialogData.last_time)}</Text>
-                            </View>
-                            <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
-                                <View style={styles.row}>
-                                    <MaterialCommunityIcons
-                                        name='file-check'
-                                        size={20}
-                                        color='grey'
-                                        style={{ marginRight: 3 }} />
-                                    <Text style={styles.dialog_text}>آخر نتيجة</Text>
-                                </View>
-                                <Text style={styles.dialog_text}>% {dialogData.last_score}</Text>
-                            </View>
-                            <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
-                                <View style={styles.row}>
-                                    <MaterialCommunityIcons
-                                        name='clock-check'
-                                        size={20}
-                                        color='grey'
-                                        style={{ marginRight: 3 }} />
-                                    <Text style={styles.dialog_text}>آخر توقيت</Text>
-                                </View>
-                                <Text style={styles.dialog_text}>{dialogData.last_time_score} د</Text>
-                            </View>
-                        </Dialog.Content>
-
-                        <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
-                            <IconButton
-                                icon='file-remove'
-                                color='#E53935'
-                                size={24}
-                                onPress={() => remove_file(dialogData.title, dialogData.path)} />
-                            <Button
-                                onPress={() => setDialogData({ visible: false })}
-                                labelStyle={{
-                                    letterSpacing: 0,
-                                    fontFamily: 'Cairo-Bold'
-                                }}
-                            >حسناً</Button>
-                        </Dialog.Actions>
-                    </Dialog>
-                </Portal>
-            </View>
+        return (
+            <View style={styles.container}>
+                <Header />
+                <Files />
+            </View >
         )
     }
-
     return (
-        <View style={styles.container}>
-            <Header />
-            <Files />
-
-        </View >
+        <Stack.Navigator screenOptions={{ headerStyle: { height: 50 } }}>
+            <Stack.Screen
+                name="Subject"
+                component={subject_component}
+                options={{
+                    headerTitleStyle: { fontFamily: 'Cairo-Bold', fontSize: 14 },
+                    headerLeft: () => (<MaterialCommunityIcons size={30} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
+                }} />
+        </Stack.Navigator>
     )
 }
 
