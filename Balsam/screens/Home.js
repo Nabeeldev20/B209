@@ -20,9 +20,6 @@ export default function Home({ navigation }) {
     const { colors } = useTheme();
 
     function EmptyHome() {
-        if (all_data.length == 0) {
-            all_data = get_database()
-        }
         return (
             <Animatable.View animation="fadeIn" style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
                 <MaterialCommunityIcons
