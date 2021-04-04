@@ -132,9 +132,7 @@ export default function Home({ navigation }) {
             }
             return { name: 'checkbox-blank-circle-outline', color: 'grey' }
         }
-        if (data.length == 0) {
-            set_data(get_database())
-        }
+
         return (
             <View style={styles.container}>
                 {get_database().length > 0 ?
