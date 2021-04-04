@@ -139,14 +139,13 @@ export default function Bookmarks({ navigation }) {
                             </Surface>
                         )
                     }} />
-
             )
         }
         function NoBookmarks() {
             return (
                 <Animatable.View animation="fadeIn" style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
                     <MaterialCommunityIcons
-                        name='file-download'
+                        name='bookmark-plus'
                         color='grey'
                         size={50} style={{ marginLeft: 5 }} />
                     <Text style={{ fontFamily: 'Cairo-Bold', color: 'grey' }}>محفوظات؟ جرّب إضافتها أثناء حل الاختبار</Text>
@@ -194,7 +193,7 @@ export default function Bookmarks({ navigation }) {
                 component={bookmarks_component}
                 options={{
                     title: 'المحفوظات',
-                    headerTitleStyle: { fontFamily: 'Cairo-Bold' },
+                    headerTitleStyle: { fontFamily: 'Cairo-Bold', fontSize: 14 },
                     headerLeft: () => (<MaterialCommunityIcons size={30} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
                 }} />
         </Stack.Navigator>

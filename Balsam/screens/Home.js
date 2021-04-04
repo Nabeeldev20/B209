@@ -45,9 +45,6 @@ export default function Home({ navigation }) {
         const [data, set_data] = React.useState(get_database());
         React.useEffect(() => {
             set_data(get_database());
-            if (data.length == 0) {
-                set_data(get_database())
-            }
         }, [get_database()])
         async function remove_file(title, path) {
             setDialogData({ visible: false })
@@ -134,6 +131,9 @@ export default function Home({ navigation }) {
                 return { name: 'checkbox-blank-circle', color: 'grey' }
             }
             return { name: 'checkbox-blank-circle-outline', color: 'grey' }
+        }
+        if (data.length == 0) {
+            set_data(get_database())
         }
         return (
             <View style={styles.container}>

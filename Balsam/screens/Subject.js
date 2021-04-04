@@ -193,7 +193,6 @@ export default function Subject({ navigation, route }) {
                         data={data}
                         keyExtractor={item => item.title}
                         extraData={data}
-                        ListEmptyComponent={empty_state_cycle}
                         renderItem={({ item }) => (
                             <View
                                 key={item.title}
