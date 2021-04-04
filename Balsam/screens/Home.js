@@ -8,6 +8,7 @@ import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
+import { useFocusEffect } from '@react-navigation/native';
 
 import Exam from './Exam'
 import FinishScreen from './FinishScreen'
@@ -18,34 +19,38 @@ import { get_database, set_database, get_act } from './db'
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();
     const { colors } = useTheme();
-    function EmptyHome() {
-        return (
-            <Animatable.View animation="fadeIn" style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
-                <MaterialCommunityIcons
-                    name='file-download'
-                    color='grey'
-                    size={50} style={{ marginLeft: 5 }} />
-                <Text style={{ fontFamily: 'Cairo-Bold', color: 'grey' }}>جرّب إضافة بعض الملفات</Text>
-            </Animatable.View>
-        )
-    }
-    function calculate_last_time(lastTime = DateTime.now().toISODate()) {
-        let end = DateTime.fromISO(DateTime.now().toISODate());
-        let start = DateTime.fromISO(lastTime);
-        let math = end.diff(start, 'days').toObject().days;
-        if (math == 0) {
-            return 'اليوم'
-        }
-        return `${math} يوم`
-    }
+
 
     function Home_component({ navigation }) {
         const [dialogData, setDialogData] = React.useState({ visible: false })
         const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 });
-        const [data, set_data] = React.useState(get_database());
-        React.useEffect(() => {
-            set_data(get_database());
-        }, [get_database()])
+        const [data, set_data] = React.useState([]);
+
+        useFocusEffect(
+            React.useCallback(() => {
+                set_data(get_database());
+            }, [])
+        );
+        function EmptyHome() {
+            return (
+                <Animatable.View animation="fadeIn" style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
+                    <MaterialCommunityIcons
+                        name='file-download'
+                        color='grey'
+                        size={50} style={{ marginLeft: 5 }} />
+                    <Text style={{ fontFamily: 'Cairo-Bold', color: 'grey' }}>جرّب إضافة بعض الملفات</Text>
+                </Animatable.View>
+            )
+        }
+        function calculate_last_time(lastTime = DateTime.now().toISODate()) {
+            let end = DateTime.fromISO(DateTime.now().toISODate());
+            let start = DateTime.fromISO(lastTime);
+            let math = end.diff(start, 'days').toObject().days;
+            if (math == 0) {
+                return 'اليوم'
+            }
+            return `${math} يوم`
+        }
         async function remove_file(title, path) {
             setDialogData({ visible: false })
             // in db.js
@@ -131,15 +136,14 @@ export default function Home({ navigation }) {
             }
             return { name: 'checkbox-blank-circle-outline', color: 'grey' }
         }
-
         return (
             <View style={styles.container}>
-                {get_database().length > 0 ?
+                {data.length > 0 ?
                     <FlatList
                         data={data}
                         extraData={data}
                         keyExtractor={item => item.title}
-                        renderItem={({ item, index }) => (
+                        renderItem={({ item }) => (
                             <View
                                 key={item.title}
                                 style={{

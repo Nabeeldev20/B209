@@ -4,6 +4,7 @@ import { Divider, Surface, Headline, Subheading, Button, IconButton } from 'reac
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Animatable from 'react-native-animatable';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { get_bookmarks, update_bookmarks, save_blsm } from './db'
 
@@ -21,6 +22,13 @@ export default function Bookmarks({ navigation }) {
     const [bookmarks, set_bookmarks] = React.useState(get_bookmarks());
     const [selected_subject, set_selected_subject] = React.useState('');
     function bookmarks_component() {
+
+        useFocusEffect(
+            React.useCallback(() => {
+                set_bookmarks(get_bookmarks())
+            }, [])
+        );
+
         function SubjectsButtons() {
             function get_subjects() {
                 let output = [];
@@ -106,7 +114,7 @@ export default function Bookmarks({ navigation }) {
                                                 styles.text,
                                                 {
                                                     color: choice == item.right_answer ? 'green' : 'grey',
-                                                    fontWeight: choice == item.right_answer ? 'bold' : null
+                                                    fontFamily: choice == item.right_answer ? 'Cairo-Bold' : 'Cairo-Semibold'
                                                 }
                                             ]}
                                             key={choice}
