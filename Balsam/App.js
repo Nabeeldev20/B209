@@ -10,11 +10,11 @@ import CryptoJS from 'crypto-js';
 import { Dirs, FileSystem } from 'react-native-file-access';
 import * as Animatable from 'react-native-animatable';
 
-import Home from './screens/Home'
-import CustomExam from './screens/CustomExam'
-import CustomDrawer from './screens/CustomDrawer'
-import Subject from './screens/Subject'
-import Bookmarks from './screens/Bookmarks'
+import Home from './screens/Home';
+import CustomExam from './screens/CustomExam';
+import CustomDrawer from './screens/CustomDrawer';
+import Subject from './screens/Subject';
+import Bookmarks from './screens/Bookmarks';
 import * as Network from 'expo-network';
 
 import { update_database, update_bookmarks, update_act, update_cache_array, update_error_msgs } from './screens/db'
@@ -290,10 +290,9 @@ export default function App() {
     }
     check_permission();
     read_blsm();
-  }, [shouldAskForPermissions])
+  }, [shouldAskForPermissions]);
 
-
-  if (loading) {
+  function loading_screen() {
     if (shouldAskForPermissions == false) {
       return (
         <Animatable.View animation='flash' iterationCount='infinite' duration={3500} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
@@ -327,6 +326,8 @@ export default function App() {
     }
   }
 
+
+
   return (
     <PaperProvider
       theme={theme}
@@ -341,12 +342,18 @@ export default function App() {
           drawerContentOptions={{
             activeTintColor: '#e91e63',
             itemStyle: { marginVertical: 3, padding: 0 },
-          }}
-        >
-          <Drawer.Screen name="Home" component={Home} />
-          <Drawer.Screen name="CustomExam" component={CustomExam} />
-          <Drawer.Screen name="Bookmarks" component={Bookmarks} />
-          <Drawer.Screen name="Subject" component={Subject} />
+          }}>
+          {loading ?
+            <Drawer.Screen name='LoadingScreen' component={loading_screen} /> :
+            (
+              <>
+                <Drawer.Screen name="Home" component={Home} />
+                <Drawer.Screen name="CustomExam" component={CustomExam} />
+                <Drawer.Screen name="Bookmarks" component={Bookmarks} />
+                <Drawer.Screen name="Subject" component={Subject} />
+              </>
+            )
+          }
 
         </Drawer.Navigator>
       </NavigationContainer>

@@ -4,11 +4,10 @@ import { Divider } from 'react-native-paper';
 import { DrawerItem } from '@react-navigation/drawer';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { get_database, update_error_msgs } from './db'
+import { get_database } from './db'
 
 
 export default function CustomDrawer({ navigation }) {
-    update_error_msgs({ Place: 'Custom Drawer', expected: 2 })
 
     let data = get_database()
     const get_subjects = () => {
