@@ -17,7 +17,7 @@ import Subject from './screens/Subject'
 import Bookmarks from './screens/Bookmarks'
 import * as Network from 'expo-network';
 
-import { update_database, set_database, update_bookmarks, update_act, update_cache_array, update_error_msgs } from './screens/db'
+import { update_database, update_bookmarks, update_act, update_cache_array, update_error_msgs } from './screens/db'
 
 
 const { Storage } = NativeModules;
@@ -197,7 +197,6 @@ export default function App() {
               file_output.path = paths[i];
               set_last_time(file_output);
               add_methods(file_output);
-              set_database([])
               update_database(file_output);
             }
           } catch (error) {
