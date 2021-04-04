@@ -1,22 +1,7 @@
 import { Dirs, FileSystem } from 'react-native-file-access';
 import CryptoJS from 'crypto-js';
 
-let database = [{
-    title: 'عنوان الاختبار',
-    subject: 'اسم المادة',
-    code: 'كود المادة',
-    last_time: null,
-    index: 0,
-    questions: [],
-    taken_number: 0,
-    paid: false,
-    cycle_university: '',
-    answered_wrong: [],
-    average_time: [],
-    average_accuracy: [],
-    estimated_time_for_question: 45,
-    path: null,
-}]
+let database = []
 let bookmarks = []
 let act_array = []
 let error_array = []

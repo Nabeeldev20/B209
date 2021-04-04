@@ -9,7 +9,7 @@ import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { get_database, set_database, get_bookmarks, get_act, update_error_msgs } from './db'
+import { get_database, set_database, get_act } from './db'
 export default function Subject({ navigation, route }) {
     const Stack = createStackNavigator();
     const { subject_name } = route.params;
@@ -29,7 +29,6 @@ export default function Subject({ navigation, route }) {
 
 
     function subject_component() {
-        update_error_msgs({ Place: 'Subject', expected: 3 })
 
         function Header() {
             function has_cycles() {
