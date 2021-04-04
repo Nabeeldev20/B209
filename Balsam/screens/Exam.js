@@ -93,12 +93,6 @@ export default function Exam({ navigation, route }) {
             if (choices_animation) {
                 choices_animation.current?.fadeIn()
             }
-            if (bookmark_button) {
-                try {
-                    bookmark_button.current?.fadeIn();
-                } catch (error) {
-                }
-            }
             setIndex(index + 1);
             setHasAnswered(false);
             setVisible(false);
