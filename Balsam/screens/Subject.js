@@ -14,7 +14,6 @@ import { get_database, set_database, get_act, update_error_msgs } from './db'
 export default function Subject({ navigation, route }) {
     const Stack = createStackNavigator();
     const { subject_name } = route.params;
-    update_error_msgs({ at: 'Subject.js', expected: 'subject_name', subject_name })
 
     const [onlyCycles, setOnlyCycles] = React.useState(false);
     const [data, setData] = React.useState([])
@@ -27,11 +26,6 @@ export default function Subject({ navigation, route }) {
         useFocusEffect(
             React.useCallback(() => {
                 setData(get_database().filter(quiz => quiz.subject == subject_name));
-                try {
-                    navigation.setOptions({ title: subject_name });
-                } catch (error) {
-                    update_error_msgs({ Code: '@useFocusEffect', error })
-                }
             }, [])
         );
 

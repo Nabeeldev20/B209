@@ -21,7 +21,9 @@ export default function Home({ navigation }) {
     const { colors } = useTheme();
     const [loading, set_loading] = React.useState(true);
     React.useEffect(() => {
-        set_loading(false)
+        setTimeout(() => {
+            set_loading(false)
+        }, 250);
     }, [])
     function Home_component({ navigation }) {
         const [dialogData, setDialogData] = React.useState({ visible: false })
@@ -360,8 +362,10 @@ export default function Home({ navigation }) {
 
     function loading_component() {
         return (
-            <View>
-            </View>
+            <Animatable.View animation='flash' iterationCount='infinite' duration={3500} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
+                <MaterialCommunityIcons name='folder-sync' size={35} color='grey' />
+                <Text style={[styles.headline, { color: 'grey' }]} >جاري التحميل</Text>
+            </Animatable.View>
         )
     }
 
@@ -369,7 +373,7 @@ export default function Home({ navigation }) {
     return (
         <Stack.Navigator
             screenOptions={{ headerStyle: { height: 50 } }}>
-            {loading ? <Stack.Screen name='Loading' component={loading_component} />
+            {loading ? <Stack.Screen options={{ headerShown: false }} name='Loading' component={loading_component} />
                 : (<>
                     <Stack.Screen
                         name="Home"

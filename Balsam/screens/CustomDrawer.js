@@ -54,7 +54,7 @@ export default function CustomDrawer({ navigation }) {
                                     label={subject}
                                     key={subject}
                                     labelStyle={styles.drawer_text}
-                                    onPress={() => navigation.jumpTo('Subject', { subject_name: subject })}
+                                    onPress={() => navigation.navigate('Subject', { screen: 'Subject', params: { subject_name: subject } })}
                                 />
                             )
                         })}
