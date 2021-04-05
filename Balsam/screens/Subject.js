@@ -10,14 +10,14 @@ import Analytics from 'appcenter-analytics';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useFocusEffect } from '@react-navigation/native';
 
-import { get_database, set_database, get_act } from './db'
+import { get_database, set_database, get_act, update_error_msgs } from './db'
 export default function Subject({ navigation, route }) {
     const Stack = createStackNavigator();
     const { subject_name } = route.params;
-
+    update_error_msgs({ at: 'Subject.js', expected: 'subject_name', subject_name })
 
     const [onlyCycles, setOnlyCycles] = React.useState(false);
-    const [data, setData] = React.useState(get_database().filter(quiz => quiz.subject == subject_name))
+    const [data, setData] = React.useState([])
     const [dialogData, setDialogData] = React.useState({ visible: false })
     const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 })
     const { colors } = useTheme();
@@ -27,7 +27,11 @@ export default function Subject({ navigation, route }) {
         useFocusEffect(
             React.useCallback(() => {
                 setData(get_database().filter(quiz => quiz.subject == subject_name));
-                navigation.setOptions({ title: subject_name });
+                try {
+                    navigation.setOptions({ title: subject_name });
+                } catch (error) {
+                    update_error_msgs({ Code: '@useFocusEffect', error })
+                }
             }, [])
         );
 
@@ -88,11 +92,7 @@ export default function Subject({ navigation, route }) {
                 navigation.jumpTo('Home')
             }
         }
-        if (data.length > 0) {
-            if (data[0].subject != subject_name) {
-                setData(get_database().filter(quiz => quiz.subject == subject_name))
-            }
-        }
+
         function go_exam(quiz) {
             function go() {
                 if (quiz.index > 0) {
@@ -422,6 +422,7 @@ export default function Subject({ navigation, route }) {
                 name="Subject"
                 component={subject_component}
                 options={{
+                    title: route.params.subject_name,
                     headerTitleStyle: { fontFamily: 'Cairo-Bold', fontSize: 14 },
                     headerLeft: () => (<MaterialCommunityIcons size={30} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
                 }} />

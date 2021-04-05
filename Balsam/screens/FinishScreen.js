@@ -156,7 +156,7 @@ export default function FinishScreen({ navigation, route }) {
                                     name='target-variant'
                                     size={20}
                                     color='#616161'
-                                    style={{ marginRight: 10 }} />
+                                    style={{ marginRight: 5 }} />
                                 <Text style={styles.exam_result}>متوسط التحصيل في مقرر {quiz.subject}</Text>
                             </View>
                             <Text style={styles.exam_result}>%{quiz.get_average_accuracy()}</Text>
@@ -174,7 +174,7 @@ export default function FinishScreen({ navigation, route }) {
                                     name='history'
                                     size={20}
                                     color='#616161'
-                                    style={{ marginRight: 10 }} />
+                                    style={{ marginRight: 5 }} />
                                 <Text style={styles.exam_result}>متوسط الوقت لمقرر {quiz.subject}</Text>
                             </View>
                             <Text style={styles.exam_result}>{quiz.get_average_time()}</Text>
