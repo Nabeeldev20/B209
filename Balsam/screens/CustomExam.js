@@ -91,7 +91,7 @@ export default function CustomExam({ navigation }) {
                                     <Text style={{
                                         fontFamily: 'Cairo-SemiBold',
                                         fontSize: 14,
-                                        color: 'grey'
+                                        color: '#616161'
                                     }}>{item}</Text>
                                 </Pressable>
                             )
@@ -162,7 +162,7 @@ export default function CustomExam({ navigation }) {
                             padding: 5
                         }}>اختبارات المقرر</Subheading>
                         <View style={styles.row}>
-                            <Text style={[styles.text, { marginRight: 5, color: 'grey' }]}> اختيار الكل</Text>
+                            <Text style={[styles.text, { marginRight: 5, color: '#616161' }]}> اختيار الكل</Text>
                             <Switch
                                 value={selected_all}
                                 onValueChange={() => handle_selected_all()}
@@ -193,7 +193,7 @@ export default function CustomExam({ navigation }) {
                                     <Text style={{
                                         fontFamily: 'Cairo-SemiBold',
                                         fontSize: 14,
-                                        color: 'grey'
+                                        color: '#616161'
                                     }}>{item}</Text>
                                 </Pressable>
                             )
@@ -258,7 +258,7 @@ export default function CustomExam({ navigation }) {
                             <MaterialCommunityIcons
                                 name='shuffle-variant'
                                 size={20}
-                                color='grey'
+                                color='#616161'
                                 style={{ marginRight: 3 }} />
                             <Text style={styles.text}>عشوائية بالخيارات</Text>
                         </View>
@@ -276,7 +276,7 @@ export default function CustomExam({ navigation }) {
                             <MaterialCommunityIcons
                                 name='check-decagram'
                                 size={20}
-                                color='grey'
+                                color='#616161'
                                 style={{ marginRight: 3 }} />
                             <Text style={styles.text}>الدورات فقط</Text>
                         </View>
@@ -293,7 +293,7 @@ export default function CustomExam({ navigation }) {
                             <MaterialCommunityIcons
                                 name='format-list-numbered-rtl'
                                 size={20}
-                                color='grey'
+                                color='#616161'
                                 style={{ marginRight: 3 }} />
                             <Text style={[styles.text, { marginRight: 3 }]}>عدد الأسئلة</Text>
                         </View>
@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
     text: {
         fontFamily: 'Cairo-SemiBold',
         fontSize: 14,
-        color: 'grey'
+        color: '#616161'
     },
     row: {
         alignItems: 'center',

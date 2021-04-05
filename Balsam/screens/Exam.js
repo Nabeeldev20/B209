@@ -93,6 +93,9 @@ export default function Exam({ navigation, route }) {
             if (choices_animation) {
                 choices_animation.current?.fadeIn()
             }
+            if (bookmark_button) {
+                bookmark_button.current?.fadeIn();
+            }
             setIndex(index + 1);
             setHasAnswered(false);
             setVisible(false);
@@ -119,7 +122,7 @@ export default function Exam({ navigation, route }) {
             }
         }
         if (bookmark_button) {
-            bookmark_button.current?.zoomOut();
+            bookmark_button.current?.fadeOut();
         }
         ToastAndroid.showWithGravity(
             'تمت الإضافة للمحفوظات',
@@ -208,7 +211,7 @@ export default function Exam({ navigation, route }) {
                         <MaterialCommunityIcons
                             name='card-text'
                             size={20}
-                            color='grey'
+                            color='#616161'
                             style={{ marginRight: 3 }} />
                         <Text style={styles.header_text}>
                             <Text style={{ fontWeight: 'bold' }}>{index + 1}</Text>
@@ -221,7 +224,7 @@ export default function Exam({ navigation, route }) {
                         <MaterialCommunityIcons
                             name='timer-sand'
                             size={20}
-                            color='grey'
+                            color='#616161'
                             style={{ marginLeft: 3 }} />
                     </View>
                 </View>
@@ -350,7 +353,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     header_text: {
-        color: 'grey',
+        color: '#616161',
         fontSize: 16,
         fontFamily: 'Cairo-Regular'
     }

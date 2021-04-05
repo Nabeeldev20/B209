@@ -23,13 +23,11 @@ export default function Subject({ navigation, route }) {
     const { colors } = useTheme();
 
     function subject_component() {
-        React.useEffect(() => {
-            navigation.setOptions({ title: subject_name });
-        }, [subject_name]);
 
         useFocusEffect(
             React.useCallback(() => {
                 setData(get_database().filter(quiz => quiz.subject == subject_name));
+                navigation.setOptions({ title: subject_name });
             }, [])
         );
 
@@ -49,7 +47,7 @@ export default function Subject({ navigation, route }) {
                     <View style={styles.row}>
                         <MaterialCommunityIcons
                             name='check-decagram'
-                            color='grey'
+                            color='#616161'
                             size={16}
                             style={{ marginRight: 6 }} />
                         <Text style={[styles.Header_text, { marginRight: 5 }]}>الدورات فقط</Text>
@@ -181,12 +179,12 @@ export default function Subject({ navigation, route }) {
                 return { name: 'check-decagram', color: '#E53935' }
             }
             else if (quiz.index > 0) {
-                return { name: 'asterisk', color: 'grey' }
+                return { name: 'asterisk', color: '#616161' }
             }
             else if (quiz.taken_number > 0) {
-                return { name: 'checkbox-blank-circle', color: 'grey' }
+                return { name: 'checkbox-blank-circle', color: '#616161' }
             }
-            return { name: 'checkbox-blank-circle-outline', color: 'grey' }
+            return { name: 'checkbox-blank-circle-outline', color: '#616161' }
         }
         function Files() {
             return (
@@ -259,11 +257,12 @@ export default function Subject({ navigation, route }) {
                                                     style={{ marginHorizontal: 5 }} />
                                                 <Text style={styles.subtitle}>{item.subject}</Text>
                                                 {item.is_cycle() ? <Text style={[styles.cycle_university, { color: colors.error }]}>{item.cycle_university}</Text> : null}
-                                                <Text
-                                                    style={[styles.subtitle, {
-                                                        paddingLeft: 10,
-                                                        fontSize: 12
-                                                    }]}>منذ {calculate_last_time(item.last_time)}</Text>
+                                                {item.taken_number != 0 ?
+                                                    <Text
+                                                        style={[styles.subtitle, {
+                                                            paddingLeft: 10,
+                                                            fontSize: 12
+                                                        }]}>منذ {calculate_last_time(item.last_time)}</Text> : null}
                                             </View>
                                         </View>
 
@@ -273,13 +272,14 @@ export default function Subject({ navigation, route }) {
                                                 style={{
                                                     flexDirection: 'row',
                                                     alignItems: 'center',
-                                                    justifyContent: 'flex-end'
+                                                    justifyContent: 'flex-end',
+                                                    marginBottom: 5
                                                 }}>
                                                 <Text style={styles.numbers}>{item.get_questions_number()}</Text>
                                                 <MaterialCommunityIcons
                                                     name="format-list-numbered"
                                                     size={20}
-                                                    color="grey"
+                                                    color="#616161"
                                                     style={{ marginLeft: 5 }} />
                                             </View>
                                             <View
@@ -292,7 +292,7 @@ export default function Subject({ navigation, route }) {
                                                 <MaterialCommunityIcons
                                                     name="progress-clock"
                                                     size={20}
-                                                    color="grey"
+                                                    color="#616161"
                                                     style={{ marginLeft: 5 }} />
                                             </View>
                                         </View>
@@ -333,7 +333,7 @@ export default function Subject({ navigation, route }) {
                                         <MaterialCommunityIcons
                                             name='target-variant'
                                             size={20}
-                                            color='grey'
+                                            color='#616161'
                                             style={{ marginRight: 3 }} />
                                         <Text style={styles.dialog_text}>متوسط التحصيل في المقرر</Text>
                                     </View>
@@ -345,7 +345,7 @@ export default function Subject({ navigation, route }) {
                                         <MaterialCommunityIcons
                                             name='history'
                                             size={20}
-                                            color='grey'
+                                            color='#616161'
                                             style={{ marginRight: 3 }} />
                                         <Text style={styles.dialog_text}>متوسط الوقت في المقرر</Text>
                                     </View>
@@ -357,7 +357,7 @@ export default function Subject({ navigation, route }) {
                                         <MaterialCommunityIcons
                                             name='calendar-today'
                                             size={20}
-                                            color='grey'
+                                            color='#616161'
                                             style={{ marginRight: 3 }} />
                                         <Text style={styles.dialog_text}>آخر مرة </Text>
                                     </View>
@@ -369,7 +369,7 @@ export default function Subject({ navigation, route }) {
                                         <MaterialCommunityIcons
                                             name='file-check'
                                             size={20}
-                                            color='grey'
+                                            color='#616161'
                                             style={{ marginRight: 3 }} />
                                         <Text style={styles.dialog_text}>آخر نتيجة</Text>
                                     </View>
@@ -381,7 +381,7 @@ export default function Subject({ navigation, route }) {
                                         <MaterialCommunityIcons
                                             name='clock-check'
                                             size={20}
-                                            color='grey'
+                                            color='#616161'
                                             style={{ marginRight: 3 }} />
                                         <Text style={styles.dialog_text}>آخر توقيت</Text>
                                     </View>
@@ -447,37 +447,30 @@ const styles = StyleSheet.create({
         letterSpacing: 0,
         selectable: false
     },
-    Listcontainer: {
-        padding: 12,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#D7D8D2',
-    },
     title: {
         fontFamily: 'Cairo-Bold',
         fontSize: 18,
-        marginTop: 0,
+        paddingBottom: 3,
         selectable: false
     },
     subtitle: {
         fontFamily: 'Cairo-SemiBold',
-        fontSize: 15,
+        fontSize: 14,
         lineHeight: 20,
-        color: 'grey',
-        marginHorizontal: 5,
+        height: 20,
+        color: '#616161',
+        marginHorizontal: 4,
         selectable: false
     },
     numbers: {
         fontFamily: 'Cairo-SemiBold',
         fontSize: 15,
-        color: 'grey',
+        height: 20,
         lineHeight: 23,
+        color: '#616161',
         selectable: false
     },
     cycle_university: {
-        color: 'red',
         fontSize: 15,
         paddingLeft: 5,
         selectable: false
