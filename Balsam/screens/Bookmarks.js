@@ -228,7 +228,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         selectable: false,
         padding: 3,
-        textAlign: 'justify'
     },
     text: {
         fontFamily: 'Cairo-SemiBold',
