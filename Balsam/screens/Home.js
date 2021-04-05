@@ -19,8 +19,17 @@ import { get_database, set_database, get_act } from './db'
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();
     const { colors } = useTheme();
-
-
+    const [loading, set_loading] = React.useState(true);
+    React.useEffect(() => {
+        setTimeout(() => {
+            set_loading(false);
+            ToastAndroid.showWithGravity(
+                'الشروع بشاشة التحميل',
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM
+            )
+        }, 500);
+    }, [])
     function Home_component({ navigation }) {
         const [dialogData, setDialogData] = React.useState({ visible: false })
         const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 });
@@ -129,12 +138,12 @@ export default function Home({ navigation }) {
                 return { name: 'check-decagram', color: '#E53935' }
             }
             else if (quiz.index > 0) {
-                return { name: 'asterisk', color: 'grey' }
+                return { name: 'asterisk', color: '#37474F' }
             }
             else if (quiz.taken_number > 0) {
-                return { name: 'checkbox-blank-circle', color: 'grey' }
+                return { name: 'checkbox-blank-circle', color: '#37474F' }
             }
-            return { name: 'checkbox-blank-circle-outline', color: 'grey' }
+            return { name: 'checkbox-blank-circle-outline', color: '#37474F' }
         }
         return (
             <View style={styles.container}>
@@ -216,13 +225,14 @@ export default function Home({ navigation }) {
                                                 style={{
                                                     flexDirection: 'row',
                                                     alignItems: 'center',
-                                                    justifyContent: 'flex-end'
+                                                    justifyContent: 'flex-end',
+                                                    marginBottom: 5
                                                 }}>
                                                 <Text style={styles.numbers}>{item.get_questions_number()}</Text>
                                                 <MaterialCommunityIcons
                                                     name="format-list-numbered"
                                                     size={20}
-                                                    color="grey"
+                                                    color="#616161"
                                                     style={{ marginLeft: 5 }} />
                                             </View>
                                             <View
@@ -235,7 +245,7 @@ export default function Home({ navigation }) {
                                                 <MaterialCommunityIcons
                                                     name="progress-clock"
                                                     size={20}
-                                                    color="grey"
+                                                    color="#616161"
                                                     style={{ marginLeft: 5 }} />
                                             </View>
                                         </View>
@@ -278,7 +288,7 @@ export default function Home({ navigation }) {
                                     <MaterialCommunityIcons
                                         name='target-variant'
                                         size={20}
-                                        color='grey'
+                                        color='#616161'
                                         style={{ marginRight: 3 }} />
                                     <Text style={styles.dialog_text}>متوسط التحصيل في المقرر</Text>
                                 </View>
@@ -290,7 +300,7 @@ export default function Home({ navigation }) {
                                     <MaterialCommunityIcons
                                         name='history'
                                         size={20}
-                                        color='grey'
+                                        color='#616161'
                                         style={{ marginRight: 3 }} />
                                     <Text style={styles.dialog_text}>متوسط الوقت في المقرر</Text>
                                 </View>
@@ -302,7 +312,7 @@ export default function Home({ navigation }) {
                                     <MaterialCommunityIcons
                                         name='calendar-today'
                                         size={20}
-                                        color='grey'
+                                        color='#616161'
                                         style={{ marginRight: 3 }} />
                                     <Text style={styles.dialog_text}>آخر مرة </Text>
                                 </View>
@@ -314,7 +324,7 @@ export default function Home({ navigation }) {
                                     <MaterialCommunityIcons
                                         name='file-check'
                                         size={20}
-                                        color='grey'
+                                        color='#616161'
                                         style={{ marginRight: 3 }} />
                                     <Text style={styles.dialog_text}>آخر نتيجة</Text>
                                 </View>
@@ -326,7 +336,7 @@ export default function Home({ navigation }) {
                                     <MaterialCommunityIcons
                                         name='clock-check'
                                         size={20}
-                                        color='grey'
+                                        color='#616161'
                                         style={{ marginRight: 3 }} />
                                     <Text style={styles.dialog_text}>آخر توقيت</Text>
                                 </View>
@@ -354,49 +364,62 @@ export default function Home({ navigation }) {
             </View>
         )
     }
+
+    function loading_component() {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>جاري التحميل</Text>
+                <Text>تجربة التحميل بعد شاشة</Text>
+            </View>
+        )
+    }
+
+
     return (
         <Stack.Navigator
-            initialRouteName='Home'
             screenOptions={{ headerStyle: { height: 50 } }}>
-            <Stack.Screen
-                name="Home"
-                component={Home_component}
-                options={{
-                    title: 'بلســم',
-                    headerTitleStyle: { fontFamily: 'Cairo-Bold', fontSize: 16 },
-                    headerLeft: () => (<MaterialCommunityIcons size={30} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
-                }} />
-            <Stack.Screen
-                name="Exam"
-                options={({ route }) => ({
-                    headerTitleStyle: {
-                        color: '#313131',
-                        fontSize: 14,
-                        fontFamily: 'Cairo-Bold'
-                    }
-                })}
-                component={Exam} />
-            <Stack.Screen
-                name="FinishScreen"
-                component={FinishScreen}
-                options={({ route }) => ({
-                    title: route.params.quiz.title,
-                    headerTitleStyle: {
-                        color: '#313131',
-                        fontSize: 14,
-                        fontFamily: 'Cairo-Bold'
-                    }
-                })} />
-            <Stack.Screen
-                name="Activation"
-                component={Activation}
-                options={({ route }) => ({
-                    headerTitleStyle: {
-                        color: '#313131',
-                        fontSize: 14,
-                        fontFamily: 'Cairo-Bold',
-                    }
-                })} />
+            {loading ? <Stack.Screen name='Loading' component={loading_component} />
+                : (<>
+                    <Stack.Screen
+                        name="Home"
+                        component={Home_component}
+                        options={{
+                            title: 'بلســم',
+                            headerTitleStyle: { fontFamily: 'Cairo-Bold', fontSize: 16 },
+                            headerLeft: () => (<MaterialCommunityIcons size={30} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
+                        }} />
+                    <Stack.Screen
+                        name="Exam"
+                        options={({ route }) => ({
+                            headerTitleStyle: {
+                                color: '#313131',
+                                fontSize: 14,
+                                fontFamily: 'Cairo-Bold'
+                            }
+                        })}
+                        component={Exam} />
+                    <Stack.Screen
+                        name="FinishScreen"
+                        component={FinishScreen}
+                        options={({ route }) => ({
+                            title: route.params.quiz.title,
+                            headerTitleStyle: {
+                                color: '#313131',
+                                fontSize: 14,
+                                fontFamily: 'Cairo-Bold'
+                            }
+                        })} />
+                    <Stack.Screen
+                        name="Activation"
+                        component={Activation}
+                        options={({ route }) => ({
+                            headerTitleStyle: {
+                                color: '#313131',
+                                fontSize: 14,
+                                fontFamily: 'Cairo-Bold',
+                            }
+                        })} />
+                </>)}
         </Stack.Navigator>
     )
 }
@@ -408,34 +431,30 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%'
     },
-    Listcontainer: {
-        padding: 12,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#D7D8D2',
-    },
     title: {
         fontFamily: 'Cairo-Bold',
         fontSize: 18,
-        padding: 3
+        paddingBottom: 3
     },
     subtitle: {
         fontFamily: 'Cairo-SemiBold',
         fontSize: 14,
+        height: 20,
         lineHeight: 20,
-        color: 'grey',
+        color: '#616161',
         marginHorizontal: 3
     },
     numbers: {
         fontFamily: 'Cairo-SemiBold',
         fontSize: 15,
-        color: 'grey',
-        lineHeight: 23
+        color: '#616161',
+        height: 20,
+        lineHeight: 23,
     },
     cycle_university: {
+        fontFamily: 'Cairo-SemiBold',
         fontSize: 12,
+        height: 20,
         marginLeft: 5,
     },
     row: {

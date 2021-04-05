@@ -44,8 +44,8 @@ export default function CustomDrawer({ navigation }) {
                 <View>
                     <Divider />
                     <View style={styles.row}>
-                        <MaterialCommunityIcons name='bookshelf' color='grey' size={20} />
-                        <Text style={{ fontFamily: 'Cairo-SemiBold', margin: 5, fontSize: 15, color: 'grey' }}>المقررات</Text>
+                        <MaterialCommunityIcons name='bookshelf' color='#616161' size={20} />
+                        <Text style={{ fontFamily: 'Cairo-SemiBold', margin: 5, fontSize: 15, color: '#616161' }}>المقررات</Text>
                     </View>
                     <ScrollView>
                         {get_subjects().map(subject => {
@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Cairo-Bold',
         fontSize: 14,
         height: 26,
+        color: '#616161'
     },
     row: {
         flexDirection: 'row',

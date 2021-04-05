@@ -37,6 +37,9 @@ export default function Bookmarks({ navigation }) {
                 }
                 return [... new Set(output)]
             }
+            if (get_subjects().length == 0) {
+                return null
+            }
             return (
                 <Surface style={{
                     margin: 4,
@@ -99,7 +102,7 @@ export default function Bookmarks({ navigation }) {
                                     <MaterialCommunityIcons
                                         name='card-bulleted'
                                         size={20}
-                                        color='grey'
+                                        color='#616161'
                                         style={{ marginRight: 4 }} />
                                     <Headline style={styles.headline}>
                                         {item.title}
@@ -113,8 +116,8 @@ export default function Bookmarks({ navigation }) {
                                             style={[
                                                 styles.text,
                                                 {
-                                                    color: choice == item.right_answer ? 'green' : 'grey',
-                                                    fontFamily: choice == item.right_answer ? 'Cairo-Bold' : 'Cairo-Semibold'
+                                                    color: choice == item.right_answer ? 'green' : '#616161',
+                                                    fontFamily: choice == item.right_answer ? 'Cairo-Bold' : 'Cairo-SemiBold'
                                                 }
                                             ]}
                                             key={choice}
@@ -132,15 +135,15 @@ export default function Bookmarks({ navigation }) {
                                             <MaterialCommunityIcons
                                                 name='comment-question'
                                                 size={16}
-                                                color='grey'
-                                                style={{ marginRight: 4 }} />
+                                                color='#616161'
+                                                style={{ marginRight: 3 }} />
                                             <Text style={styles.text}>{item.explanation}</Text>
                                         </View> : null
                                 }
                                 <IconButton
                                     icon='bookmark-remove'
                                     size={24}
-                                    color='grey'
+                                    color='#EF5350'
                                     onPress={() => remove_bookmark(item)}
                                     style={{ alignSelf: 'flex-end' }}
                                 />
@@ -234,7 +237,7 @@ const styles = StyleSheet.create({
         padding: 3,
         paddingHorizontal: 5,
         marginHorizontal: 5,
-        color: 'grey'
+        color: '#616161'
     },
     row: {
         alignItems: 'center',

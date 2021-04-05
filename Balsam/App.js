@@ -327,7 +327,6 @@ export default function App() {
   }
 
 
-
   return (
     <PaperProvider
       theme={theme}
@@ -336,7 +335,6 @@ export default function App() {
       }}>
       <NavigationContainer>
         <Drawer.Navigator
-          initialRouteName='Home'
           drawerContent={(props) => <CustomDrawer {...props} />}
           drawerType='slide'
           drawerContentOptions={{

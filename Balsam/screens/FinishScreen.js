@@ -19,22 +19,22 @@ export default function FinishScreen({ navigation, route }) {
             return x >= min && x < max ? true : false
         }
         if (between(number, 0, 70)) {
-            return { text: 'عادي.', color: '#313131' }
+            return { text: 'عادي.', color: '#74d99f' }
         }
         if (between(number, 70, 80)) {
-            return { text: 'جيد', color: '#4CAF50' }
+            return { text: 'جيد', color: '#74d99f' }
         }
         if (between(number, 80, 85)) {
-            return { text: 'جيد جداً', color: '#4CAF50' }
+            return { text: 'جيد جداً', color: '#36bc6f' }
         }
         if (between(number, 85, 90)) {
-            return { text: 'ممتاز', color: '#4CAF50' }
+            return { text: 'ممتاز', color: '#36bc6f' }
         }
         if (between(number, 90, 95)) {
-            return { text: 'رائع', color: '#4CAF50' }
+            return { text: 'رائع', color: '#249d57' }
         }
         if (between(number, 95, 100) || number == 100) {
-            return { text: 'عظيم جداً', color: '#4CAF50' }
+            return { text: 'عظيم جداً', color: '#249d57' }
         }
     }
     function get_time() {
@@ -117,7 +117,7 @@ export default function FinishScreen({ navigation, route }) {
                             <MaterialCommunityIcons
                                 name='chart-areaspline-variant'
                                 size={22}
-                                color='grey'
+                                color='#616161'
                                 style={{ paddingBottom: 3 }} />
                             <Text style={styles.exam_result}>الدقة</Text>
                             <Text style={styles.exam_result}>%{get_ratio_score()}</Text>
@@ -126,7 +126,7 @@ export default function FinishScreen({ navigation, route }) {
                             <MaterialCommunityIcons
                                 name='timer-sand'
                                 size={22}
-                                color='grey'
+                                color='#616161'
                                 style={{ paddingBottom: 3 }} />
                             <Text style={styles.exam_result}>الوقت</Text>
                             <Text style={styles.exam_result}>{get_time()} د</Text>
@@ -135,7 +135,7 @@ export default function FinishScreen({ navigation, route }) {
                             <MaterialCommunityIcons
                                 name='playlist-remove'
                                 size={22}
-                                color='grey'
+                                color='#616161'
                                 style={{ paddingBottom: 3 }} />
                             <Text style={styles.exam_result}>الخطأ</Text>
                             <Text style={styles.exam_result}>{wrong_count}</Text>
@@ -155,7 +155,7 @@ export default function FinishScreen({ navigation, route }) {
                                 <MaterialCommunityIcons
                                     name='target-variant'
                                     size={20}
-                                    color='grey'
+                                    color='#616161'
                                     style={{ marginRight: 10 }} />
                                 <Text style={styles.exam_result}>متوسط التحصيل في مقرر {quiz.subject}</Text>
                             </View>
@@ -173,7 +173,7 @@ export default function FinishScreen({ navigation, route }) {
                                 <MaterialCommunityIcons
                                     name='history'
                                     size={20}
-                                    color='grey'
+                                    color='#616161'
                                     style={{ marginRight: 10 }} />
                                 <Text style={styles.exam_result}>متوسط الوقت لمقرر {quiz.subject}</Text>
                             </View>
@@ -206,7 +206,7 @@ export default function FinishScreen({ navigation, route }) {
                             <MaterialCommunityIcons
                                 name='refresh'
                                 size={25}
-                                color='#00C853'
+                                color={get_text_score(get_ratio_score()).color}
                                 style={{ marginLeft: 10 }} />
                         </Pressable>
                     </Surface>
@@ -256,7 +256,7 @@ export default function FinishScreen({ navigation, route }) {
                                                     <Text>{get_recommendation(0).questions_number}</Text>
                                                     <MaterialCommunityIcons
                                                         name="format-list-numbered"
-                                                        color="grey"
+                                                        color="#616161"
                                                         size={20}
                                                         style={{ marginLeft: 5 }} />
                                                 </View>
@@ -295,7 +295,7 @@ export default function FinishScreen({ navigation, route }) {
                                                 <Text>{get_recommendation(1).questions_number}</Text>
                                                 <MaterialCommunityIcons
                                                     name="format-list-numbered"
-                                                    color="grey"
+                                                    color="#616161"
                                                     size={20}
                                                     style={{ marginLeft: 5 }} />
                                             </View>
@@ -336,6 +336,6 @@ const styles = StyleSheet.create({
         fontFamily: 'Cairo-SemiBold',
         fontSize: 14,
         lineHeight: 20,
-        color: 'grey'
+        color: '#616161'
     },
 })
