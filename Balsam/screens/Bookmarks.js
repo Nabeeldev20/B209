@@ -37,7 +37,7 @@ export default function Bookmarks({ navigation }) {
                 }
                 return [... new Set(output)]
             }
-            if (get_subjects().length == 0) {
+            if (get_subjects().length == 1) {
                 return null
             }
             return (

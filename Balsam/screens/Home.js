@@ -21,14 +21,7 @@ export default function Home({ navigation }) {
     const { colors } = useTheme();
     const [loading, set_loading] = React.useState(true);
     React.useEffect(() => {
-        setTimeout(() => {
-            set_loading(false);
-            ToastAndroid.showWithGravity(
-                'الشروع بشاشة التحميل',
-                ToastAndroid.LONG,
-                ToastAndroid.BOTTOM
-            )
-        }, 500);
+        set_loading(false)
     }, [])
     function Home_component({ navigation }) {
         const [dialogData, setDialogData] = React.useState({ visible: false })
@@ -367,9 +360,7 @@ export default function Home({ navigation }) {
 
     function loading_component() {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>جاري التحميل</Text>
-                <Text>تجربة التحميل بعد شاشة</Text>
+            <View>
             </View>
         )
     }
