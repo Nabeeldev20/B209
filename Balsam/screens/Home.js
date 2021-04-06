@@ -472,5 +472,10 @@ const styles = StyleSheet.create({
     dialog_button: {
         letterSpacing: 0,
         fontFamily: 'Cairo-Bold'
+    },
+    headline: {
+        fontFamily: 'Cairo-Bold',
+        fontSize: 21,
+        paddingBottom: 20
     }
 })

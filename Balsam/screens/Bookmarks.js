@@ -21,13 +21,13 @@ export default function Bookmarks({ navigation }) {
     }
     const [bookmarks, set_bookmarks] = React.useState(get_bookmarks());
     const [selected_subject, set_selected_subject] = React.useState('');
-    function bookmarks_component() {
 
-        useFocusEffect(
-            React.useCallback(() => {
-                set_bookmarks(get_bookmarks())
-            }, [])
-        );
+    useFocusEffect(
+        React.useCallback(() => {
+            set_bookmarks(get_bookmarks())
+        }, [])
+    );
+    function bookmarks_component() {
 
         function SubjectsButtons() {
             function get_subjects() {
@@ -97,7 +97,7 @@ export default function Bookmarks({ navigation }) {
                                 <View style={{
                                     alignItems: 'center',
                                     flexDirection: 'row',
-                                    paddingHorizontal: 4
+                                    paddingHorizontal: 6
                                 }}>
                                     <MaterialCommunityIcons
                                         name='card-bulleted'

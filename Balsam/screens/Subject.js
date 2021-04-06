@@ -20,14 +20,12 @@ export default function Subject({ navigation, route }) {
     const [dialogData, setDialogData] = React.useState({ visible: false })
     const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 })
     const { colors } = useTheme();
-
+    useFocusEffect(
+        React.useCallback(() => {
+            setData(get_database().filter(quiz => quiz.subject == subject_name));
+        }, [subject_name])
+    );
     function subject_component() {
-
-        useFocusEffect(
-            React.useCallback(() => {
-                setData(get_database().filter(quiz => quiz.subject == subject_name));
-            }, [])
-        );
 
         function Header() {
             function has_cycles() {
