@@ -157,7 +157,7 @@ export default function FinishScreen({ navigation, route }) {
                                     size={20}
                                     color='#616161'
                                     style={{ marginRight: 5 }} />
-                                <Text style={styles.exam_result}>متوسط التحصيل في مقرر {quiz.subject}</Text>
+                                <Text style={styles.exam_result}>متوسط دقة   {quiz.subject}</Text>
                             </View>
                             <Text style={styles.exam_result}>%{quiz.get_average_accuracy()}</Text>
                         </View>
@@ -175,7 +175,7 @@ export default function FinishScreen({ navigation, route }) {
                                     size={20}
                                     color='#616161'
                                     style={{ marginRight: 5 }} />
-                                <Text style={styles.exam_result}>متوسط الوقت لمقرر {quiz.subject}</Text>
+                                <Text style={styles.exam_result}>متوسط وقت  {quiz.subject}</Text>
                             </View>
                             <Text style={styles.exam_result}>{quiz.get_average_time()}</Text>
                         </View>
