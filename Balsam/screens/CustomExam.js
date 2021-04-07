@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
-import { get_database, get_act, get_error_msgs } from './db'
+import { get_database, get_act } from './db'
 
 export default function CustomExam({ navigation }) {
     const Stack = createStackNavigator();
@@ -448,7 +448,6 @@ export default function CustomExam({ navigation }) {
                     <QuizzesCheckBoxes />
                     <QuizOptions />
                     <GoExam />
-                    <Text style={{ color: 'red' }}>{JSON.stringify(get_error_msgs(), null, 2)}</Text>
                 </View>
             </ScrollView>
         )

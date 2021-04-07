@@ -115,7 +115,7 @@ export default function FinishScreen({ navigation, route }) {
                     }}>
                         <View style={{ alignItems: 'center' }}>
                             <MaterialCommunityIcons
-                                name='chart-areaspline-variant'
+                                name='bullseye-arrow'
                                 size={22}
                                 color='#616161'
                                 style={{ paddingBottom: 3 }} />
@@ -133,7 +133,7 @@ export default function FinishScreen({ navigation, route }) {
                         </View>
                         <View style={{ alignItems: 'center' }}>
                             <MaterialCommunityIcons
-                                name='playlist-remove'
+                                name='close'
                                 size={22}
                                 color='#616161'
                                 style={{ paddingBottom: 3 }} />
@@ -153,11 +153,11 @@ export default function FinishScreen({ navigation, route }) {
                         }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <MaterialCommunityIcons
-                                    name='target-variant'
+                                    name='chart-areaspline-variant'
                                     size={20}
                                     color='#616161'
                                     style={{ marginRight: 5 }} />
-                                <Text style={styles.exam_result}>متوسط دقة   {quiz.subject}</Text>
+                                <Text style={styles.exam_result}>متوسط دقة {quiz.subject}</Text>
                             </View>
                             <Text style={styles.exam_result}>%{quiz.get_average_accuracy()}</Text>
                         </View>
