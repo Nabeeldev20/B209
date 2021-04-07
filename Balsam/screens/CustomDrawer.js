@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { View, StyleSheet, Text, ScrollView } from 'react-native'
+import { View, StyleSheet, Text } from 'react-native'
 import { Divider } from 'react-native-paper';
-import { DrawerItem } from '@react-navigation/drawer';
+import { DrawerItem, DrawerContentScrollView } from '@react-navigation/drawer';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { get_database } from './db'
@@ -16,38 +16,37 @@ export default function CustomDrawer({ navigation }) {
         return [... new Set(output)]
     }
     return (
-        <View style={styles.container}>
+        <DrawerContentScrollView>
+            <View style={styles.container}>
+                <DrawerItem
+                    label='الرئيسة'
+                    icon={() => <MaterialCommunityIcons size={20} name='home' />}
+                    labelStyle={styles.drawer_text}
+                    style={{ marginVertical: 1 }}
+                    onPress={() => navigation.navigate('Home')} />
 
-            <DrawerItem
-                label='الرئيسة'
-                icon={() => <MaterialCommunityIcons size={20} name='home' />}
-                labelStyle={styles.drawer_text}
-                style={{ marginVertical: 1 }}
-                onPress={() => navigation.navigate('Home')} />
+                <DrawerItem
+                    label='امتحان مخصص'
+                    icon={() => <MaterialCommunityIcons size={20} name='auto-fix' />}
+                    labelStyle={styles.drawer_text}
+                    onPress={() => navigation.navigate('CustomExam')}
+                    style={{ marginVertical: 1 }}
+                />
 
-            <DrawerItem
-                label='امتحان مخصص'
-                icon={() => <MaterialCommunityIcons size={20} name='auto-fix' />}
-                labelStyle={styles.drawer_text}
-                onPress={() => navigation.navigate('CustomExam')}
-                style={{ marginVertical: 1 }}
-            />
-
-            <DrawerItem
-                label='المحفوظات'
-                icon={() => <MaterialCommunityIcons size={20} name='bookmark-multiple' />}
-                labelStyle={styles.drawer_text}
-                onPress={() => navigation.navigate('Bookmarks')}
-                style={{ marginVertical: 1 }}
-            />
-            {get_subjects().length > 0 ?
-                <View>
-                    <Divider />
-                    <View style={styles.row}>
-                        <MaterialCommunityIcons name='bookshelf' color='#616161' size={20} />
-                        <Text style={{ fontFamily: 'Cairo-SemiBold', margin: 5, fontSize: 15, color: '#616161' }}>المقررات</Text>
-                    </View>
-                    <ScrollView>
+                <DrawerItem
+                    label='المحفوظات'
+                    icon={() => <MaterialCommunityIcons size={20} name='bookmark-multiple' />}
+                    labelStyle={styles.drawer_text}
+                    onPress={() => navigation.navigate('Bookmarks')}
+                    style={{ marginVertical: 1 }}
+                />
+                {get_subjects().length > 0 ?
+                    <View>
+                        <Divider />
+                        <View style={styles.row}>
+                            <MaterialCommunityIcons name='bookshelf' color='#616161' size={20} />
+                            <Text style={{ fontFamily: 'Cairo-SemiBold', margin: 5, fontSize: 15, color: '#616161' }}>المقررات</Text>
+                        </View>
                         {get_subjects().map(subject => {
                             return (
                                 <DrawerItem
@@ -58,11 +57,9 @@ export default function CustomDrawer({ navigation }) {
                                 />
                             )
                         })}
-                    </ScrollView>
-
-                </View> : null}
-        </View>
-
+                    </View> : null}
+            </View>
+        </DrawerContentScrollView>
     )
 }
 const styles = StyleSheet.create({

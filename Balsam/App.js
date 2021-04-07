@@ -17,7 +17,7 @@ import Subject from './screens/Subject';
 import Bookmarks from './screens/Bookmarks';
 import * as Network from 'expo-network';
 
-import { update_database, update_bookmarks, update_act, update_cache_array, update_error_msgs } from './screens/db'
+import { update_database, get_database, update_bookmarks, update_act, update_cache_array, update_error_msgs } from './screens/db'
 
 
 const { Storage } = NativeModules;
@@ -219,7 +219,9 @@ export default function App() {
       try {
         let check_permission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
         if (check_permission) {
-          get_data();
+          if (get_database().length == 0) {
+            get_data();
+          }
           setLoading(false);
         } else {
           setShouldAskForPermissions(true)
@@ -342,7 +344,7 @@ export default function App() {
             itemStyle: { marginVertical: 3, padding: 0 },
           }}>
           {loading ?
-            <Drawer.Screen name='LoadingScreen' component={loading_screen} /> :
+            <Drawer.Screen name='LoadingScreen' component={loading_screen} options={{ gestureEnabled: false }} /> :
             (
               <>
                 <Drawer.Screen name="Home" component={Home} />

@@ -97,7 +97,7 @@ export default function Bookmarks({ navigation }) {
                                 <View style={{
                                     alignItems: 'center',
                                     flexDirection: 'row',
-                                    paddingHorizontal: 6
+                                    marginHorizontal: 5
                                 }}>
                                     <MaterialCommunityIcons
                                         name='card-bulleted'

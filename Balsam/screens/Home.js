@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { View, Text, StyleSheet, FlatList, Pressable, ToastAndroid } from 'react-native'
-import { Surface, Dialog, Portal, Divider, IconButton, Button, useTheme } from 'react-native-paper'
+import { Surface, Dialog, Portal, Divider, Button, useTheme } from 'react-native-paper'
 import { createStackNavigator } from '@react-navigation/stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { FileSystem } from 'react-native-file-access';
@@ -32,7 +32,7 @@ export default function Home({ navigation }) {
 
         useFocusEffect(
             React.useCallback(() => {
-                set_data(get_database());
+                set_data([...new Set(get_database())]);
             }, [])
         );
         function EmptyHome() {
@@ -255,11 +255,21 @@ export default function Home({ navigation }) {
                     <Dialog
                         visible={unfinishedDialog.visible}
                         onDismiss={() => setUnfinishedDialog({ visible: false })}>
-                        <Dialog.Title style={styles.dialog_title}>لم تنه الامتحان آخر مرة!</Dialog.Title>
-                        <Dialog.Content>
-                            <Text style={styles.dialog_text}>توقفت عند السؤال {unfinishedDialog.index} من أصل {unfinishedDialog.questions_number}</Text>
+                        <Dialog.Title style={{
+                            fontFamily: 'Cairo-Bold',
+                            fontSize: 18,
+                            marginTop: 15,
+                            marginBottom: 15
+                        }}>لم تنه الامتحان آخر مرة!</Dialog.Title>
+                        <Dialog.Content style={{ paddingHorizontal: 15, paddingBottom: 0 }}>
+                            <Text style={{ fontFamily: 'Cairo-SemiBold', fontSize: 15 }}>توقفت عند السؤال {unfinishedDialog.index} من أصل {unfinishedDialog.questions_number}</Text>
                         </Dialog.Content>
-                        <Dialog.Actions style={[styles.row, { justifyContent: 'space-between', paddingHorizontal: 3 }]}>
+                        <Dialog.Actions style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            marginHorizontal: 5,
+                        }}>
                             <Button
                                 labelStyle={styles.dialog_button}
                                 onPress={() => resume_exam({ quiz: unfinishedDialog.quiz })}
@@ -274,35 +284,39 @@ export default function Home({ navigation }) {
 
                     <Dialog
                         visible={dialogData.visible}
-                        onDismiss={() => setDialogData({ visible: false })}
-                        style={{ padding: 3 }}>
-                        <Dialog.Title style={styles.title}>{dialogData.title}</Dialog.Title>
-                        <Dialog.Content style={{ padding: 3 }}>
-                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                        onDismiss={() => setDialogData({ visible: false })}>
+                        <Dialog.Title style={{
+                            fontFamily: 'Cairo-Bold',
+                            fontSize: 18,
+                            marginTop: 15,
+                            marginBottom: 15
+                        }}>{dialogData.title}</Dialog.Title>
+                        <Dialog.Content style={{ paddingHorizontal: 15, paddingBottom: 0 }}>
+                            <View style={styles.row}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
-                                        name='target-variant'
+                                        name='chart-areaspline-variant'
                                         size={20}
                                         color='#616161'
                                         style={{ marginRight: 3 }} />
-                                    <Text style={styles.dialog_text}>متوسط التحصيل في المقرر</Text>
+                                    <Text style={styles.dialog_text}>متوسط دقة</Text>
                                 </View>
                                 <Text style={styles.dialog_text}>{dialogData.average_accuracy}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                            <View style={styles.row}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='history'
                                         size={20}
                                         color='#616161'
                                         style={{ marginRight: 3 }} />
-                                    <Text style={styles.dialog_text}>متوسط الوقت في المقرر</Text>
+                                    <Text style={styles.dialog_text}>متوسط وقت </Text>
                                 </View>
                                 <Text style={styles.dialog_text}>{dialogData.average_time}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                            <View style={styles.row}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='calendar-today'
@@ -314,10 +328,10 @@ export default function Home({ navigation }) {
                                 <Text style={styles.dialog_text}>{calculate_last_time(dialogData.last_time)}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                            <View style={styles.row}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
-                                        name='file-check'
+                                        name='medal'
                                         size={20}
                                         color='#616161'
                                         style={{ marginRight: 3 }} />
@@ -326,7 +340,7 @@ export default function Home({ navigation }) {
                                 <Text style={styles.dialog_text}>% {dialogData.last_score}</Text>
                             </View>
                             <Divider />
-                            <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                            <View style={styles.row}>
                                 <View style={styles.row}>
                                     <MaterialCommunityIcons
                                         name='clock-check'
@@ -340,15 +354,18 @@ export default function Home({ navigation }) {
                         </Dialog.Content>
 
                         <Dialog.Actions
-                            style={[
-                                styles.row, {
-                                    justifyContent: 'space-between',
-                                }]}>
-                            <IconButton
-                                icon='file-remove'
-                                size={24}
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                marginHorizontal: 5,
+                            }}>
+                            <Button
                                 color='#E53935'
-                                onPress={() => remove_file(dialogData.title, dialogData.path)} />
+                                labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo-Bold' }}
+                                onPress={() => remove_file(dialogData.title, dialogData.path)}>
+                                حذف الملف
+                                    </Button>
                             <Button
                                 onPress={() => setDialogData({ visible: false })}
                                 labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo-Bold' }}
@@ -422,7 +439,7 @@ export default function Home({ navigation }) {
 
 const styles = StyleSheet.create({
     container: {
-        paddingVertical: 12,
+        paddingVertical: 10,
         flex: 1,
         width: '100%'
     },
@@ -455,7 +472,8 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 5
+        justifyContent: 'space-between',
+        paddingVertical: 5
     },
     dialog_text: {
         fontFamily: 'Cairo-SemiBold',

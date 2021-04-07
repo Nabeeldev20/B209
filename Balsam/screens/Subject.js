@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { View, Text, StyleSheet, FlatList, Pressable, Switch, ToastAndroid } from 'react-native'
-import { Surface, Portal, Dialog, IconButton, Button, Divider, useTheme } from 'react-native-paper'
-import * as Animatable from 'react-native-animatable';
+import { Surface, Portal, Dialog, Button, Divider, useTheme } from 'react-native-paper'
 import * as Haptics from 'expo-haptics';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { FileSystem } from 'react-native-file-access';
@@ -22,7 +21,7 @@ export default function Subject({ navigation, route }) {
     const { colors } = useTheme();
     useFocusEffect(
         React.useCallback(() => {
-            setData(get_database().filter(quiz => quiz.subject == subject_name));
+            setData([...new Set(get_database())].filter(quiz => quiz.subject == subject_name));
         }, [subject_name])
     );
     function subject_component() {
@@ -35,23 +34,37 @@ export default function Subject({ navigation, route }) {
                         output.push(data[i].title)
                     }
                 }
-                if (output.length > 0) return true;
+                if (output.length > 1) return true;
                 return false;
             }
             if (has_cycles()) {
                 return (
-                    <View style={styles.row}>
-                        <MaterialCommunityIcons
-                            name='check-decagram'
-                            color='#616161'
-                            size={16}
-                            style={{ marginRight: 6 }} />
-                        <Text style={[styles.Header_text, { marginRight: 5 }]}>الدورات فقط</Text>
-                        <Switch
-                            value={onlyCycles}
-                            onValueChange={handle_switch}
-                            trackColor={{ false: '#767577', true: '#ec9b99' }}
-                            thumbColor={onlyCycles ? '#E53935' : '#f4f3f4'} />
+                    <View style={{
+                        flexDirection: 'row',
+                        justifyContent: 'flex-end',
+                        margin: 3
+                    }}>
+                        <View style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                        }}>
+                            <MaterialCommunityIcons
+                                name='check-decagram'
+                                color='#616161'
+                                size={16}
+                                style={{ marginRight: 6 }} />
+                            <Text style={{
+                                fontFamily: 'Cairo-SemiBold',
+                                fontSize: 16,
+                                height: 25,
+                                marginRight: 5
+                            }}>الدورات فقط</Text>
+                            <Switch
+                                value={onlyCycles}
+                                onValueChange={handle_switch}
+                                trackColor={{ false: '#767577', true: '#ec9b99' }}
+                                thumbColor={onlyCycles ? '#E53935' : '#f4f3f4'} />
+                        </View>
                     </View>
                 )
             }
@@ -295,15 +308,24 @@ export default function Subject({ navigation, route }) {
                         )}
                     />
                     <Portal>
-
                         <Dialog
                             visible={unfinishedDialog.visible}
                             onDismiss={() => setUnfinishedDialog({ visible: false })}>
-                            <Dialog.Title style={styles.dialog_title}>لم تنه الامتحان آخر مرة!</Dialog.Title>
-                            <Dialog.Content>
-                                <Text style={styles.dialog_text}>توقفت عند السؤال {unfinishedDialog.index} من أصل {unfinishedDialog.questions_number}</Text>
+                            <Dialog.Title style={{
+                                fontFamily: 'Cairo-Bold',
+                                fontSize: 18,
+                                marginTop: 15,
+                                marginBottom: 15
+                            }}>لم تنه الامتحان آخر مرة!</Dialog.Title>
+                            <Dialog.Content style={{ paddingHorizontal: 15, paddingBottom: 0 }}>
+                                <Text style={{ fontFamily: 'Cairo-SemiBold', fontSize: 15 }}>توقفت عند السؤال {unfinishedDialog.index} من أصل {unfinishedDialog.questions_number}</Text>
                             </Dialog.Content>
-                            <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
+                            <Dialog.Actions style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                marginHorizontal: 5,
+                            }}>
                                 <Button
                                     labelStyle={styles.dialog_button}
                                     onPress={() => resume_exam({ quiz: unfinishedDialog.quiz })}
@@ -316,35 +338,41 @@ export default function Subject({ navigation, route }) {
                             </Dialog.Actions>
                         </Dialog>
 
-                        <Dialog visible={dialogData.visible} onDismiss={() => setDialogData({ visible: false })}>
-                            <Dialog.Title style={[styles.title, { padding: 10 }]}>{dialogData.title}</Dialog.Title>
-
-                            <Dialog.Content style={{ padding: 3 }}>
-                                <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                        <Dialog
+                            visible={dialogData.visible}
+                            onDismiss={() => setDialogData({ visible: false })}>
+                            <Dialog.Title style={{
+                                fontFamily: 'Cairo-Bold',
+                                fontSize: 18,
+                                marginTop: 15,
+                                marginBottom: 15
+                            }}>{dialogData.title}</Dialog.Title>
+                            <Dialog.Content style={{ paddingHorizontal: 15, paddingBottom: 0 }}>
+                                <View style={styles.row}>
                                     <View style={styles.row}>
                                         <MaterialCommunityIcons
-                                            name='target-variant'
+                                            name='chart-areaspline-variant'
                                             size={20}
                                             color='#616161'
                                             style={{ marginRight: 3 }} />
-                                        <Text style={styles.dialog_text}>متوسط التحصيل في المقرر</Text>
+                                        <Text style={styles.dialog_text}>متوسط الدقة</Text>
                                     </View>
                                     <Text style={styles.dialog_text}>{dialogData.average_accuracy}</Text>
                                 </View>
                                 <Divider />
-                                <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                                <View style={styles.row}>
                                     <View style={styles.row}>
                                         <MaterialCommunityIcons
                                             name='history'
                                             size={20}
                                             color='#616161'
                                             style={{ marginRight: 3 }} />
-                                        <Text style={styles.dialog_text}>متوسط الوقت في المقرر</Text>
+                                        <Text style={styles.dialog_text}>متوسط الوقت</Text>
                                     </View>
                                     <Text style={styles.dialog_text}>{dialogData.average_time}</Text>
                                 </View>
                                 <Divider />
-                                <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                                <View style={styles.row}>
                                     <View style={styles.row}>
                                         <MaterialCommunityIcons
                                             name='calendar-today'
@@ -356,10 +384,10 @@ export default function Subject({ navigation, route }) {
                                     <Text style={styles.dialog_text}>{calculate_last_time(dialogData.last_time)}</Text>
                                 </View>
                                 <Divider />
-                                <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                                <View style={styles.row}>
                                     <View style={styles.row}>
                                         <MaterialCommunityIcons
-                                            name='file-check'
+                                            name='medal'
                                             size={20}
                                             color='#616161'
                                             style={{ marginRight: 3 }} />
@@ -368,7 +396,7 @@ export default function Subject({ navigation, route }) {
                                     <Text style={styles.dialog_text}>% {dialogData.last_score}</Text>
                                 </View>
                                 <Divider />
-                                <View style={[styles.row, { justifyContent: 'space-between' }]}>
+                                <View style={styles.row}>
                                     <View style={styles.row}>
                                         <MaterialCommunityIcons
                                             name='clock-check'
@@ -377,22 +405,26 @@ export default function Subject({ navigation, route }) {
                                             style={{ marginRight: 3 }} />
                                         <Text style={styles.dialog_text}>آخر توقيت</Text>
                                     </View>
-                                    <Text style={styles.dialog_text}>{dialogData.last_time_score} د</Text>
+                                    <Text style={styles.dialog_text}>{dialogData.last_time_score}</Text>
                                 </View>
                             </Dialog.Content>
 
-                            <Dialog.Actions style={[styles.row, { justifyContent: 'space-between' }]}>
-                                <IconButton
-                                    icon='file-remove'
+                            <Dialog.Actions
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    marginHorizontal: 5,
+                                }}>
+                                <Button
                                     color='#E53935'
-                                    size={24}
-                                    onPress={() => remove_file(dialogData.title, dialogData.path)} />
+                                    labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo-Bold' }}
+                                    onPress={() => remove_file(dialogData.title, dialogData.path)}>
+                                    حذف الملف
+                                    </Button>
                                 <Button
                                     onPress={() => setDialogData({ visible: false })}
-                                    labelStyle={{
-                                        letterSpacing: 0,
-                                        fontFamily: 'Cairo-Bold'
-                                    }}
+                                    labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo-Bold' }}
                                 >حسناً</Button>
                             </Dialog.Actions>
                         </Dialog>
@@ -431,14 +463,8 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 5
-    },
-    Header_text: {
-        fontFamily: 'Cairo-SemiBold',
-        fontSize: 15,
-        height: 25,
-        letterSpacing: 0,
-        selectable: false
+        justifyContent: 'space-between',
+        paddingVertical: 5
     },
     title: {
         fontFamily: 'Cairo-Bold',
@@ -464,7 +490,10 @@ const styles = StyleSheet.create({
         selectable: false
     },
     cycle_university: {
-        fontSize: 15,
+        fontFamily: 'Cairo-SemiBold',
+        fontSize: 14,
+        lineHeight: 20,
+        height: 20,
         paddingLeft: 5,
         selectable: false
     },
