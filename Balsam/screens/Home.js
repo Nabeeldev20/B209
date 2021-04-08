@@ -20,21 +20,22 @@ export default function Home({ navigation }) {
     const Stack = createStackNavigator();
     const { colors } = useTheme();
     const [loading, set_loading] = React.useState(true);
+    const [dialogData, setDialogData] = React.useState({ visible: false })
+    const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 });
+    const [data, set_data] = React.useState([]);
     React.useEffect(() => {
         setTimeout(() => {
             set_loading(false)
         }, 250);
     }, [])
-    function Home_component({ navigation }) {
-        const [dialogData, setDialogData] = React.useState({ visible: false })
-        const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 });
-        const [data, set_data] = React.useState([]);
+    useFocusEffect(
+        React.useCallback(() => {
+            set_data([...new Set(get_database().sort((a, b) => a.taken_number - b.taken_number))]);
+        }, [])
+    );
 
-        useFocusEffect(
-            React.useCallback(() => {
-                set_data([...new Set(get_database())]);
-            }, [])
-        );
+    function Home_component({ navigation }) {
+
         function EmptyHome() {
             return (
                 <Animatable.View animation="fadeIn" style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
@@ -61,12 +62,17 @@ export default function Home({ navigation }) {
             set_data(data.filter(quiz => quiz.title != title))
             set_database(get_database().filter(quiz => quiz.title != title));
             try {
-                await FileSystem.unlink(path)
+                await FileSystem.unlink(path);
+                ToastAndroid.showWithGravity(
+                    `تم حذف ${title}`,
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM
+                )
             } catch (error) {
                 ToastAndroid.showWithGravity(
                     'Error#011',
                     ToastAndroid.LONG,
-                    ToastAndroid.BOTTOM
+                    ToastAndroid.TOP
                 )
             }
         }
@@ -149,7 +155,6 @@ export default function Home({ navigation }) {
                         keyExtractor={item => item.title}
                         renderItem={({ item }) => (
                             <View
-                                key={item.title}
                                 style={{
                                     marginVertical: 3,
                                 }}>

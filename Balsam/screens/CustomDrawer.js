@@ -13,7 +13,7 @@ export default function CustomDrawer({ navigation }) {
     const get_subjects = () => {
         let output = [];
         data.forEach(file => output.push(file.subject))
-        return [... new Set(output)]
+        return [... new Set(output.sort(new Intl.Collator('ar').compare))]
     }
     return (
         <DrawerContentScrollView>

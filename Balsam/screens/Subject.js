@@ -8,6 +8,7 @@ import { DateTime } from 'luxon'
 import Analytics from 'appcenter-analytics';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useFocusEffect } from '@react-navigation/native';
+import * as Animatable from 'react-native-animatable';
 
 import { get_database, set_database, get_act, update_error_msgs } from './db'
 export default function Subject({ navigation, route }) {
@@ -21,7 +22,7 @@ export default function Subject({ navigation, route }) {
     const { colors } = useTheme();
     useFocusEffect(
         React.useCallback(() => {
-            setData([...new Set(get_database())].filter(quiz => quiz.subject == subject_name));
+            setData([...new Set(get_database().sort((a, b) => a.taken_number - b.taken_number))].filter(quiz => quiz.subject == subject_name));
         }, [subject_name])
     );
     function subject_component() {
@@ -55,8 +56,8 @@ export default function Subject({ navigation, route }) {
                                 style={{ marginRight: 6 }} />
                             <Text style={{
                                 fontFamily: 'Cairo-SemiBold',
-                                fontSize: 16,
-                                height: 25,
+                                fontSize: 14,
+                                height: 24,
                                 marginRight: 5
                             }}>الدورات فقط</Text>
                             <Switch
@@ -92,9 +93,6 @@ export default function Subject({ navigation, route }) {
                     ToastAndroid.LONG,
                     ToastAndroid.BOTTOM
                 )
-            }
-            if (data.length == 0) {
-                navigation.jumpTo('Home')
             }
         }
 
@@ -432,11 +430,34 @@ export default function Subject({ navigation, route }) {
                 </View>
             )
         }
-
+        function NoFiles() {
+            return (
+                <Animatable.View animation="fadeIn" style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
+                    <MaterialCommunityIcons
+                        name="emoticon-devil"
+                        color="grey"
+                        size={50}
+                        style={{ marginLeft: 5 }}
+                    />
+                    <Text style={{ fontFamily: 'Cairo-Bold', color: 'grey' }}>
+                        حذفت جميع ملفات {subject_name}
+                    </Text>
+                    <Button
+                        style={{ marginTop: 3 }}
+                        mode='outlined'
+                        compact={true}
+                        labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo-Bold', height: 26, color: 'grey' }}
+                        onPress={() => navigation.navigate('Home')}>عودة إلى الشاشة الرئيسة </Button>
+                </Animatable.View>
+            )
+        }
         return (
             <View style={styles.container}>
-                <Header />
-                <Files />
+                {data.length != 0 ?
+                    <View>
+                        <Header />
+                        <Files />
+                    </View> : <NoFiles />}
             </View >
         )
     }

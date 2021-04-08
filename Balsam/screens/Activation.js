@@ -12,7 +12,7 @@ import * as Network from 'expo-network';
 
 
 export default function Activation({ navigation, route }) {
-    const h = new Hashids("nabeel adnan ali nizam", 12, "abcdefghijklmnopqrstuvwxyz123456789");
+    const h = new Hashids("3121593N-W-A-N#@!", 12, "abcdefghijklmnopqrstuvwxyznNIZAM123456789");
     const { subject_name, code } = route.params;
     React.useEffect(() => {
         navigation.setOptions({ title: 'تفعيل بنك' + ' ' + subject_name })
@@ -84,15 +84,9 @@ export default function Activation({ navigation, route }) {
         }
     }
     function copy() {
-        Clipboard.setString(`
-        Telegram: @Balsam_dev || ${DateTime.now().toISODate()}
-        --
-        ${storeCode}
-        --
-        ${get_act_code()}
-        --
-        شكراً لك 
-    `);
+        Clipboard.setString(`Telegram: @Balsam_dev
+- - - 
+${storeCode}-${get_act_code()}-${DateTime.now().toISODate()}`);
         ToastAndroid.showWithGravity(
             'تم النسخ للحافظة',
             ToastAndroid.LONG,
@@ -146,7 +140,11 @@ export default function Activation({ navigation, route }) {
                 )
             }
         } catch (error) {
-            update_error_msgs({ Code: 'Error fetching mac ', error })
+            ToastAndroid.showWithGravity(
+                'Error#012',
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM
+            )
         }
     }
     is_input_valid_animation();

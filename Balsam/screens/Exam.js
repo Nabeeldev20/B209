@@ -63,13 +63,77 @@ export default function Exam({ navigation, route }) {
         }
         return null
     }
+    function Explanation() {
+        if (visible) {
+            return (
+                <Animatable.View
+                    animation="fadeInDown"
+                    style={{
+                        backgroundColor: 'white',
+                        padding: 10,
+                        elevation: 5
+                    }}>
+                    <Text style={styles.banner_text}>{quiz.get_question(index).explanation}</Text>
+                </Animatable.View>
+            )
+        }
+        return null
+    }
+    function Header() {
+        return (
+            <View
+                style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    paddingTop: 10,
+                    paddingHorizontal: 10,
+                    paddingBottom: 10
+                }}>
+                <View style={styles.row}>
+                    <MaterialCommunityIcons
+                        name='card-text'
+                        size={20}
+                        color='#616161'
+                        style={{ marginRight: 3 }} />
+                    <Text style={styles.header_text}>
+                        <Text style={{ fontWeight: 'bold' }}>{index + 1}</Text>
+                              /
+                             {quiz.get_questions_number()}
+                    </Text>
+                </View>
+                <View style={styles.row}>
+                    <Text style={styles.header_text}>{quiz.get_remaining_time(index)}</Text>
+                    <MaterialCommunityIcons
+                        name='timer-sand'
+                        size={20}
+                        color='#616161'
+                        style={{ marginLeft: 3 }} />
+                </View>
+            </View>
+        )
+    }
+    function BookmarkButton() {
+        if (check_is_bookmark()) {
+            return (
+                <Animatable.View ref={bookmark_button}>
+                    <IconButton
+                        icon='bookmark'
+                        size={34}
+                        color='grey'
+                        onPress={() => add_to_bookmarks()} />
+                </Animatable.View>
+            )
+        }
+        return null
+    }
     const check_answer = async (choice) => {
         if (!hasAnswered) {
             if (quiz.get_question(index).is_right(choice)) {
                 move_to_next_question()
             } else {
                 if (quiz.get_question(index).has_explanation()) {
-                    show_banner()
+                    setVisible(true)
                 }
                 await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
                 setHasAnswered(true);
@@ -122,7 +186,7 @@ export default function Exam({ navigation, route }) {
             }
         }
         if (bookmark_button) {
-            bookmark_button.current?.fadeOut();
+            bookmark_button.current?.fadeOut(900);
         }
         ToastAndroid.showWithGravity(
             'تمت الإضافة للمحفوظات',
@@ -133,14 +197,11 @@ export default function Exam({ navigation, route }) {
         save_to_bookmarks();
         Analytics.trackEvent('Bookmark', { Subject: quiz.subject });
     }
-    function show_banner() {
-        setVisible(true)
-    }
     function update_index() {
         if (!quiz.title.includes('مخصص')) {
             React.useEffect(() => {
                 navigation.addListener('beforeRemove', (e) => {
-                    if (index !== quiz.get_questions_number() - 1 && index != 0) {
+                    if (index !== (quiz.get_questions_number() - 1) && index != 0) {
                         e.preventDefault();
                         ToastAndroid.showWithGravity(
                             "جاري الحفظ",
@@ -181,55 +242,12 @@ export default function Exam({ navigation, route }) {
     return (
         <ScrollView
             style={{ flex: 1 }}
-            contentContainerStyle={styles.scrollview}
+            contentContainerStyle={styles.container}
             scrollEnabled={scrollEnabled}
             onContentSizeChange={onContentSizeChange}>
-
-            <View style={styles.container}>
-                {visible ?
-                    <Animatable.View
-                        animation="fadeInDown"
-                        style={{
-                            backgroundColor: 'white',
-                            padding: 10,
-                            elevation: 5
-                        }}>
-                        <Text style={styles.banner_text}>{quiz.get_question(index).explanation}</Text>
-                    </Animatable.View> : null}
-
-
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        paddingTop: 10,
-                        paddingHorizontal: 10,
-                        paddingBottom: 10
-                    }}>
-                    <View style={styles.row}>
-                        <MaterialCommunityIcons
-                            name='card-text'
-                            size={20}
-                            color='#616161'
-                            style={{ marginRight: 3 }} />
-                        <Text style={styles.header_text}>
-                            <Text style={{ fontWeight: 'bold' }}>{index + 1}</Text>
-                              /
-                             {quiz.get_questions_number()}
-                        </Text>
-                    </View>
-                    <View style={styles.row}>
-                        <Text style={styles.header_text}>{quiz.get_remaining_time(index)}</Text>
-                        <MaterialCommunityIcons
-                            name='timer-sand'
-                            size={20}
-                            color='#616161'
-                            style={{ marginLeft: 3 }} />
-                    </View>
-                </View>
-
-
+            <View>
+                <Explanation />
+                <Header />
 
                 <Animatable.Text
                     ref={title}
@@ -281,22 +299,8 @@ export default function Exam({ navigation, route }) {
 
             </View>
 
-            <View
-                style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    width: '100%'
-                }}>
-                {check_is_bookmark() ?
-                    <Animatable.View
-                        ref={bookmark_button}>
-                        <IconButton
-                            icon='bookmark'
-                            size={34}
-                            color='grey'
-                            onPress={() => add_to_bookmarks()} />
-                    </Animatable.View> : null}
-
+            <View>
+                <BookmarkButton />
                 <Text style={{
                     fontFamily: 'Cairo-SemiBold',
                     alignSelf: 'center',
@@ -313,6 +317,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         width: '100%',
+        justifyContent: 'space-between',
+        flexGrow: 1
     },
     question: {
         textAlign: 'justify',
