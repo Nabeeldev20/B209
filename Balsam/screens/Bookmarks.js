@@ -94,21 +94,10 @@ export default function Bookmarks({ navigation }) {
                                 borderWidth: 1,
                                 borderColor: '#d7d8d2'
                             }}>
-                                <View style={{
-                                    alignItems: 'center',
-                                    flexDirection: 'row',
-                                    marginHorizontal: 5
-                                }}>
-                                    <MaterialCommunityIcons
-                                        name='card-bulleted'
-                                        size={20}
-                                        color='#616161'
-                                        style={{ marginRight: 4 }} />
-                                    <Headline style={styles.headline}>
-                                        {item.title}
-                                        {selected_subject == '' ? <Text style={styles.text}>  ({item.subject})  </Text> : null}
-                                    </Headline>
-                                </View>
+                                <Headline style={styles.headline}>
+                                    {item.title}
+                                    {selected_subject == '' ? <Text style={styles.text}>  ({item.subject})  </Text> : null}
+                                </Headline>
                                 <Divider />
                                 {item.choices.filter(choice => choice != '-').map(choice => {
                                     return (
@@ -227,7 +216,8 @@ const styles = StyleSheet.create({
         fontFamily: 'Cairo-Bold',
         fontSize: 16,
         selectable: false,
-        padding: 3,
+        marginHorizontal: 3,
+        paddingVertical: 3
     },
     text: {
         fontFamily: 'Cairo-SemiBold',
