@@ -153,7 +153,8 @@ export default function Subject({ navigation, route }) {
                     }
                 })
             } else {
-                quiz.index = 0
+                quiz.index = 0;
+                quiz.wrong_count = 0;
                 quiz.get_shuffled_questions(true, true);
                 navigation.navigate('Home', {
                     screen: 'Exam',
@@ -164,7 +165,6 @@ export default function Subject({ navigation, route }) {
                         random_choices: true
                     }
                 })
-                setUnfinishedDialog({ visible: false })
             }
             setUnfinishedDialog({ visible: false })
         }

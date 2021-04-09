@@ -23,14 +23,13 @@ export default function Home({ navigation }) {
     const [dialogData, setDialogData] = React.useState({ visible: false })
     const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 });
     const [data, set_data] = React.useState([]);
-    React.useEffect(() => {
-        setTimeout(() => {
-            set_loading(false)
-        }, 250);
-    }, [])
+
     useFocusEffect(
         React.useCallback(() => {
             set_data([...new Set(get_database().sort((a, b) => a.taken_number - b.taken_number))]);
+            if (loading) {
+                set_loading(false)
+            }
         }, [])
     );
 
@@ -121,17 +120,19 @@ export default function Home({ navigation }) {
                     exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
                     random_questions: true,
                     random_choices: true
-                })
+                });
+                setUnfinishedDialog({ visible: false });
             } else {
-                quiz.index = 0
+                quiz.index = 0;
+                quiz.wrong_count = 0;
                 quiz.get_shuffled_questions(true, true);
                 navigation.push('Exam', {
                     quiz,
                     exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
                     random_questions: true,
                     random_choices: true
-                })
-                setUnfinishedDialog({ visible: false })
+                });
+                setUnfinishedDialog({ visible: false });
             }
         }
         function get_icon(quiz) {
