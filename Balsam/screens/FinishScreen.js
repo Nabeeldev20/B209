@@ -65,6 +65,7 @@ export default function FinishScreen({ navigation, route }) {
         quiz.index = 0;
         quiz.taken_number += 1;
         quiz.last_time = DateTime.now().toISODate();
+        quiz.wrong_count = 0;
         try {
             save_file(quiz);
         } catch (error) {
@@ -402,11 +403,12 @@ export default function FinishScreen({ navigation, route }) {
                     <View>
                         <MaterialCommunityIcons
                             name='lightbulb-on'
-                            color='#616161'
-                            size={16} />
+                            color='grey'
+                            size={14} />
                         <Text style={{
                             fontFamily: 'Cairo-Bold',
-                            color: '#616161'
+                            fontSize: 14,
+                            color: 'grey'
                         }}>{data[random_between(0, data.length)]}</Text>
                     </View>
                 </View>

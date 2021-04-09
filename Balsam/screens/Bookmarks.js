@@ -90,7 +90,7 @@ export default function Bookmarks({ navigation }) {
                             <Surface style={{
                                 margin: 4,
                                 elevation: 1,
-                                padding: 3,
+                                padding: 5,
                                 borderWidth: 1,
                                 borderColor: '#d7d8d2'
                             }}>
@@ -99,35 +99,32 @@ export default function Bookmarks({ navigation }) {
                                     {selected_subject == '' ? <Text style={styles.text}>  ({item.subject})  </Text> : null}
                                 </Headline>
                                 <Divider />
-                                {item.choices.filter(choice => choice != '-').map(choice => {
-                                    return (
-                                        <Text
-                                            style={[
-                                                styles.text,
-                                                {
-                                                    color: choice == item.right_answer ? 'green' : '#616161',
-                                                    fontFamily: choice == item.right_answer ? 'Cairo-Bold' : 'Cairo-SemiBold'
-                                                }
-                                            ]}
-                                            key={choice}
-                                        >{choice}</Text>
-                                    )
+                                <View style={{ padding: 4 }}>
+                                    {item.choices.filter(choice => choice != '-').map(choice => {
+                                        return (
+                                            <Text
+                                                style={[
+                                                    styles.text,
+                                                    {
+                                                        color: choice == item.right_answer ? 'green' : '#616161',
+                                                        fontFamily: choice == item.right_answer ? 'Cairo-Bold' : 'Cairo-SemiBold'
+                                                    }
+                                                ]}
+                                                key={choice}
+                                            >{choice}</Text>
+                                        )
 
-                                })}
+                                    })}
+                                </View>
                                 {
                                     item.explanation.length > 2 ?
-                                        <View style={{
-                                            alignItems: 'center',
-                                            flexDirection: 'row',
-                                            paddingHorizontal: 4
-                                        }}>
-                                            <MaterialCommunityIcons
-                                                name='comment-question'
-                                                size={16}
-                                                color='#616161'
-                                                style={{ marginRight: 3 }} />
-                                            <Text style={styles.text}>{item.explanation}</Text>
-                                        </View> : null
+                                        <View>
+                                            <Divider />
+                                            <Text style={styles.text}>
+                                                الشرح: {'\n'} {item.explanation}
+                                            </Text>
+                                        </View>
+                                        : null
                                 }
                                 <IconButton
                                     icon='bookmark-remove'
@@ -136,7 +133,7 @@ export default function Bookmarks({ navigation }) {
                                     onPress={() => remove_bookmark(item)}
                                     style={{ alignSelf: 'flex-end' }}
                                 />
-                            </Surface>
+                            </Surface >
                         )
                     }} />
             )
@@ -216,16 +213,13 @@ const styles = StyleSheet.create({
         fontFamily: 'Cairo-Bold',
         fontSize: 16,
         selectable: false,
-        marginHorizontal: 3,
-        paddingVertical: 3
+        padding: 4
     },
     text: {
         fontFamily: 'Cairo-SemiBold',
         fontSize: 14,
+        paddingVertical: 4,
         selectable: false,
-        padding: 3,
-        paddingHorizontal: 5,
-        marginHorizontal: 5,
         color: '#616161'
     },
     row: {

@@ -174,7 +174,6 @@ export default function CustomExam({ navigation }) {
                     <FlatList
                         data={get_quizzes().all}
                         extraData={get_quizzes().all}
-                        numColumns={2}
                         ListEmptyComponent={NoQuizzes}
                         renderItem={({ item }) => {
                             return (
@@ -182,7 +181,6 @@ export default function CustomExam({ navigation }) {
                                     key={item}
                                     onPress={() => select(item)}
                                     style={{
-                                        flex: 1,
                                         flexDirection: 'row',
                                         alignItems: 'center'
                                     }}>
@@ -192,7 +190,7 @@ export default function CustomExam({ navigation }) {
                                         color='#00C853' />
                                     <Text style={{
                                         fontFamily: 'Cairo-SemiBold',
-                                        fontSize: 14,
+                                        fontSize: 16,
                                         color: '#616161'
                                     }}>{item}</Text>
                                 </Pressable>

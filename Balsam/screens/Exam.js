@@ -73,7 +73,7 @@ export default function Exam({ navigation, route }) {
                         padding: 10,
                         elevation: 5
                     }}>
-                    <Text style={styles.banner_text}>{quiz.get_question(index).explanation}</Text>
+                    <Text style={styles.banner_text}>شرح السؤال: {'\n'}{quiz.get_question(index).explanation}</Text>
                 </Animatable.View>
             )
         }
@@ -145,7 +145,7 @@ export default function Exam({ navigation, route }) {
         if (index == (quiz.get_questions_number() - 1)) {
             navigation.replace('FinishScreen', {
                 quiz,
-                wrong_count: wrongAnswersCount,
+                wrong_count: wrongAnswersCount + quiz.wrong_count,
                 exam_time,
                 random_questions,
                 random_choices
@@ -209,6 +209,7 @@ export default function Exam({ navigation, route }) {
                             ToastAndroid.BOTTOM
                         );
                         quiz.index = index;
+                        quiz.wrong_count = wrongAnswersCount;
                         try {
                             save_file(quiz);
                         } catch (error) {
@@ -240,77 +241,81 @@ export default function Exam({ navigation, route }) {
     }
     update_index();
     return (
-        <ScrollView
-            style={{ flex: 1 }}
-            contentContainerStyle={styles.container}
-            scrollEnabled={scrollEnabled}
-            onContentSizeChange={onContentSizeChange}>
-            <View>
-                <Explanation />
-                <Header />
+        <View style={{ flex: 1 }}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ flexGrow: 1 }}>
 
-                <Animatable.Text
-                    ref={title}
-                    animation="fadeInRight"
-                    duration={1500}
-                    style={{ paddingHorizontal: 10 }}>
-                    <Title style={styles.question}>{quiz.get_question(index).title}</Title>
-                </Animatable.Text>
+                <View style={{ flex: 1, justifyContent: 'space-between' }}>
+                    <View>
+                        <Explanation />
+                        <Header />
 
-                <Animatable.View
-                    ref={choices_animation}
-                    animation="fadeIn"
-                    duration={1500}
-                    delay={250}
-                    style={{ paddingTop: 3 }}>
-                    <FlatList
-                        data={quiz.get_question(index).choices.filter(ch => ch != '-')}
-                        extraData={quiz.get_question(index).choices.filter(ch => ch != '-')}
-                        renderItem={({ item }) => {
-                            return (
-                                <View
-                                    key={item}
-                                    style={{
-                                        marginVertical: 3,
-                                        marginHorizontal: 5,
-                                    }}>
-                                    <Surface style={{
-                                        borderColor: hasAnswered && quiz.get_question(index).is_right(item) ? colors.success : '#D7D8D2',
-                                        borderWidth: hasAnswered && quiz.get_question(index).is_right(item) ? 2 : 1,
-                                        elevation: 2,
-                                    }}>
-                                        <Pressable
-                                            onPress={() => check_answer(item)}
-                                            android_ripple={{ color: quiz.get_question(index).is_right(item) ? colors.success : colors.error, borderless: false }}
+                        <Animatable.Text
+                            ref={title}
+                            animation="fadeInRight"
+                            duration={1500}
+                            style={{ paddingHorizontal: 10 }}>
+                            <Title style={styles.question}>{quiz.get_question(index).title}</Title>
+                        </Animatable.Text>
+
+                        <Animatable.View
+                            ref={choices_animation}
+                            animation="fadeIn"
+                            duration={1500}
+                            delay={250}
+                            style={{ paddingTop: 3 }}>
+                            <FlatList
+                                data={quiz.get_question(index).choices.filter(ch => ch != '-')}
+                                extraData={quiz.get_question(index).choices.filter(ch => ch != '-')}
+                                renderItem={({ item }) => {
+                                    return (
+                                        <View
+                                            key={item}
                                             style={{
-                                                alignItems: 'flex-start',
-                                                padding: 15
+                                                marginVertical: 3,
+                                                marginHorizontal: 5,
                                             }}>
-                                            <Subheading style={styles.choice} >
-                                                {item}
-                                            </Subheading>
-                                        </Pressable>
-                                    </Surface>
-                                </View>
-                            )
-                        }}
-                    />
-                </Animatable.View>
+                                            <Surface style={{
+                                                borderColor: hasAnswered && quiz.get_question(index).is_right(item) ? colors.success : '#D7D8D2',
+                                                borderWidth: hasAnswered && quiz.get_question(index).is_right(item) ? 2 : 1,
+                                                elevation: 2,
+                                            }}>
+                                                <Pressable
+                                                    onPress={() => check_answer(item)}
+                                                    android_ripple={{ color: quiz.get_question(index).is_right(item) ? colors.success : colors.error, borderless: false }}
+                                                    style={{
+                                                        alignItems: 'flex-start',
+                                                        padding: 15
+                                                    }}>
+                                                    <Subheading style={styles.choice} >
+                                                        {item}
+                                                    </Subheading>
+                                                </Pressable>
+                                            </Surface>
+                                        </View>
+                                    )
+                                }}
+                            />
+                        </Animatable.View>
 
-            </View>
+                    </View>
 
-            <View>
-                <BookmarkButton />
-                <Text style={{
-                    fontFamily: 'Cairo-SemiBold',
-                    alignSelf: 'center',
-                    color: 'grey',
-                    fontSize: 11,
-                    padding: 5
-                }}>بلســـم</Text>
-                <Footer />
-            </View>
-        </ScrollView >
+                    <View>
+                        <BookmarkButton />
+                        <Text style={{
+                            fontFamily: 'Cairo-SemiBold',
+                            alignSelf: 'center',
+                            color: 'grey',
+                            fontSize: 11,
+                            padding: 5
+                        }}>بلســـم</Text>
+                    </View>
+                </View>
+            </ScrollView >
+
+            <Footer />
+        </View>
     )
 }
 const styles = StyleSheet.create({
