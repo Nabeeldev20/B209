@@ -378,6 +378,7 @@ export default function CustomExam({ navigation }) {
                     subject: selected_subject,
                     questions: get_questions(),
                     index: 0,
+                    wrong_count: 0,
                     get_question(index) {
                         return this.questions[index]
                     },

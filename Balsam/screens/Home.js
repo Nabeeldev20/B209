@@ -19,22 +19,16 @@ import { get_database, set_database, get_act } from './db'
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();
     const { colors } = useTheme();
-    const [loading, set_loading] = React.useState(true);
     const [dialogData, setDialogData] = React.useState({ visible: false })
     const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 });
     const [data, set_data] = React.useState([]);
 
-    useFocusEffect(
-        React.useCallback(() => {
-            set_data([...new Set(get_database().sort((a, b) => a.taken_number - b.taken_number))]);
-            if (loading) {
-                set_loading(false)
-            }
-        }, [])
-    );
-
     function Home_component({ navigation }) {
-
+        useFocusEffect(
+            React.useCallback(() => {
+                set_data([...new Set(get_database().sort((a, b) => a.taken_number - b.taken_number))]);
+            }, [])
+        );
         function EmptyHome() {
             return (
                 <Animatable.View animation="fadeIn" style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
@@ -383,61 +377,49 @@ export default function Home({ navigation }) {
         )
     }
 
-    function loading_component() {
-        return (
-            <Animatable.View animation='flash' iterationCount='infinite' duration={3500} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
-                <MaterialCommunityIcons name='folder-sync' size={35} color='grey' />
-                <Text style={[styles.headline, { color: 'grey' }]} >جاري التحميل</Text>
-            </Animatable.View>
-        )
-    }
-
-
     return (
         <Stack.Navigator
             screenOptions={{ headerStyle: { height: 50 } }}>
-            {loading ? <Stack.Screen options={{ headerShown: false }} name='Loading' component={loading_component} />
-                : (<>
-                    <Stack.Screen
-                        name="Home"
-                        component={Home_component}
-                        options={{
-                            title: 'بلســم',
-                            headerTitleStyle: { fontFamily: 'Cairo-Bold', fontSize: 16 },
-                            headerLeft: () => (<MaterialCommunityIcons size={30} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
-                        }} />
-                    <Stack.Screen
-                        name="Exam"
-                        options={({ route }) => ({
-                            headerTitleStyle: {
-                                color: '#313131',
-                                fontSize: 14,
-                                fontFamily: 'Cairo-Bold'
-                            }
-                        })}
-                        component={Exam} />
-                    <Stack.Screen
-                        name="FinishScreen"
-                        component={FinishScreen}
-                        options={({ route }) => ({
-                            title: route.params.quiz.title,
-                            headerTitleStyle: {
-                                color: '#313131',
-                                fontSize: 14,
-                                fontFamily: 'Cairo-Bold'
-                            }
-                        })} />
-                    <Stack.Screen
-                        name="Activation"
-                        component={Activation}
-                        options={({ route }) => ({
-                            headerTitleStyle: {
-                                color: '#313131',
-                                fontSize: 14,
-                                fontFamily: 'Cairo-Bold',
-                            }
-                        })} />
-                </>)}
+            <Stack.Screen
+                name="Home"
+                component={Home_component}
+                options={{
+                    title: 'بلســم',
+                    headerTitleStyle: { fontFamily: 'Cairo-Bold', fontSize: 16 },
+                    headerLeft: () => (<MaterialCommunityIcons size={30} style={{ marginLeft: 20 }} name='menu' onPress={() => navigation.openDrawer()} />)
+                }} />
+            <Stack.Screen
+                name="Exam"
+                options={({ route }) => ({
+                    headerTitleStyle: {
+                        color: '#313131',
+                        fontSize: 14,
+                        fontFamily: 'Cairo-Bold'
+                    }
+                })}
+                component={Exam} />
+            <Stack.Screen
+                name="FinishScreen"
+                component={FinishScreen}
+                options={({ route }) => ({
+                    title: route.params.quiz.title,
+                    headerTitleStyle: {
+                        color: '#313131',
+                        fontSize: 14,
+                        fontFamily: 'Cairo-Bold'
+                    }
+                })} />
+            <Stack.Screen
+                name="Activation"
+                component={Activation}
+                options={({ route }) => ({
+                    headerTitleStyle: {
+                        color: '#313131',
+                        fontSize: 14,
+                        fontFamily: 'Cairo-Bold',
+                    }
+                })} />
+
         </Stack.Navigator>
     )
 }

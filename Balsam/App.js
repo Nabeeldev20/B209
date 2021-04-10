@@ -40,7 +40,8 @@ export default function App() {
     },
   };
   const [loading, setLoading] = React.useState(true);
-  const [shouldAskForPermissions, setShouldAskForPermissions] = React.useState(false)
+  const [shouldAskForPermissions, setShouldAskForPermissions] = React.useState(false);
+  const [ready, set_ready] = React.useState(false);
   async function ask_for_permission() {
     try {
       const has_premissons = await PermissionsAndroid.requestMultiple([PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE, PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE]);
@@ -232,7 +233,6 @@ export default function App() {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM
         )
-        update_error_msgs({ Code: 'ERROR checking permissons', error });
       }
     }
     async function read_blsm() {
@@ -290,9 +290,11 @@ export default function App() {
         )
       }
     }
-    check_permission();
-    read_blsm();
-  }, [shouldAskForPermissions]);
+    if (ready) {
+      check_permission();
+      read_blsm();
+    }
+  }, [shouldAskForPermissions, ready]);
 
   function loading_screen() {
     if (shouldAskForPermissions == false) {
@@ -335,7 +337,10 @@ export default function App() {
       settings={{
         icon: props => <MaterialCommunityIcons {...props} />,
       }}>
-      <NavigationContainer>
+      <NavigationContainer
+        onReady={() => {
+          set_ready(true)
+        }}>
         <Drawer.Navigator
           drawerContent={(props) => <CustomDrawer {...props} />}
           drawerType='slide'
