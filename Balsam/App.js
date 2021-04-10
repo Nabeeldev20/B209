@@ -220,10 +220,12 @@ export default function App() {
       try {
         let check_permission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
         if (check_permission) {
-          if (get_database().length == 0) {
-            get_data();
+          if (ready) {
+            if (get_database().length == 0) {
+              get_data();
+            }
+            setLoading(false);
           }
-          setLoading(false);
         } else {
           setShouldAskForPermissions(true)
         }
@@ -290,10 +292,10 @@ export default function App() {
         )
       }
     }
-    if (ready) {
-      check_permission();
-      read_blsm();
-    }
+
+    check_permission();
+    read_blsm();
+
   }, [shouldAskForPermissions, ready]);
 
   function loading_screen() {

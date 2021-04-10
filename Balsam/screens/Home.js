@@ -22,13 +22,13 @@ export default function Home({ navigation }) {
     const [dialogData, setDialogData] = React.useState({ visible: false })
     const [unfinishedDialog, setUnfinishedDialog] = React.useState({ visible: false, index: 0, questions_number: 0 });
     const [data, set_data] = React.useState([]);
-
+    useFocusEffect(
+        React.useCallback(() => {
+            set_data([...new Set(get_database().sort((a, b) => a.taken_number - b.taken_number))]);
+        }, [])
+    );
     function Home_component({ navigation }) {
-        useFocusEffect(
-            React.useCallback(() => {
-                set_data([...new Set(get_database().sort((a, b) => a.taken_number - b.taken_number))]);
-            }, [])
-        );
+
         function EmptyHome() {
             return (
                 <Animatable.View animation="fadeIn" style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%' }}>
