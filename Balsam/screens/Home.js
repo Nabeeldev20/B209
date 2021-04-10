@@ -15,6 +15,7 @@ import FinishScreen from './FinishScreen'
 import Activation from './Activation'
 
 import { get_database, set_database, get_act } from './db'
+import { withSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();
@@ -29,12 +30,10 @@ export default function Home({ navigation }) {
         }, [])
     );
     React.useEffect(() => {
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-        await sleep(50);
-        set_data(get_database());
-        set_loading(false);
+        setTimeout(() => {
+            set_data(get_database());
+            set_loading(false);
+        }, 50);
     }, [])
     function Home_component({ navigation }) {
 
