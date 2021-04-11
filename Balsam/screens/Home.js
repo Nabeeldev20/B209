@@ -25,7 +25,7 @@ import { FileSystem } from 'react-native-file-access';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Analytics from 'appcenter-analytics';
-
+import Database from './DatabaseContext';
 import {
     get_database,
     set_database,
@@ -33,6 +33,7 @@ import {
 } from './db';
 export default function Home({ navigation }) {
     const { colors } = useTheme();
+    const { Database_array } = React.useContext(Database);
     const [dialogData, setDialogData] = React.useState({ visible: false });
     const [unfinishedDialog, setUnfinishedDialog] = React.useState({
         visible: false,
@@ -40,13 +41,33 @@ export default function Home({ navigation }) {
         questions_number: 0,
     });
     const [data, set_data] = React.useState([]);
+    React.useEffect(() => {
+        let mounted = true;
+        if (mounted) {
+            set_data(Database_array);
+            set_database(Database_array);
+        }
+        return () => {
+            mounted = false;
+            set_data([]);
+        };
+    }, [Database_array]);
     useFocusEffect(
         React.useCallback(() => {
-            set_data([
+            let mounted = true;
+            let sorted_data = [
                 ...new Set(
                     get_database().sort((a, b) => a.taken_number - b.taken_number),
                 ),
-            ]);
+            ];
+            if (mounted) {
+                set_data(sorted_data);
+            }
+
+            return () => {
+                mounted = false;
+                set_data([]);
+            };
         }, []),
     );
     function EmptyHome() {
