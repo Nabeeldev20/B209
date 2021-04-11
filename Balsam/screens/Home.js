@@ -15,7 +15,6 @@ import FinishScreen from './FinishScreen'
 import Activation from './Activation'
 
 import { get_database, set_database, get_act } from './db'
-import { withSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Home({ navigation }) {
     const Stack = createStackNavigator();
@@ -29,12 +28,7 @@ export default function Home({ navigation }) {
             set_data([...new Set(get_database().sort((a, b) => a.taken_number - b.taken_number))]);
         }, [])
     );
-    React.useEffect(() => {
-        setTimeout(() => {
-            set_data(get_database());
-            set_loading(false);
-        }, 50);
-    }, [])
+
     function Home_component({ navigation }) {
 
         function EmptyHome() {
@@ -385,6 +379,15 @@ export default function Home({ navigation }) {
         )
     }
     function loading_component() {
+        React.useEffect(() => {
+            let mounted = true;
+            if (mounted) {
+                set_loading(false);
+            }
+            return () => {
+                mounted = false
+            }
+        }, [])
         return (
             <Animatable.View animation='flash' iterationCount='infinite' duration={3500} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
                 <MaterialCommunityIcons name='folder-sync' size={35} color='grey' />
