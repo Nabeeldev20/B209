@@ -25,7 +25,7 @@ import {
   update_bookmarks,
   update_act,
   update_cache_array,
-} from './db';
+} from './screens/db';
 
 import CryptoJS from 'crypto-js';
 import HomeStack from './screens/HomeStack';
