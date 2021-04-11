@@ -1,53 +1,102 @@
-import * as React from 'react'
-import { View, Text, StyleSheet, Pressable, ScrollView, Dimensions, ToastAndroid, FlatList } from 'react-native'
-import { Surface, Divider } from 'react-native-paper'
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable prettier/prettier */
+import * as React from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    Pressable,
+    ScrollView,
+    Dimensions,
+    ToastAndroid,
+    FlatList,
+} from 'react-native';
+import { Surface, Divider } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { DateTime } from 'luxon'
+import { DateTime } from 'luxon';
 import * as Animatable from 'react-native-animatable';
-import { get_database, save_file } from './db'
-
+import { get_database, save_file } from './db';
 
 export default function FinishScreen({ navigation, route }) {
-    const { quiz, wrong_count, exam_time, random_questions, random_choices } = route.params;
-    const [screenHeight, setScreenHeight] = React.useState(Dimensions.get('window'));
+    const {
+        quiz,
+        wrong_count,
+        exam_time,
+        random_questions,
+        random_choices,
+    } = route.params;
+    React.useEffect(() => {
+        async function update_quiz() {
+            quiz.update_average_time(Math.ceil(get_time() * 60));
+            quiz.update_average_accuracy(get_ratio_score());
+            quiz.index = 0;
+            quiz.taken_number += 1;
+            quiz.last_time = DateTime.now().toISODate();
+            quiz.wrong_count = 0;
+            try {
+                save_file(quiz);
+            } catch (error) {
+                ToastAndroid.showWithGravity(
+                    'Error #013',
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        }
+        navigation.addListener('beforeRemove', e => {
+            if (!quiz.title.includes('مخصص')) {
+                e.preventDefault();
+                ToastAndroid.showWithGravity(
+                    'جاري الحفظ',
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM,
+                );
+                update_quiz();
+                navigation.dispatch(e.data.action);
+            }
+        });
+    }, [navigation, quiz]);
+    const [screenHeight, setScreenHeight] = React.useState(
+        Dimensions.get('window'),
+    );
     const { height } = Dimensions.get('window');
     const scrollEnabled = () => {
-        return screenHeight > height ? true : false
-    }
-    const onContentSizeChange = (contentHeight) => {
+        return screenHeight > height ? true : false;
+    };
+    const onContentSizeChange = contentHeight => {
         setScreenHeight(contentHeight);
-    }
+    };
     function get_ratio_score() {
         let right = quiz.get_questions_number() - wrong_count;
-        return Math.ceil((right * 100) / quiz.get_questions_number())
+        return Math.ceil((right * 100) / quiz.get_questions_number());
     }
     function get_text_score(number) {
         function between(x, min, max) {
-            return x >= min && x < max ? true : false
+            return x >= min && x < max ? true : false;
         }
         if (between(number, 0, 70)) {
-            return { text: 'عادي.', color: '#74d99f' }
+            return { text: 'عادي.', color: '#74d99f' };
         }
         if (between(number, 70, 80)) {
-            return { text: 'جيد', color: '#74d99f' }
+            return { text: 'جيد', color: '#74d99f' };
         }
         if (between(number, 80, 85)) {
-            return { text: 'جيد جداً', color: '#36bc6f' }
+            return { text: 'جيد جداً', color: '#36bc6f' };
         }
         if (between(number, 85, 90)) {
-            return { text: 'ممتاز', color: '#36bc6f' }
+            return { text: 'ممتاز', color: '#36bc6f' };
         }
         if (between(number, 90, 95)) {
-            return { text: 'رائع', color: '#249d57' }
+            return { text: 'رائع', color: '#249d57' };
         }
-        if (between(number, 95, 100) || number == 100) {
-            return { text: 'عظيم جداً', color: '#249d57' }
+        if (between(number, 95, 100) || number === 100) {
+            return { text: 'عظيم جداً', color: '#249d57' };
         }
     }
     function get_time() {
-        let end = DateTime.fromISO(DateTime.now().toISOTime())
-        let start = exam_time
-        return Math.ceil(end.diff(start, 'minutes').toObject().minutes)
+        let end = DateTime.fromISO(DateTime.now().toISOTime());
+        let start = exam_time;
+        return Math.ceil(end.diff(start, 'minutes').toObject().minutes);
     }
     function go_exam(exam = quiz) {
         exam.get_shuffled_questions(random_questions, random_choices);
@@ -56,67 +105,37 @@ export default function FinishScreen({ navigation, route }) {
             quiz: exam,
             exam_time: DateTime.fromISO(DateTime.now().toISOTime()),
             random_questions,
-            random_choices
-        })
+            random_choices,
+        });
     }
-    async function update_quiz() {
-        quiz.update_average_time(Math.ceil(get_time() * 60));
-        quiz.update_average_accuracy(get_ratio_score());
-        quiz.index = 0;
-        quiz.taken_number += 1;
-        quiz.last_time = DateTime.now().toISODate();
-        quiz.wrong_count = 0;
-        try {
-            save_file(quiz);
-        } catch (error) {
-            ToastAndroid.showWithGravity(
-                "Error #013",
-                ToastAndroid.LONG,
-                ToastAndroid.BOTTOM
-            );
-        }
-    }
-    function update_data() {
-        if (!quiz.title.includes('مخصص')) {
-            React.useEffect(() => {
-                navigation.addListener('beforeRemove', (e) => {
-                    e.preventDefault();
-                    ToastAndroid.showWithGravity(
-                        "جاري الحفظ",
-                        ToastAndroid.LONG,
-                        ToastAndroid.BOTTOM
-                    );
-                    update_quiz();
-                    navigation.dispatch(e.data.action);
-                })
-            }, [])
 
-        }
-    }
-    update_data();
     function is_custom_exam() {
-        if (quiz.title.includes('مخصص')) return true;
-        return false
+        if (quiz.title.includes('مخصص')) { return true; }
+        return false;
     }
     function QuizAnalytics() {
-        if (is_custom_exam() == false) {
+        if (is_custom_exam() === false) {
             return (
                 <Surface style={styles.surface}>
-                    <View style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: 5
-                    }}>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: 5,
+                        }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <MaterialCommunityIcons
-                                name='chart-areaspline-variant'
+                                name="chart-areaspline-variant"
                                 size={20}
-                                color='#616161'
-                                style={{ marginRight: 5 }} />
+                                color="#616161"
+                                style={{ marginRight: 5 }}
+                            />
                             <Text style={styles.exam_result}>متوسط دقة {quiz.subject}</Text>
                         </View>
-                        <Text style={styles.exam_result}>%{quiz.get_average_accuracy()}</Text>
+                        <Text style={styles.exam_result}>
+                            %{quiz.get_average_accuracy()}
+                        </Text>
                     </View>
                     <Divider />
                     <View
@@ -124,20 +143,21 @@ export default function FinishScreen({ navigation, route }) {
                             flexDirection: 'row',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            padding: 5
+                            padding: 5,
                         }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <MaterialCommunityIcons
-                                name='history'
+                                name="history"
                                 size={20}
-                                color='#616161'
-                                style={{ marginRight: 5 }} />
+                                color="#616161"
+                                style={{ marginRight: 5 }}
+                            />
                             <Text style={styles.exam_result}>متوسط وقت {quiz.subject}</Text>
                         </View>
                         <Text style={styles.exam_result}>{quiz.get_average_time()}</Text>
                     </View>
                 </Surface>
-            )
+            );
         }
         return null;
     }
@@ -154,7 +174,7 @@ export default function FinishScreen({ navigation, route }) {
                         backgroundColor: 'white',
                         elevation: 3,
                         borderWidth: 1,
-                        borderColor: '#D7D8D2'
+                        borderColor: '#D7D8D2',
                     }}>
                     <Pressable
                         onPress={() => go_exam()}
@@ -163,40 +183,51 @@ export default function FinishScreen({ navigation, route }) {
                             flexDirection: 'row',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            padding: 15
+                            padding: 15,
                         }}>
-                        <Text style={{ fontFamily: 'Cairo-Bold', fontSize: 15 }}>خوض الاختبار مجدداً</Text>
+                        <Text style={{ fontFamily: 'Cairo-Bold', fontSize: 15 }}>
+                            خوض الاختبار مجدداً
+            </Text>
                         <MaterialCommunityIcons
-                            name='refresh'
+                            name="refresh"
                             size={25}
                             color={get_text_score(get_ratio_score()).color}
-                            style={{ marginLeft: 10 }} />
+                            style={{ marginLeft: 10 }}
+                        />
                     </Pressable>
                 </Surface>
             </View>
-        )
+        );
     }
     function Recommendation() {
         function get_recommendation() {
-            let data_subjects = get_database().filter(data_quiz => data_quiz.subject == quiz.subject);
-            let other_files = data_subjects.filter(file => file.title != quiz.title).sort((a, b) => a.taken_number - b.last_time);
+            let data_subjects = get_database().filter(
+                data_quiz => data_quiz.subject === quiz.subject,
+            );
+            let other_files = data_subjects
+                .filter(file => file.title !== quiz.title)
+                .sort((a, b) => a.taken_number - b.last_time);
             return other_files;
         }
         function Header() {
             return (
-                <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginLeft: 8
-                }}>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginLeft: 8,
+                    }}>
                     <MaterialCommunityIcons
-                        name='telescope'
+                        name="telescope"
                         size={20}
-                        color='grey'
-                        style={{ marginRight: 3 }} />
-                    <Text style={{ fontFamily: 'Cairo-SemiBold', color: 'grey' }}>اختبارت أخرى لحلها: </Text>
+                        color="grey"
+                        style={{ marginRight: 3 }}
+                    />
+                    <Text style={{ fontFamily: 'Cairo-SemiBold', color: 'grey' }}>
+                        اختبارت أخرى لحلها:{' '}
+                    </Text>
                 </View>
-            )
+            );
         }
         function Cards() {
             if (get_recommendation().length > 3) {
@@ -207,105 +238,137 @@ export default function FinishScreen({ navigation, route }) {
                         renderItem={({ item }) => {
                             return (
                                 <View style={{ margin: 5 }}>
-                                    <Surface style={{
-                                        backgroundColor: 'white',
-                                        elevation: 2,
-                                        borderWidth: 1,
-                                        borderColor: '#D7D8D2',
-                                    }}>
+                                    <Surface
+                                        style={{
+                                            backgroundColor: 'white',
+                                            elevation: 2,
+                                            borderWidth: 1,
+                                            borderColor: '#D7D8D2',
+                                        }}>
                                         <Pressable
                                             onPress={() => go_exam(item)}
-                                            android_ripple={{ color: 'rgba(0, 0, 0, .32)', borderless: false }}
+                                            android_ripple={{
+                                                color: 'rgba(0, 0, 0, .32)',
+                                                borderless: false,
+                                            }}
                                             style={{
                                                 justifyContent: 'space-between',
                                                 alignItems: 'center',
                                                 flexDirection: 'row',
-                                                padding: 15
+                                                padding: 15,
                                             }}>
-                                            <Text style={{ fontFamily: 'Cairo-Bold' }}>{item.title}</Text>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                                                <Text style={{ fontFamily: 'Cairo-SemiBold' }}>{item.get_questions_number()}</Text>
+                                            <Text style={{ fontFamily: 'Cairo-Bold' }}>
+                                                {item.title}
+                                            </Text>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-end',
+                                                }}>
+                                                <Text style={{ fontFamily: 'Cairo-SemiBold' }}>
+                                                    {item.get_questions_number()}
+                                                </Text>
                                                 <MaterialCommunityIcons
                                                     name="format-list-numbered"
                                                     color="#616161"
                                                     size={20}
-                                                    style={{ marginLeft: 5 }} />
+                                                    style={{ marginLeft: 5 }}
+                                                />
                                             </View>
                                         </Pressable>
                                     </Surface>
                                 </View>
-                            )
+                            );
                         }}
                     />
-                )
-
+                );
             }
             return null;
         }
-        if (is_custom_exam() == false && get_recommendation().length > 3) {
+        if (is_custom_exam() === false && get_recommendation().length > 3) {
             return (
                 <View>
                     <Header />
                     <Cards />
                 </View>
-            )
+            );
         }
-        return null
+        return null;
     }
     function QuizScore() {
         return (
             <Surface style={styles.surface}>
-                <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginHorizontal: 2
-                }}>
-                    <Text style={[styles.message, { color: get_text_score(get_ratio_score()).color }]}>{get_text_score(get_ratio_score()).text}</Text>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginHorizontal: 2,
+                    }}>
+                    <Text
+                        style={[
+                            styles.message,
+                            { color: get_text_score(get_ratio_score()).color },
+                        ]}>
+                        {get_text_score(get_ratio_score()).text}
+                    </Text>
                     <Animatable.Text
-                        style={[styles.numbers, { color: get_text_score(get_ratio_score()).color }]}
-                        animation={get_text_score(get_ratio_score()).text == 'عادي.' ? 'shake' : 'tada'}
+                        style={[
+                            styles.numbers,
+                            { color: get_text_score(get_ratio_score()).color },
+                        ]}
+                        animation={
+                            get_text_score(get_ratio_score()).text === 'عادي.'
+                                ? 'shake'
+                                : 'tada'
+                        }
                         iterationCount={3}>
-                        {quiz.get_questions_number() - wrong_count}/{quiz.get_questions_number()}
+                        {quiz.get_questions_number() - wrong_count}/
+            {quiz.get_questions_number()}
                     </Animatable.Text>
                 </View>
                 <Divider style={{ margin: 4 }} />
-                <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-evenly',
-                    padding: 10
-                }}>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-evenly',
+                        padding: 10,
+                    }}>
                     <View style={{ alignItems: 'center' }}>
                         <MaterialCommunityIcons
-                            name='bullseye-arrow'
+                            name="bullseye-arrow"
                             size={22}
-                            color='#616161'
-                            style={{ paddingBottom: 3 }} />
+                            color="#616161"
+                            style={{ paddingBottom: 3 }}
+                        />
                         <Text style={styles.exam_result}>الدقة</Text>
                         <Text style={styles.exam_result}>%{get_ratio_score()}</Text>
                     </View>
                     <View style={{ alignItems: 'center' }}>
                         <MaterialCommunityIcons
-                            name='timer-sand'
+                            name="timer-sand"
                             size={22}
-                            color='#616161'
-                            style={{ paddingBottom: 3 }} />
+                            color="#616161"
+                            style={{ paddingBottom: 3 }}
+                        />
                         <Text style={styles.exam_result}>الوقت</Text>
                         <Text style={styles.exam_result}>{get_time()} د</Text>
                     </View>
                     <View style={{ alignItems: 'center' }}>
                         <MaterialCommunityIcons
-                            name='close'
+                            name="close"
                             size={22}
-                            color='#616161'
-                            style={{ paddingBottom: 3 }} />
+                            color="#616161"
+                            style={{ paddingBottom: 3 }}
+                        />
                         <Text style={styles.exam_result}>الخطأ</Text>
                         <Text style={styles.exam_result}>{wrong_count}</Text>
                     </View>
                 </View>
             </Surface>
-        )
+        );
     }
     function Quotes() {
         let data = [
@@ -353,7 +416,6 @@ export default function FinishScreen({ navigation, route }) {
             'Suffixes:\n -chalasis => Relaxation',
             'Suffixes:\n -continence => To stop',
 
-
             'Suffixes:\n -cusis => Hearing',
             'Suffixes:\n -cyesis => Pregnancy',
             'Suffixes:\n -cytosis => Condition of cells',
@@ -389,8 +451,9 @@ export default function FinishScreen({ navigation, route }) {
             'Suffixes:\n -lytic => Destruction or breakdown',
             'Suffixes:\n -ology => Study of',
             'Suffixes:\n -oma => Tumor or mass',
-        ]
-        const random_between = (min, max) => Math.ceil(Math.random() * (max - min) + min);
+        ];
+        const random_between = (min, max) =>
+            Math.ceil(Math.random() * (max - min) + min);
         if (is_custom_exam()) {
             return (
                 <View
@@ -398,23 +461,27 @@ export default function FinishScreen({ navigation, route }) {
                         margin: 5,
                         justifyContent: 'center',
                         alignItems: 'center',
-                        flexGrow: 1
+                        flexGrow: 1,
                     }}>
                     <View>
                         <MaterialCommunityIcons
-                            name='lightbulb-on'
-                            color='grey'
-                            size={14} />
-                        <Text style={{
-                            fontFamily: 'Cairo-Bold',
-                            fontSize: 14,
-                            color: 'grey'
-                        }}>{data[random_between(0, data.length)]}</Text>
+                            name="lightbulb-on"
+                            color="grey"
+                            size={14}
+                        />
+                        <Text
+                            style={{
+                                fontFamily: 'Cairo-Bold',
+                                fontSize: 14,
+                                color: 'grey',
+                            }}>
+                            {data[random_between(0, data.length)]}
+                        </Text>
                     </View>
                 </View>
-            )
+            );
         }
-        return null
+        return null;
     }
     return (
         <ScrollView
@@ -431,9 +498,9 @@ export default function FinishScreen({ navigation, route }) {
                 <AgainButton />
                 <Recommendation />
                 <Quotes />
-            </Animatable.View >
+            </Animatable.View>
         </ScrollView>
-    )
+    );
 }
 const styles = StyleSheet.create({
     container: {
@@ -463,6 +530,6 @@ const styles = StyleSheet.create({
         fontFamily: 'Cairo-SemiBold',
         fontSize: 14,
         lineHeight: 20,
-        color: '#616161'
+        color: '#616161',
     },
-})
+});

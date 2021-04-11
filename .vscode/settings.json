@@ -2,5 +2,8 @@
     "cSpell.ignoreWords": [
         "pressable"
     ],
-    "eslint.enable": false
+    "extends": [
+        // ...
+        "plugin:react-hooks/recommended"
+    ]
 }
