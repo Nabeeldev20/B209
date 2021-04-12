@@ -38,6 +38,7 @@ export default function HomeStack({ navigation }) {
             <Stack.Screen
                 name="Exam"
                 options={({ route }) => ({
+                    title: route.params.quiz.title,
                     headerTitleStyle: {
                         color: '#313131',
                         fontSize: 14,
