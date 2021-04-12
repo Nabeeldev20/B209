@@ -27,9 +27,7 @@ import { get_bookmarks, update_bookmarks, save_file, save_blsm } from './db';
 
 export default function Exam({ navigation, route }) {
     let { quiz, exam_time, random_questions, random_choices } = route.params;
-    React.useEffect(() => {
-        navigation.setOptions({ title: quiz.title });
-    }, [quiz.title]);
+
 
     const { colors } = useTheme();
     const [index, setIndex] = React.useState(quiz.index);

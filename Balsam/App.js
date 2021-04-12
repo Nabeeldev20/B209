@@ -77,7 +77,7 @@ export default function App() {
       );
     }
   }
-
+  let local_database = [];
   React.useEffect(() => {
     function decode_file(file) {
       let bytes = CryptoJS.AES.decrypt(file, 'nabeeladnanalinizam_20900!@#()');
@@ -241,6 +241,7 @@ export default function App() {
               set_last_time(file_output);
               add_methods(file_output);
               update_database(file_output);
+              local_database.push(file_output);
             }
           } catch (error) {
             ToastAndroid.showWithGravity(
@@ -423,7 +424,7 @@ export default function App() {
       );
     }
   }
-  let Database_array = get_database();
+  let Database_array = local_database;
   return (
     <PaperProvider
       theme={theme}
