@@ -52,6 +52,7 @@ export default function App() {
     },
   };
   const [loading, setLoading] = React.useState(true);
+  const [ready, set_ready] = React.useState(false);
   const [shouldAskForPermissions, setShouldAskForPermissions] = React.useState(
     false,
   );
@@ -265,10 +266,14 @@ export default function App() {
           PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
         );
         if (has_permission) {
-          if (get_database().length === 0) {
-            get_data();
+          if (ready) {
+            setTimeout(() => {
+              if (get_database().length === 0) {
+                get_data();
+              }
+              setLoading(false);
+            }, 1000);
           }
-          setLoading(false);
         } else {
           setShouldAskForPermissions(true);
         }
@@ -341,7 +346,7 @@ export default function App() {
 
     check_permission();
     read_blsm();
-  }, [shouldAskForPermissions]);
+  }, [shouldAskForPermissions, ready]);
   function LoadingScreen() {
     if (shouldAskForPermissions === false) {
       return (
@@ -432,7 +437,7 @@ export default function App() {
         icon: props => <MaterialCommunityIcons {...props} />,
       }}>
       <Database.Provider value={{ Database_array }}>
-        <NavigationContainer>
+        <NavigationContainer onReady={() => set_ready(true)}>
           <Drawer.Navigator
             drawerContent={props => <CustomDrawer {...props} />}
             drawerType="slide"

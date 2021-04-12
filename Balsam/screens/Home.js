@@ -8,6 +8,7 @@ import {
     FlatList,
     Pressable,
     ToastAndroid,
+    Linking,
 } from 'react-native';
 import {
     Surface,
@@ -40,11 +41,10 @@ export default function Home({ navigation }) {
         index: 0,
         questions_number: 0,
     });
-    const [data, set_data] = React.useState([]);
+    const [data, set_data] = React.useState(Database_array);
     React.useEffect(() => {
         let mounted = true;
         if (mounted) {
-            set_data(Database_array);
             set_database(Database_array);
         }
         return () => {
@@ -72,25 +72,61 @@ export default function Home({ navigation }) {
     );
     function EmptyHome() {
         return (
-            <Animatable.View
-                animation="fadeIn"
-                style={{
+            <Animatable.View animation="fadeIn" style={{ flex: 1, width: '100%' }}>
+                <View style={{
+                    flexGrow: 1,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    flex: 1,
-                    width: '100%',
                 }}>
-                <MaterialCommunityIcons
-                    name="file-download"
-                    color="grey"
-                    size={50}
-                    style={{ marginLeft: 5 }}
-                />
-                <Text style={{ fontFamily: 'Cairo-Bold', color: 'grey' }}>
-                    جرّب إضافة بعض الملفات
-        </Text>
+                    <MaterialCommunityIcons
+                        name="file-download"
+                        color="grey"
+                        size={50} style={{ marginLeft: 5 }} />
+                    <Text style={{ fontFamily: 'Cairo-Bold', color: 'grey' }}>جرّب إضافة بعض الملفات</Text>
+                </View>
+                <View style={{ paddingHorizontal: 10, width: '60%' }}>
+                    <Text style={{ fontFamily: 'Cairo-SemiBold', color: 'grey' }}>ملفات بلسم بلاحقة quiz.</Text>
+                    <View style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-evenly',
+                        paddingVertical: 5,
+                    }}>
+                        <Button
+                            icon="telegram"
+                            onPress={() => Linking.openURL('https://t.me/Balsam_app')}
+                            contentStyle={{ flexDirection: 'row-reverse' }}
+                            labelStyle={{ fontFamily: 'Cairo-SemiBold' }}
+                            compact
+                            color="grey">قناتنا على التلغرام</Button>
+                        <Button
+                            icon="account-question"
+                            onPress={() => Linking.openURL('https://t.me/Balsam_dev')}
+                            contentStyle={{ flexDirection: 'row-reverse' }}
+                            labelStyle={{ fontFamily: 'Cairo-SemiBold' }}
+                            compact
+                            color="grey">بحاجة مساعدة؟</Button>
+                    </View>
+                </View>
             </Animatable.View>
         );
+    }
+    function Tutorial() {
+        if (data.length > 0 && data.length < 4) {
+            return (
+                <View style={{ alignItems: 'center', flexDirection: 'row', padding: 5 }}>
+                    <MaterialCommunityIcons
+                        name="lightbulb-on"
+                        size={16}
+                        color="grey" />
+                    <Text style={{
+                        fontFamily: 'Cairo-SemiBold',
+                        fontSize: 12, color: 'grey', padding: 5,
+
+                    }}>اضغط مطولاً على أي من البطاقات للمزيد من المعلومات</Text>
+                </View>
+            );
+        }
+        return null;
     }
     function calculate_last_time(lastTime = DateTime.now().toISODate()) {
         let end = DateTime.fromISO(DateTime.now().toISODate());
@@ -246,6 +282,7 @@ export default function Home({ navigation }) {
                                                 ] ?? 0,
                                             last_time_score: calculate_last_time_score() ?? '00:00',
                                             last_time: item.last_time,
+                                            taken_number: item.taken_number,
                                         });
                                         await Haptics.impactAsync(
                                             Haptics.ImpactFeedbackStyle.Medium,
@@ -457,6 +494,21 @@ export default function Home({ navigation }) {
                                 {dialogData.last_time_score}
                             </Text>
                         </View>
+                        <Divider />
+                        <View style={styles.row}>
+                            <View style={styles.row}>
+                                <MaterialCommunityIcons
+                                    name="file-eye"
+                                    size={20}
+                                    color="#616161"
+                                    style={{ marginRight: 3 }}
+                                />
+                                <Text style={styles.dialog_text}>عدد مرّات الاختبار</Text>
+                            </View>
+                            <Text style={styles.dialog_text}>
+                                {dialogData.taken_number}
+                            </Text>
+                        </View>
                     </Dialog.Content>
 
                     <Dialog.Actions
@@ -480,6 +532,7 @@ export default function Home({ navigation }) {
                     </Dialog.Actions>
                 </Dialog>
             </Portal>
+            <Tutorial />
         </View>
     );
 }

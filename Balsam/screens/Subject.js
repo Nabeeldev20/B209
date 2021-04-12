@@ -276,6 +276,7 @@ export default function Subject({ navigation, route }) {
                                                     ] ?? 0,
                                                 last_time_score: calculate_last_time_score() ?? '00:00',
                                                 last_time: item.last_time,
+                                                taken_number: item.taken_number,
                                             });
                                             await Haptics.impactAsync(
                                                 Haptics.ImpactFeedbackStyle.Medium,
@@ -500,6 +501,21 @@ export default function Subject({ navigation, route }) {
                                     </View>
                                     <Text style={styles.dialog_text}>
                                         {dialogData.last_time_score}
+                                    </Text>
+                                </View>
+                                <Divider />
+                                <View style={styles.row}>
+                                    <View style={styles.row}>
+                                        <MaterialCommunityIcons
+                                            name="file-eye"
+                                            size={20}
+                                            color="#616161"
+                                            style={{ marginRight: 3 }}
+                                        />
+                                        <Text style={styles.dialog_text}>عدد مرّات الاختبار</Text>
+                                    </View>
+                                    <Text style={styles.dialog_text}>
+                                        {dialogData.taken_number}
                                     </Text>
                                 </View>
                             </Dialog.Content>
