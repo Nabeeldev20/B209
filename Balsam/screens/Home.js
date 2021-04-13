@@ -34,24 +34,24 @@ import {
 } from './db';
 export default function Home({ navigation }) {
     const { colors } = useTheme();
-    const { Database_array } = React.useContext(Database);
+    const { DB } = React.useContext(Database);
     const [dialogData, setDialogData] = React.useState({ visible: false });
     const [unfinishedDialog, setUnfinishedDialog] = React.useState({
         visible: false,
         index: 0,
         questions_number: 0,
     });
-    const [data, set_data] = React.useState(Database_array);
+    const [data, set_data] = React.useState(DB);
     React.useEffect(() => {
         let mounted = true;
         if (mounted) {
-            set_database(Database_array);
+            set_database(DB);
         }
         return () => {
             mounted = false;
             set_data([]);
         };
-    }, [Database_array]);
+    }, [DB]);
     useFocusEffect(
         React.useCallback(() => {
             let mounted = true;
@@ -84,16 +84,16 @@ export default function Home({ navigation }) {
                         size={50} style={{ marginLeft: 5 }} />
                     <Text style={{ fontFamily: 'Cairo-Bold', color: 'grey' }}>جرّب إضافة بعض الملفات</Text>
                 </View>
-                <View style={{ paddingHorizontal: 10, width: '60%' }}>
+                <View style={{ paddingHorizontal: 10 }}>
                     <Text style={{ fontFamily: 'Cairo-SemiBold', color: 'grey' }}>ملفات بلسم بلاحقة quiz.</Text>
                     <View style={{
                         flexDirection: 'row',
-                        justifyContent: 'space-evenly',
                         paddingVertical: 5,
                     }}>
                         <Button
                             icon="telegram"
                             onPress={() => Linking.openURL('https://t.me/Balsam_app')}
+                            style={{ flex: 1 }}
                             contentStyle={{ flexDirection: 'row-reverse' }}
                             labelStyle={{ fontFamily: 'Cairo-SemiBold' }}
                             compact
@@ -101,6 +101,7 @@ export default function Home({ navigation }) {
                         <Button
                             icon="account-question"
                             onPress={() => Linking.openURL('https://t.me/Balsam_dev')}
+                            style={{ flex: 1 }}
                             contentStyle={{ flexDirection: 'row-reverse' }}
                             labelStyle={{ fontFamily: 'Cairo-SemiBold' }}
                             compact

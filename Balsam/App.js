@@ -53,6 +53,7 @@ export default function App() {
   };
   const [loading, setLoading] = React.useState(true);
   const [ready, set_ready] = React.useState(false);
+  const [DB, setDB] = React.useState([]);
   const [shouldAskForPermissions, setShouldAskForPermissions] = React.useState(
     false,
   );
@@ -78,7 +79,6 @@ export default function App() {
       );
     }
   }
-  let local_database = [];
   React.useEffect(() => {
     function decode_file(file) {
       let bytes = CryptoJS.AES.decrypt(file, 'nabeeladnanalinizam_20900!@#()');
@@ -242,7 +242,7 @@ export default function App() {
               set_last_time(file_output);
               add_methods(file_output);
               update_database(file_output);
-              local_database.push(file_output);
+              setDB([...DB, file_output]);
             }
           } catch (error) {
             ToastAndroid.showWithGravity(
@@ -429,14 +429,13 @@ export default function App() {
       );
     }
   }
-  let Database_array = local_database;
   return (
     <PaperProvider
       theme={theme}
       settings={{
         icon: props => <MaterialCommunityIcons {...props} />,
       }}>
-      <Database.Provider value={{ Database_array }}>
+      <Database.Provider value={{ DB }}>
         <NavigationContainer onReady={() => set_ready(true)}>
           <Drawer.Navigator
             drawerContent={props => <CustomDrawer {...props} />}
