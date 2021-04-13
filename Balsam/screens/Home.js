@@ -41,17 +41,17 @@ export default function Home({ navigation }) {
         index: 0,
         questions_number: 0,
     });
-    const [data, set_data] = React.useState(DB);
+    const [data, set_data] = React.useState(DB.current);
     React.useEffect(() => {
         let mounted = true;
         if (mounted) {
-            set_database(DB);
+            set_database(DB.current);
         }
         return () => {
             mounted = false;
             set_data([]);
         };
-    }, [DB]);
+    }, []);
     useFocusEffect(
         React.useCallback(() => {
             let mounted = true;
