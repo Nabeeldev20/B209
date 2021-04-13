@@ -53,7 +53,7 @@ export default function App() {
   };
   const [loading, setLoading] = React.useState(true);
   const [ready, set_ready] = React.useState(false);
-  const [DB, setDB] = React.useState([]);
+  const DB = React.useRef([]);
   const [shouldAskForPermissions, setShouldAskForPermissions] = React.useState(
     false,
   );
@@ -242,7 +242,7 @@ export default function App() {
               set_last_time(file_output);
               add_methods(file_output);
               update_database(file_output);
-              setDB([...DB, file_output]);
+              DB.current = [...DB.current, file_output];
             }
           } catch (error) {
             ToastAndroid.showWithGravity(
@@ -267,12 +267,10 @@ export default function App() {
         );
         if (has_permission) {
           if (ready) {
-            setTimeout(() => {
-              if (get_database().length === 0) {
-                get_data();
-              }
-              setLoading(false);
-            }, 1000);
+            if (get_database().length === 0) {
+              get_data();
+            }
+            setLoading(false);
           }
         } else {
           setShouldAskForPermissions(true);
