@@ -20,7 +20,7 @@ export default function HomeStack({ navigation }) {
         React.useEffect(() => {
             setTimeout(() => {
                 set_loading(false);
-            }, 1250);
+            }, 500);
         }, []);
         return (
             <Animatable.View
