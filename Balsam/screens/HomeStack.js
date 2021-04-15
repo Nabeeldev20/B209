@@ -11,7 +11,6 @@ import FinishScreen from './FinishScreen';
 import Activation from './Activation';
 
 
-
 export default function HomeStack({ navigation }) {
     const Stack = createStackNavigator();
     const [loading, set_loading] = React.useState(true);

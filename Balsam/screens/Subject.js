@@ -27,12 +27,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
 
-import { get_database, set_database, get_act } from './db';
+import { app_database } from './db';
 export default function Subject({ navigation, route }) {
     const Stack = createStackNavigator();
     const { subject_name } = route.params;
 
-    const [onlyCycles, setOnlyCycles] = React.useState(false);
+    const [only_cycles, set_only_cycles] = React.useState(false);
     const [data, setData] = React.useState([]);
     const [dialogData, setDialogData] = React.useState({ visible: false });
     const [unfinishedDialog, setUnfinishedDialog] = React.useState({
@@ -43,13 +43,11 @@ export default function Subject({ navigation, route }) {
     const { colors } = useTheme();
     useFocusEffect(
         React.useCallback(() => {
-            setData(
-                [
-                    ...new Set(
-                        get_database().sort((a, b) => a.taken_number - b.taken_number),
-                    ),
-                ].filter(quiz => quiz.subject === subject_name),
-            );
+            let subject_data = app_database.get_database.filter(quiz => quiz.subject === subject_name);
+            let mounted = true;
+            if (mounted) {
+                setData(subject_data);
+            }
         }, [subject_name]),
     );
     function subject_component() {
@@ -93,10 +91,10 @@ export default function Subject({ navigation, route }) {
                                 الدورات فقط
               </Text>
                             <Switch
-                                value={onlyCycles}
+                                value={only_cycles}
                                 onValueChange={handle_switch}
                                 trackColor={{ false: '#767577', true: '#ec9b99' }}
-                                thumbColor={onlyCycles ? '#E53935' : '#f4f3f4'}
+                                thumbColor={only_cycles ? '#E53935' : '#f4f3f4'}
                             />
                         </View>
                     </View>
@@ -105,20 +103,28 @@ export default function Subject({ navigation, route }) {
             return null;
         }
         function handle_switch() {
-            if (!onlyCycles) {
+            if (only_cycles === false) {
                 setData(data.filter(quiz => quiz.cycle_university.length > 3));
-                setOnlyCycles(true);
+                set_only_cycles(true);
             } else {
-                setOnlyCycles(false);
-                setData(get_database().filter(quiz => quiz.subject === subject_name));
+                set_only_cycles(false);
+                setData(app_database.get_database.filter(quiz => quiz.subject === subject_name));
             }
         }
-        async function remove_file(title, path) {
-            setData(data.filter(quiz => quiz.title !== title));
+        async function remove_file(title, ID, path) {
+            setData(data.filter(quiz => quiz.ID !== ID));
             setDialogData({ visible: false });
-            set_database(get_database().filter(quiz => quiz.title !== title));
+            app_database.update_database = {
+                is_array: false,
+                update: app_database.get_database.filter(quiz => quiz.ID !== ID),
+            };
             try {
                 await FileSystem.unlink(path);
+                ToastAndroid.showWithGravity(
+                    `تم حذف ${title}`,
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM,
+                );
             } catch (error) {
                 ToastAndroid.showWithGravity(
                     'Error#011',
@@ -156,7 +162,7 @@ export default function Subject({ navigation, route }) {
             }
             if (quiz.is_paid()) {
                 function has_code(quiz_code) {
-                    let codes = get_act();
+                    let codes = app_database.get_activation;
                     if (codes.includes(quiz_code)) {
                         return true;
                     }
@@ -228,7 +234,7 @@ export default function Subject({ navigation, route }) {
                 <View>
                     <FlatList
                         data={data}
-                        keyExtractor={item => item.title}
+                        keyExtractor={item => item.ID}
                         extraData={data}
                         renderItem={({ item }) => (
                             <View
@@ -268,6 +274,7 @@ export default function Subject({ navigation, route }) {
                                                 visible: true,
                                                 title: item.title,
                                                 path: item.path,
+                                                ID: item.ID,
                                                 average_accuracy: item.get_average_accuracy(),
                                                 average_time: item.get_average_time(),
                                                 last_score:
@@ -306,7 +313,6 @@ export default function Subject({ navigation, route }) {
                                                     size={16}
                                                     style={{ marginHorizontal: 5 }}
                                                 />
-                                                <Text style={styles.subtitle}>{item.subject}</Text>
                                                 {item.is_cycle() ? (
                                                     <Text
                                                         style={[
@@ -322,7 +328,7 @@ export default function Subject({ navigation, route }) {
                                                             styles.subtitle,
                                                             {
                                                                 paddingLeft: 10,
-                                                                fontSize: 12,
+                                                                fontSize: 14,
                                                             },
                                                         ]}>
                                                         منذ {calculate_last_time(item.last_time)}
@@ -531,7 +537,7 @@ export default function Subject({ navigation, route }) {
                                     color="#E53935"
                                     labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo-Bold' }}
                                     onPress={() =>
-                                        remove_file(dialogData.title, dialogData.path)
+                                        remove_file(dialogData.title, dialogData.ID, dialogData.path)
                                     }>
                                     حذف الملف
                 </Button>

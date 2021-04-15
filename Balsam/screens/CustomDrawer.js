@@ -6,10 +6,10 @@ import { Divider } from 'react-native-paper';
 import { DrawerItem, DrawerContentScrollView } from '@react-navigation/drawer';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { get_database } from './db';
+import { app_database } from './db';
 
 export default function CustomDrawer({ navigation }) {
-    let data = get_database();
+    let data = app_database.get_database;
     const get_subjects = () => {
         let output = [];
         data.forEach(file => output.push(file.subject));

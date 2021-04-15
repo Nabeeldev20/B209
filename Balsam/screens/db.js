@@ -1,92 +1,67 @@
+/* eslint-disable prettier/prettier */
 import { Dirs, FileSystem } from 'react-native-file-access';
 import CryptoJS from 'crypto-js';
-
-let database = []
-let bookmarks = []
-let act_array = []
-let error_array = []
-let cache_array = []
-let mac = null
-function update_mac(update) {
-    mac = update
-}
-function get_mac() {
-    return mac
-}
-function get_database() {
-    return database
-}
-function update_database(update) {
-    database = [...database, update]
-}
-function set_database(update) {
-    database = update
-}
-function get_bookmarks() {
-    return bookmarks
-}
-function update_bookmarks(update) {
-    bookmarks = update
-}
-function erase_bookmarks() {
-    bookmarks = []
-}
-function get_act() {
-    return act_array
-}
-function get_cache_array() {
-    return cache_array
-}
-function update_cache_array(update) {
-    cache_array.push(...update)
-}
-function update_act(update) {
-    act_array.push(...update);
-}
-async function save_file(quiz) {
-    try {
-        let path = quiz.path;
-        let encrypted = CryptoJS.AES.encrypt(JSON.stringify(quiz), 'nabeeladnanalinizam_20900!@#()').toString();
-        await FileSystem.writeFile(path, encrypted);
-    } catch (error) {
-        update_error_msgs({ Code: 'error writing to file', error })
-    }
-}
-async function save_blsm() {
-    try {
-        let blsm = {
-            mac,
-            act_array,
-            bookmarks,
-            cache_array
+export let app_database = {
+    database: [],
+    bookmarks: [],
+    cache: [],
+    activation: [],
+    ID: null,
+    get get_database() {
+        return this.database;
+    },
+    set update_database(data) {
+        if (data.is_array) {
+            this.database = [...this.database, data.update];
+        } else {
+            this.database = data.update;
         }
-        let encrypted = CryptoJS.AES.encrypt(JSON.stringify(blsm), 'nabeeladnanalinizam_20900!@#()').toString();
-        await FileSystem.writeFile(Dirs.DocumentDir + '/b.blsm', encrypted);
-    } catch (error) {
-        update_error_msgs({ Code: 'Error saving blsm ' + error })
-    }
-}
-function get_error_msgs() {
-    return error_array;
-}
-function update_error_msgs(data) {
-    error_array.push(data)
-}
-export {
-    get_database,
-    set_database,
-    update_database,
-    get_mac,
-    update_mac,
-    get_bookmarks,
-    update_bookmarks,
-    erase_bookmarks,
-    get_act,
-    update_act,
-    save_file,
-    get_error_msgs,
-    update_error_msgs,
-    get_cache_array,
-    update_cache_array,
-    save_blsm
-}
+    },
+    set default_ID(update) {
+        this.ID = update;
+    },
+    get get_bookmarks() {
+        return this.bookmarks;
+    },
+    set update_bookmarks(update) {
+        this.bookmarks = update;
+    },
+    get get_activation() {
+        return this.activation;
+    },
+    set update_activation(update) {
+        this.activation = update;
+    },
+    get get_cache() {
+        return this.cache;
+    },
+    set update_cache(update) {
+        this.cache = update;
+    },
+    async save_file(quiz) {
+        try {
+            let path = quiz.path;
+            let encrypted = CryptoJS.AES.encrypt(JSON.stringify(quiz), 'nabeeladnanalinizam_20900!@#()').toString();
+            await FileSystem.writeFile(path, encrypted);
+        } catch (error) {
+            return error;
+        }
+    },
+    async save_blsm() {
+        try {
+            let blsm = {
+                ID: this.ID,
+                activation: this.activation,
+                bookmarks: this.bookmarks,
+                cache: this.cache,
+            };
+            let encrypted = CryptoJS.AES.encrypt(
+                JSON.stringify(blsm),
+                'nabeeladnanalinizam_20900!@#()',
+            ).toString();
+            await FileSystem.writeFile(Dirs.DocumentDir + '/b.blsm', encrypted);
+        } catch (error) {
+
+        }
+    },
+};

@@ -23,7 +23,7 @@ import * as Animatable from 'react-native-animatable';
 import * as Haptics from 'expo-haptics';
 import Analytics from 'appcenter-analytics';
 
-import { get_bookmarks, update_bookmarks, save_file, save_blsm } from './db';
+import { app_database } from './db';
 
 export default function Exam({ navigation, route }) {
     let { quiz, exam_time, random_questions, random_choices } = route.params;
@@ -54,7 +54,7 @@ export default function Exam({ navigation, route }) {
                     quiz.index = index;
                     quiz.wrong_count = wrongAnswersCount;
                     try {
-                        save_file(quiz);
+                        app_database.save_file(quiz);
                     } catch (error) {
                         ToastAndroid.showWithGravity(
                             'Error#010',
@@ -66,6 +66,7 @@ export default function Exam({ navigation, route }) {
                 }
             }
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [index, navigation]);
 
     const Footer = () => {
@@ -213,15 +214,15 @@ export default function Exam({ navigation, route }) {
     function add_to_bookmarks() {
         let question = quiz.get_question(index);
         question.subject = quiz.subject;
-        let bookmarks = get_bookmarks();
+        let bookmarks = app_database.get_bookmarks;
         function add_bookmark() {
             bookmarks.push(question);
             let updated_bookmarks = [...new Set(bookmarks)];
-            update_bookmarks(updated_bookmarks);
+            app_database.update_bookmarks = updated_bookmarks;
         }
         function save_to_bookmarks() {
             try {
-                save_blsm();
+                app_database.save_blsm();
             } catch (error) {
                 ToastAndroid.showWithGravity(
                     'Error#009',
@@ -247,7 +248,7 @@ export default function Exam({ navigation, route }) {
     function check_is_bookmark() {
         function get_questions_in_bookmarks() {
             let output = [];
-            let data = get_bookmarks().filter(item => item.subject === quiz.subject);
+            let data = app_database.get_bookmarks.filter(item => item.subject === quiz.subject);
             for (let i = 0; i < data.length; i++) {
                 output.push(data[i].title);
             }
