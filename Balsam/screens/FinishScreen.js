@@ -15,7 +15,7 @@ import { Surface, Divider } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { DateTime } from 'luxon';
 import * as Animatable from 'react-native-animatable';
-import { get_database, save_file } from './db';
+import { app_database } from './db';
 
 export default function FinishScreen({ navigation, route }) {
     const {
@@ -34,7 +34,7 @@ export default function FinishScreen({ navigation, route }) {
             quiz.last_time = DateTime.now().toISODate();
             quiz.wrong_count = 0;
             try {
-                save_file(quiz);
+                app_database.save_file(quiz);
             } catch (error) {
                 ToastAndroid.showWithGravity(
                     'Error #013',
@@ -55,6 +55,7 @@ export default function FinishScreen({ navigation, route }) {
                 navigation.dispatch(e.data.action);
             }
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [navigation, quiz]);
     const [screenHeight, setScreenHeight] = React.useState(
         Dimensions.get('window'),
@@ -201,7 +202,7 @@ export default function FinishScreen({ navigation, route }) {
     }
     function Recommendation() {
         function get_recommendation() {
-            let data_subjects = get_database().filter(
+            let data_subjects = app_database.get_database.filter(
                 data_quiz => data_quiz.subject === quiz.subject,
             );
             let other_files = data_subjects
@@ -466,14 +467,14 @@ export default function FinishScreen({ navigation, route }) {
                     <View>
                         <MaterialCommunityIcons
                             name="lightbulb-on"
-                            color="grey"
-                            size={14}
+                            color="#546E7A"
+                            size={20}
                         />
                         <Text
                             style={{
                                 fontFamily: 'Cairo-Bold',
                                 fontSize: 14,
-                                color: 'grey',
+                                color: '#546E7A',
                             }}>
                             {data[random_between(0, data.length)]}
                         </Text>

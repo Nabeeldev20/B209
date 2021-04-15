@@ -27,11 +27,7 @@ import { FileSystem } from 'react-native-file-access';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Analytics from 'appcenter-analytics';
 import Database from './DatabaseContext';
-import {
-    get_database,
-    set_database,
-    get_act,
-} from './db';
+import { app_database } from './db';
 export default function Home({ navigation }) {
     const { colors } = useTheme();
     const { DB } = React.useContext(Database);
@@ -42,31 +38,20 @@ export default function Home({ navigation }) {
         questions_number: 0,
     });
     const [data, set_data] = React.useState(DB.current);
-    React.useEffect(() => {
-        let mounted = true;
-        if (mounted) {
-            set_database(DB.current);
-        }
-        return () => {
-            mounted = false;
-            set_data([]);
-        };
-    }, []);
+    const is_first = React.useRef(true);
     useFocusEffect(
         React.useCallback(() => {
             let mounted = true;
-            let sorted_data = [
-                ...new Set(
-                    get_database().sort((a, b) => a.taken_number - b.taken_number),
-                ),
-            ];
             if (mounted) {
-                set_data(sorted_data);
+                if (is_first.current === false) {
+                    let database_data = app_database.get_database;
+                    set_data(database_data);
+                }
             }
 
             return () => {
                 mounted = false;
-                set_data([]);
+                is_first.current = false;
             };
         }, []),
     );
@@ -112,9 +97,11 @@ export default function Home({ navigation }) {
         );
     }
     function Tutorial() {
-        if (data.length > 0 && data.length < 4) {
+        if (data.length > 0 && data.length <= 4) {
             return (
-                <View style={{ alignItems: 'center', flexDirection: 'row', padding: 5 }}>
+                <Animatable.View
+                    animation="fadeIn"
+                    style={{ alignItems: 'center', flexDirection: 'row', padding: 5 }}>
                     <MaterialCommunityIcons
                         name="lightbulb-on"
                         size={16}
@@ -124,7 +111,7 @@ export default function Home({ navigation }) {
                         fontSize: 12, color: 'grey', padding: 5,
 
                     }}>اضغط مطولاً على أي من البطاقات للمزيد من المعلومات</Text>
-                </View>
+                </Animatable.View>
             );
         }
         return null;
@@ -138,11 +125,13 @@ export default function Home({ navigation }) {
         }
         return `${math} يوم`;
     }
-    async function remove_file(title, path) {
+    async function remove_file(title, ID, path) {
         setDialogData({ visible: false });
-        // in db.js
-        set_data(data.filter(quiz => quiz.title !== title));
-        set_database(get_database().filter(quiz => quiz.title !== title));
+        set_data(data.filter(quiz => quiz.ID !== ID));
+        app_database.update_database = {
+            is_array: false,
+            update: app_database.get_database.filter(quiz => quiz.ID !== ID),
+        };
         try {
             await FileSystem.unlink(path);
             ToastAndroid.showWithGravity(
@@ -184,7 +173,7 @@ export default function Home({ navigation }) {
         }
         if (quiz.is_paid()) {
             function has_code(quiz_code) {
-                let codes = get_act();
+                let codes = app_database.get_activation;
                 if (codes.includes(quiz_code)) {
                     return true;
                 }
@@ -240,7 +229,7 @@ export default function Home({ navigation }) {
                 <FlatList
                     data={data}
                     extraData={data}
-                    keyExtractor={item => item.title}
+                    keyExtractor={item => item.ID}
                     renderItem={({ item }) => (
                         <View
                             style={{
@@ -275,6 +264,7 @@ export default function Home({ navigation }) {
                                             visible: true,
                                             title: item.title,
                                             path: item.path,
+                                            ID: item.ID,
                                             average_accuracy: item.get_average_accuracy(),
                                             average_time: item.get_average_time(),
                                             last_score:
@@ -522,7 +512,7 @@ export default function Home({ navigation }) {
                         <Button
                             color="#E53935"
                             labelStyle={{ letterSpacing: 0, fontFamily: 'Cairo-Bold' }}
-                            onPress={() => remove_file(dialogData.title, dialogData.path)}>
+                            onPress={() => remove_file(dialogData.title, dialogData.ID, dialogData.path)}>
                             حذف الملف
             </Button>
                         <Button
@@ -540,7 +530,7 @@ export default function Home({ navigation }) {
 
 const styles = StyleSheet.create({
     container: {
-        paddingVertical: 10,
+        paddingBottom: 5,
         flex: 1,
         width: '100%',
     },

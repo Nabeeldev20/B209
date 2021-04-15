@@ -23,7 +23,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import * as Animatable from 'react-native-animatable';
 import { useFocusEffect } from '@react-navigation/native';
 
-import { get_bookmarks, update_bookmarks, save_blsm } from './db';
+import { app_database } from './db';
 
 export default function Bookmarks({ navigation }) {
     const Stack = createStackNavigator();
@@ -37,12 +37,12 @@ export default function Bookmarks({ navigation }) {
     const onContentSizeChange = contentHeight => {
         setScreenHeight(contentHeight);
     };
-    const [bookmarks, set_bookmarks] = React.useState(get_bookmarks());
+    const [bookmarks, set_bookmarks] = React.useState(app_database.get_bookmarks);
     const [selected_subject, set_selected_subject] = React.useState('');
 
     useFocusEffect(
         React.useCallback(() => {
-            set_bookmarks(get_bookmarks());
+            set_bookmarks(app_database.get_bookmarks);
         }, []),
     );
     function bookmarks_component() {
@@ -196,7 +196,7 @@ export default function Bookmarks({ navigation }) {
         function remove_bookmark(removed_bookmark) {
             function save_to_bookmarks() {
                 try {
-                    save_blsm();
+                    app_database.save_blsm();
                 } catch (error) {
                     ToastAndroid.showWithGravity(
                         'Error#009',
@@ -212,7 +212,7 @@ export default function Bookmarks({ navigation }) {
             ];
 
             set_bookmarks(updated_bookmarks);
-            update_bookmarks(updated_bookmarks);
+            app_database.update_bookmarks = updated_bookmarks;
             save_to_bookmarks();
         }
         return (

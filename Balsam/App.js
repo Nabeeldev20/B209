@@ -10,6 +10,7 @@ import {
   ToastAndroid,
   PermissionsAndroid,
   NativeModules,
+  Platform,
 } from 'react-native';
 import { DefaultTheme, Provider as PaperProvider, Button } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
@@ -18,14 +19,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { Dirs, FileSystem } from 'react-native-file-access';
 import { DateTime } from 'luxon';
 import * as Animatable from 'react-native-animatable';
-import * as Network from 'expo-network';
-import {
-  update_database,
-  get_database,
-  update_bookmarks,
-  update_act,
-  update_cache_array,
-} from './screens/db';
+import { app_database } from '../screens/db';
 
 import CryptoJS from 'crypto-js';
 import HomeStack from './screens/HomeStack';
@@ -241,8 +235,14 @@ export default function App() {
               file_output.path = paths[i];
               set_last_time(file_output);
               add_methods(file_output);
-              update_database(file_output);
-              DB.current = [...DB.current, file_output];
+              if (file_output.ID === undefined) {
+                file_output.ID = '_' + Math.random().toString(36).substr(2, 9);
+              }
+              let in_app_data = app_database.get_database.map(quiz => quiz.ID);
+              if (in_app_data.includes(file_output.ID) === false) {
+                app_database.update_database = { is_array: true, update: file_output };
+                DB.current = [...DB.current, file_output];
+              }
             }
           } catch (error) {
             ToastAndroid.showWithGravity(
@@ -267,9 +267,7 @@ export default function App() {
         );
         if (has_permission) {
           if (ready) {
-            if (get_database().length === 0) {
-              get_data();
-            }
+            get_data();
             setLoading(false);
           }
         } else {
@@ -291,9 +289,10 @@ export default function App() {
             let file = await FileSystem.readFile(Dirs.DocumentDir + '/b.blsm');
             let decoded_file = decode_file(file);
             let json_file = JSON.parse(decoded_file);
-            update_bookmarks(json_file.bookmarks);
-            update_act(json_file.act_array);
-            update_cache_array(json_file.cache_array);
+            app_database.update_bookmarks = json_file.bookmarks;
+            app_database.update_activation = json_file.activation;
+            app_database.update_cache = json_file.cache;
+            app_database.userId = json_file.ID;
           } catch (error) {
             ToastAndroid.showWithGravity(
               'Error#005',
@@ -303,9 +302,9 @@ export default function App() {
           }
         } else {
           try {
-            let mac = null;
+            let ID = null;
             try {
-              mac = await Network.getMacAddressAsync();
+              ID = Platform.Serial;
             } catch (error) {
               ToastAndroid.showWithGravity(
                 'Error#006',
@@ -314,9 +313,9 @@ export default function App() {
               );
             }
             let data = {
-              mac,
-              act_array: [],
-              cache_array: [],
+              ID,
+              activation: [],
+              cache: [],
               bookmarks: [],
             };
             let path = Dirs.DocumentDir + '/b.blsm';

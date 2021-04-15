@@ -9,6 +9,7 @@ import {
     ToastAndroid,
     ScrollView,
     Dimensions,
+    Platform,
 } from 'react-native';
 import {
     Surface,
@@ -23,16 +24,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import Hashids from 'hashids';
 import Analytics from 'appcenter-analytics';
 import { DateTime } from 'luxon';
-import {
-    get_act,
-    update_act,
-    get_cache_array,
-    update_cache_array,
-    save_blsm,
-    get_mac,
-    update_mac,
-} from './db';
-import * as Network from 'expo-network';
+import { app_database } from './db';
 
 export default function Activation({ navigation, route }) {
     const h = new Hashids(
@@ -69,7 +61,13 @@ export default function Activation({ navigation, route }) {
             n3.current?.fadeInRight(1500);
         }
     }, []);
-
+    React.useEffect(() => {
+        let d = h.decode(get_act_code());
+        if (d.length > 0 && d === keyCode) {
+            act_button.current?.tada();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [keyCode]);
     function hasErrors() {
         if (storeCode.length > 0) { return storeCode.length < 12; }
         return false;
@@ -77,7 +75,7 @@ export default function Activation({ navigation, route }) {
 
     function get_act_code() {
         function has_cache_code(quiz_code) {
-            let data = get_cache_array();
+            let data = app_database.get_cache;
             let output = [];
             for (let i = 0; i < data.length; i++) {
                 output.push(data[i].QuizCode);
@@ -93,15 +91,15 @@ export default function Activation({ navigation, route }) {
         }
 
         if (has_cache_code(code)) {
-            return get_cache_array().find(item => item.QuizCode === code).HashCode;
+            return app_database.get_cache.find(item => item.QuizCode === code).HashCode;
         } else {
             let new_code = {
                 QuizCode: code,
                 HashCode: generate_code(),
             };
-            update_cache_array([...get_cache_array(), new_code]);
+            app_database.update_cache = [...app_database.get_cache, new_code];
             try {
-                save_blsm();
+                app_database.save_blsm();
             } catch (error) {
                 ToastAndroid.showWithGravity(
                     'Error#009',
@@ -122,12 +120,6 @@ ${storeCode}-${get_act_code()}-${DateTime.now().toISODate()}`);
             ToastAndroid.BOTTOM,
         );
     }
-    function is_input_valid_animation() {
-        let d = h.decode(get_act_code());
-        if (d.length > 0 && d === keyCode) {
-            act_button.current?.tada();
-        }
-    }
     async function save() {
         function update_data() {
             ToastAndroid.showWithGravity(
@@ -135,9 +127,9 @@ ${storeCode}-${get_act_code()}-${DateTime.now().toISODate()}`);
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
             );
-            update_act([...get_act(), code]);
+            app_database.update_activation = [...app_database.get_activation, code];
             try {
-                save_blsm();
+                app_database.save_blsm();
             } catch (error) {
                 ToastAndroid.showWithGravity(
                     'Error#009',
@@ -153,24 +145,16 @@ ${storeCode}-${get_act_code()}-${DateTime.now().toISODate()}`);
             navigation.navigate('Home');
         }
         try {
-            let mac_address = null;
-            mac_address = await Network.getMacAddressAsync();
-            let mac = get_mac();
-            if (mac != null && mac_address != null) {
-                if (mac === mac_address) {
-                    update_data();
-                }
-            }
-            if (mac == null && mac_address != null) {
-                update_mac(mac_address);
-                update_data();
-            }
-            if (mac != null && mac_address === null) {
+            let phone_Id = null;
+            phone_Id = Platform.Serial;
+            if (app_database.ID !== phone_Id) {
                 ToastAndroid.showWithGravity(
-                    'قم بتشغيل الـ wifi من فضلك',
+                    'فشلت عملية التفعيل',
                     ToastAndroid.LONG,
                     ToastAndroid.BOTTOM,
                 );
+            } else {
+                update_data();
             }
         } catch (error) {
             ToastAndroid.showWithGravity(
@@ -180,7 +164,6 @@ ${storeCode}-${get_act_code()}-${DateTime.now().toISODate()}`);
             );
         }
     }
-    is_input_valid_animation();
 
     return (
         <ScrollView
@@ -190,9 +173,6 @@ ${storeCode}-${get_act_code()}-${DateTime.now().toISODate()}`);
             onContentSizeChange={onContentSizeChange}>
             <View style={styles.container}>
                 <Text style={styles.welcome}> ثلاث خطوات بسيطة لتفعيل البنك</Text>
-                <Text style={[styles.text, { color: 'grey' }]}>
-                    لكي يتم التفعيل بصورة صحيحة يجب تشغيل الـ wifi
-        </Text>
                 <Animatable.View ref={n1}>
                     <Surface style={styles.surface}>
                         <View style={styles.row}>
