@@ -19,7 +19,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { Dirs, FileSystem } from 'react-native-file-access';
 import { DateTime } from 'luxon';
 import * as Animatable from 'react-native-animatable';
-import { app_database } from '../screens/db';
+import { app_database } from './screens/db';
 
 import CryptoJS from 'crypto-js';
 import HomeStack from './screens/HomeStack';
